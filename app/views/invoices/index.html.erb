@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Fakturaer</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th><%= link_to "Medlemsnr.", invoices_path %></th>
+			<th><%= link_to "Navn", invoices_path(order: :name) %></th>
+      <th><%= link_to "Fakturanr.", invoices_path(order: :id) %></th>
+			<th><%= link_to "Status", invoices_path(order: [:paid, :id]) %></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @invoices.each do |invoice| %>
+      <% if invoice.people.any? || invoice.tickets.any? %>
+				<tr>
+					<td><%= link_to invoice.member.number, invoice.member %></td>
+					<td><%= link_to invoice.member.name, invoice %></td>
+					<td><%= link_to invoice.id, invoice %></td>
+					<td><%= invoice.paid ? "betalt" : "ikke betalt" %></td>
+				</tr>
+			<% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+

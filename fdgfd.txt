@@ -1,0 +1,9 @@
+timeout på faktura: slet indhold (people/tickets) og sæt paid=true
+
+match 'tickets/toggle/:activity_id/:person_id' => 'tickets#toggle'
+og så skal den rammes ved klik (js), og rækken+konfliktende opfriskes
+
+conflicts-metode skal returnere konfliktende aktiviteter, så de kan markeres inaktive, opfriskes...
+
+forsiden skal måske kun vise fremsøgte - ikke starte med hele listen...
+

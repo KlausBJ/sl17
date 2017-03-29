@@ -1,0 +1,2 @@
+class HousingType < ApplicationRecord
+end

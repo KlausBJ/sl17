@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Navn:</strong>
+  <%= @place.name %>
+</p>
+
+<p>
+  <strong>Beskrivelse:</strong>
+  <%= @place.description %>
+</p>
+
+<p>
+  <strong>Begrænset:</strong>
+  <%= @place.limited %>
+</p>
+
+<%= link_to 'Rediger', edit_place_path(@place) %> |
+<%= link_to 'Oversigt', places_path %>

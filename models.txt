@@ -1,0 +1,32 @@
+1.Member *
+2.Person(1,6) *
+3.Activity(2,9) *
+4.Task(3) *
+5.Ticket(2,3,8) *
+6.Ptype *
+7.Assignment(2,4)
+8.Invoice(1)
+9.Place
+
+Member:
+Første gang - find medlemsnr, opgiv email, mail sendes med kode.
+
+Member:
+login med kode, tilmeld sommerlejr-deltagere, opkrævning med link til P2B + vejledning i betaling sendes pr. mail.
+
+Member:
+Ved køb skal der vises matrix, personer mod aktiviteter, opdelt i dage
+aktiviteter vises pr. dag ved booking - klik for at booke, klik igen for at fjerne booking
+ved afkrydsning checkes der for konflikter - hvis konflikt advares der (og der bookes ikke) - ellers er der booket
+hvis man vil booke, må man fjerne den der er i konflikt
+
+Member:
+Man logger på, der oprettes en tom invoice
+når man indikerer, at man er færdig (afslut og log af...), sendes der en "faktura" med hvad der skal betales, og hvor man gør det.
+vejledning viser hvordan der skal gøres i P2B
+
+Member:
+tilføje aktivitet - inkluderer booking af sted
+derefter kan der oprettes arbejdsopgaver - skal der være mulighed for at forhåndsreservere hjælpere?
+	vi kan ikke vide, om hjælperne er tilmeldt
+	det fremmer klike-mentaliteten - vi vil kun have hjælp af dem, vi er gode venner med i forvejen :/

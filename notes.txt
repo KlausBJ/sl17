@@ -1,0 +1,18 @@
+sted
+Basketballbanen
+Fællesområdet
+Fodboldbanen
+Konferencen
+Stranden
+Teenage-teltet
+Telt 1
+Telt 2
+Telt 3
+Telt 4
+Telt 6
+TV-Hytten
+
+<%= check_box_tag 'complete', '1', task.complete, {
+  onchange: "$(this).data('params', 'complete=' + this.checked)",
+  data: { url: url_for(action: 'complete', id: task.id,), remote: true, method: :patch },
+} %>

@@ -1,0 +1,38 @@
+checkbox skal medsende id for deltager, aktivitet
+faktura kan findes ud fra deltager -> medlem - aktiv...
+url kan indeholde aktiviteten - tilmelding skal ske via aktivitetens controller
+deltageren skal tilmeldes hvis:
+	der er ledige pladser
+	der ikke er overlappende aktiviteter for deltageren
+
+people_controller skal kontrollere for overlap 
+
+hvis slut er før-eller-på dennes start eller start er på-eller-efter dennes slut: ok
+ellers konflikt!
+ved kontrol:
+hent deltagers andre billetter, gennemgå:
+sæt ok
+for hver billet: check betingelse ovenfor, hvis ikke opfyldt, fjern ok og afslut
+return false unless blabla
+
+navne ved kolonner skal ikke scrolle - de skal være stationære i browseren
+
+aktiviteter sorterbare efter start, slut, pris, altid grupperet i dage?
+
+billetter skal høre til en faktura: find ubetalt/aktiv eller opret ny
+
+
+hvis slut er før-eller-på dennes start eller start er på-eller-efter dennes slut: ok
+ellers konflikt!
+
+alternativ: (bedre kode!)
+hvis slut er efter dennes start OG start er før dennes slut: konflikt! <- scope :conflict
+@ticket.save unless @person.activities.conflict(@activity).any? or @activity.full?
+
+ved klik: 
+flueben
+	gennemfør køb hvis stadig muligt
+	opdater checkbox + alle med konflikt sættes inaktiv.
+tom boks
+	fjern billet
+	aktivér konfliktende aktivitets-checkboxe

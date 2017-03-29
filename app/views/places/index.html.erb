@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Steder</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Navn</th>
+      <th>Beskrivelse</th>
+      <th>Begrænset</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @places.each do |place| %>
+      <tr>
+        <td><%= place.name %></td>
+        <td><%= place.description %></td>
+        <td><%= place.limited %></td>
+        <td><%= link_to 'Vis', place %></td>
+        <td><%= link_to 'Rediger', edit_place_path(place) %></td>
+        <td><%= link_to 'Slet', place, method: :delete, data: { confirm: 'Er du sikker?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Nyt Sted', new_place_path %>

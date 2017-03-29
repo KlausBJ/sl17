@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sl17</title>
+    <%= javascript_include_tag :defaults %>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+		<div id="header">
+			<table>
+				<tr>
+					<td><%= image_tag("gclogo63.png") %></td>
+					<td><h1>Tilmelding til sommerlejr 2017</h1></td>
+					<% if session[:member_id] %>
+						<td><%= @cm ? "Medlemsnr.: #{@cm.number}" : "Anonym" %><%= @cm.roles_to_s if @cm %> - <%= link_to "Log ud", logout_path, method: :delete %></td>
+					<% end %>
+				</tr>
+			</table>
+		</div>
+    <%= yield %>
+		<div id="footer">
+			<table>
+				<tr>
+					<td><%= image_tag("visa.png") %></td>
+					<td><%= image_tag("mastercard.png") %></td>
+					<td><%= link_to "Betingelser", '/betingelser', target: :_blank %></td>
+					<td><%= link_to "Mere om Gifted Children", "http://www.giftedchildren.dk", target: :_blank %></td>
+					<% if session[:member_id] %><td><%= link_to 'Deltagerliste', people_path %></td><% end %>
+					<% if session[:member_id] %><td><%= link_to "Tilbage til medlemslisten", members_path %></td><% end %>
+				</tr>
+			</table>
+    </div>
+
+  </body>
+</html>

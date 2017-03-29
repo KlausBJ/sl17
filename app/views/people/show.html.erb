@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Navn:</strong>
+  <%= @person.name %>
+</p>
+
+<p>
+  <strong>Medlemsnr:</strong>
+  <%= @person.member.number %>
+</p>
+
+<p>
+  <strong>Billettype:</strong>
+  <%= @person.ptype.name %>
+</p>
+
+<p>
+  <strong>Køn:</strong>
+  <%= @person.koen %>
+</p>
+
+<% unless @person.aargang.nil? %>
+<p>
+  <strong>Årgang (fødselsdato):</strong>
+  <%= @person.aargang %>
+</p>
+<% end %>
+
+<%= link_to 'Rediger', edit_person_path(@person) %> |
+<%= link_to 'Oversigt', people_path %>

@@ -1,0 +1,32 @@
+<%= form_for(member) do |f| %>
+  <% if member.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(member.errors.count, "error") %> prohibited this member from being saved:</h2>
+
+      <ul>
+      <% member.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label "Medlemsnr" %>
+    <%= f.hidden_field :number, :value => member.number %><%= member.number %>
+  </div>
+
+  <div class="field">
+    <%= f.label "Navn" %>
+    <%= f.hidden_field :name, :value => member.name %><%= member.name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :email %>
+    <%= f.text_field :email %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit 'Send email med adgangskode' %>
+  </div>
+<% end %>

@@ -1,0 +1,38 @@
+Visning af ledige pladser på en aktivitet viser
+Ledig hvis 1 er sand og enten 2 eller 3 er sand:
+1. Man ikke har noget booket på det tidspunkt OG man matcher aldersgruppen
+2. (Antal på betalte bookinger + antal på ubetalte, hvor ticket.created_at > NOW - 15 minutter) < activity.number OG activity.deltbet > 0
+3. (Antal på betalte bookinger + antal på ubetalte) < activity.number OG (activity.deltbet.to_i == 0 ELLER activity.number == 0)
+
+Hvis man kommer tilbage til en afbrudt faktura, vises bookinger, hvis de ikke er udløbet, eller hvis de er udløbet og der stadig er plads
+gratis eller ikke deltagerbegrænsede aktiviteter udløber aldrig
+
+Ingen bookinger gælder, hvis deltageren ikke er betalt
+
+Match på aldersgruppe:
+activity skal have min_aargang, max_aargang?
+offloades til ekstern tabel?
+hmmm, kan beregnes ud fra aargang og start-tid.
+
+2-cifret er alder, 4-cifret er kalenderår?
+det skal være nemt ved oprettelse af aktiviteter...
+
+1. Hvis aargang ikke matcher billettypen, skal man smides tilbage med besked om, at det er forkert (flash) og helst med data stadig udfyldt...
+	Redirect ( : back ), :notice => "something went wrong.try again" ?
+- (håndteres i Person) 2. Der skal være et felt til indkvartering (eller 2) for Member, required
++3. Der skal være et (frivilligt) felt til indkvartering for Person, og Member.indkvartering bruges, hvis det andet ikke er udfyldt (Hvis det ikke er den samme som 	resten af familien... eller noget...)
+4. Der skal være et Værtsfamilie-felt, hvis man tilmelder ikke-voksne uden voksen, required
++5. Mobilnr-felt pr. Person
+
+
+Mail/Password-funktionalitet, FØR man kan tilmelde
+Hvis der er tilmeldt personer, er mailen bekræftet...
+
+Første Persons indkvartering kopieres til Member
+
+Forældre først!
+Standard-indkvartering først!
+
+
+HostMember:
+Member, hvor deltager med ptype=1 eksisterer.

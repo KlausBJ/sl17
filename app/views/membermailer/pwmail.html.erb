@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Hej <%= @member.name %></h1>
+		<p>
+			Her er dine loginoplysninger til brug for sommerlejrtilmelding:
+		</p>
+		<p>
+			Dit brugernavn er <%= @member.number %><br>
+			Din adgangskode er <%= @member.password.password %>
+		</p>
+		<p>
+			Adgangskoden kan ikke ændres, men hvis du glemmer den, kan du få den tilsendt igen.
+		</p>
+		<p>
+			Du kan nu gå ind på <%= link_to 'Tilmeldingen', login_url %> og melde familien til sommerlejren.<br>
+			Aktivitetstilmeldinger (som åbner senere) vil foregå på samme adresse.
+		</p>
+		<p>
+			God fornøjelse.
+		</p>
+		<p>
+			Med venlig hilsen
+		</p>
+		<p>
+			<strong>Sommerlejrudvalget</strong><br>
+			Gifted Children
+		</p>
+  </body>
+</html>

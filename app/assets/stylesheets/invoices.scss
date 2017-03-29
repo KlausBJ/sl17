@@ -1,0 +1,51 @@
+// Place all the styles related to the Invoices controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
+@mixin gradient($from, $to) {
+    background: -moz-linear-gradient(45deg, $from, $to);
+    background: -webkit-linear-gradient(45deg, $from, $to);
+    background: linear-gradient(45deg, $from, $to);
+}
+
+a.button {
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 3px;
+  color: white;
+  text-decoration: none;
+  box-shadow: 0px 2px 10px #999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 20px;
+  padding: 10px 20px;
+  
+  &.red {
+    @include gradient(#DBA551, #85202c);
+  }
+
+   &.blue {
+    @include gradient(#7399ae, #662452);
+  }
+
+  &.green {
+    @include gradient(#B7CF4F, #298520);
+  }
+  
+  background-size: 250% 100% !important;  
+  background-position: 100% 0% !important; 
+  
+  &:hover {
+    background-position: 0% !important;
+    box-shadow: 0 0px 12px #BBB;
+    transition: all 0.3s ease;
+    transform: translateY(-1px);
+}
+  
+  &:active {
+    transform: translateY(0);
+    background-position: 50% !important;
+  }
+  
+}

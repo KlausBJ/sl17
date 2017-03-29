@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Navn:</strong>
+  <%= @ptype.name %>
+</p>
+
+<p>
+  <strong>Pris:</strong>
+  <%= @ptype.price %>
+</p>
+
+<p>
+  <strong>Fødselsdag krævet:</strong>
+  <%= check_box_tag 'hest', 'ko', @ptype.datereq, disabled: true %>
+</p>
+
+<%= link_to 'Rediger', edit_ptype_path(@ptype) %> |
+<%= link_to 'Oversigt', ptypes_path %>

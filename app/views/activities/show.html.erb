@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Navn:</strong>
+  <%= @activity.name %>
+</p>
+
+<p>
+  <strong>Start:</strong>
+  <%= @activity.starttime %>
+</p>
+
+<p>
+  <strong>Slut:</strong>
+  <%= @activity.endtime %>
+</p>
+
+<p>
+  <strong>Tovholder:</strong>
+  <%= @activity.person %>
+</p>
+
+<p>
+  <strong>Sted:</strong>
+  <%= @activity.place.name %>
+</p>
+
+<%= link_to 'Rediger', edit_activity_path(@activity) %> |
+<%= link_to 'Oversigt', activities_path %>

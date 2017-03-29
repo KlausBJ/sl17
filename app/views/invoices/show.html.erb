@@ -1,0 +1,88 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Medlemsnr:</strong>
+  <%= @invoice.member.number %>
+</p>
+<table width="90%" border=1>
+	<tr>
+		<th width="50%">Navn</th>
+		<th width="35%">Billet</th>
+		<th width="15%">Pris</th>
+	</tr>
+	<% if @invoice.people.any? %>
+		<tr>
+			<td colspan=3><b>Sommerlejr:</b></td>
+		</tr>
+		<% @invoice.people.each do |person| %>
+			<tr>
+				<td><%= person.name %></td>
+				<td><%= person.ptype.name %></td>
+				<td align="right"><%= dkk(person.ptype.price) %></td>
+			</tr>
+		<% end %>
+		<tr>
+			<td colspan=2><b>I alt</b></td>
+			<td align="right"><b><%= dkk(@invoice.people.map{|p| p.ptype.price}.sum) %></b></td>
+		</tr>
+	<% end %>
+	<% if @invoice.tickets.any? %>
+		<tr>
+			<td colspan=3><b>Aktiviteter:</b></td>
+		</tr>
+		<% @invoice.tickets.each do |ticket| %>
+			<tr>
+				<td><%= ticket.person.name %></td>
+				<td><%= ticket.activity.name %></td>
+				<td align="right"><%= dkk(ticket.activity.deltbet.to_i) %></td>
+			</tr>
+		<% end %>
+		<tr>
+			<td colspan=2><b>I alt</b></td>
+			<td align="right"><b><%= dkk(@invoice.tickets.map{|t| t.activity.deltbet.to_i}.sum) %></b></td>
+		</tr>
+	<% end %>
+	<% if @invoice.people.any? && @invoice.tickets.any? %>
+		<tr>
+			<td colspan=2><b>Samlet</b></td>
+			<td align="right"><b><%= dkk(@invoice.total) %></b></td>
+		</tr>
+	<% end %>
+</table>
+<br>
+
+<center>
+	<% if !(@invoice.paid || @invoice.free?) %>
+		<div>
+			<%= check_box_tag 'accept' %> Acceptér <%= link_to "betingelser", '/betingelser', target: :_blank %>
+			<br>
+			<br>
+			<%= link_to "Tilbage", member_path(@invoice.member) %>
+		</div>
+		<div id="betal" style="display:none;">
+			<%= link_to "Til betaling", pay_invoice_path(@invoice), :class => "button green", :method => :post %>
+		</div>
+		<script type="text/javascript">
+			var checkbox = document.getElementById('accept');
+			var details_div = document.getElementById('betal');
+			checkbox.onchange = function() {
+				if(this.checked) {
+					details_div.style['display'] = 'block';
+				} else {
+					details_div.style['display'] = 'none';
+				}
+			};
+		</script>
+	<% elsif @invoice.paid %>
+		<div>
+			<%= link_to "Tilbage", member_path(@invoice.member) %>
+		</div>
+	<% else %>
+		<div>
+			<%= link_to "Afslut", pay_invoice_path(@invoice), :method => :post %>
+			<br>
+			<br>
+			<%= link_to "Tilbage", member_path(@invoice.member) %>
+		</div>
+	<% end %>
+</center>

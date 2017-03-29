@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Navn:</strong>
+  <%= @task.name %>
+</p>
+
+<p>
+  <strong>Beskrivelse:</strong>
+  <%= @task.description %>
+</p>
+
+<p>
+  <strong>Aktivitet:</strong>
+  <%= @task.activity.name %>
+</p>
+
+<p>
+  <strong>Antal:</strong>
+  <%= @task.number %>
+</p>
+
+<%= link_to 'Rediger', edit_task_path(@task) %> |
+<%= link_to 'Oversigt', tasks_path %>

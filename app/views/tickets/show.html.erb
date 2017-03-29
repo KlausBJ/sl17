@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Deltager:</strong>
+  <%= @ticket.person.name %>
+</p>
+
+<p>
+  <strong>Aktivitet:</strong>
+  <%= @ticket.activity.name %>
+</p>
+
+<%= link_to 'Rediger', edit_ticket_path(@ticket) %> |
+<%= link_to 'Oversigt', tickets_path %>
