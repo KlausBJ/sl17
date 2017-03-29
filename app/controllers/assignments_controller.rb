@@ -1,7 +1,7 @@
 class AssignmentsController < ApplicationController
   let :admins, :all
-	before_action :set_assignment, only: [:show, :edit, :update, :destroy]
-	
+  before_action :set_assignment, only: [:show, :edit, :update, :destroy]
+  
   # GET /assignments
   # GET /assignments.json
   def index

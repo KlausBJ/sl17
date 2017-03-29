@@ -1,32 +1,32 @@
 class ActivitiesController < ApplicationController
   let :admins, :all
-	before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
+  before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
 
   def toggle
-		current_people = @activity.people.where(member_id: toggle_params[:member_id])
-		to_be = toggle_params[:person_ids]
-		to_remove = current_people - to_be
-		to_add = to_be - current_people
-		if to_add.any?
-			to_add.each do |person|
-				if Ticket.create(activity: @activity, person: person)
-					noticetext = "Billet tilføjet."
-					# deaktivér konfliktende
-				else
-					noticetext = "Billetten er desværre ikke tilgængelig."
-					# opdatér aktiviteten
-				end
-			end
-		elsif to_remove.any?
-			to_remove.each do |person|
-				Ticket.find_by_activity_and_person(activity: @activity, person: person).destroy
-				noticetext = "Billet slettet."
-				# aktivér konfliktende
-			end
-		end
-	end
-	
-	# GET /activities
+    current_people = @activity.people.where(member_id: toggle_params[:member_id])
+    to_be = toggle_params[:person_ids]
+    to_remove = current_people - to_be
+    to_add = to_be - current_people
+    if to_add.any?
+      to_add.each do |person|
+        if Ticket.create(activity: @activity, person: person)
+          noticetext = "Billet tilføjet."
+          # deaktivér konfliktende
+        else
+          noticetext = "Billetten er desværre ikke tilgængelig."
+          # opdatér aktiviteten
+        end
+      end
+    elsif to_remove.any?
+      to_remove.each do |person|
+        Ticket.find_by_activity_and_person(activity: @activity, person: person).destroy
+        noticetext = "Billet slettet."
+        # aktivér konfliktende
+      end
+    end
+  end
+  
+  # GET /activities
   # GET /activities.json
   def index
     @activities = Activity.all
@@ -99,10 +99,10 @@ class ActivitiesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def toggle_params
-			params.require(:activity).permit(:member_id, :person_ids)
-		end
-		
-		def activity_params
+      params.require(:activity).permit(:member_id, :person_ids)
+    end
+    
+    def activity_params
       params.require(:activity).permit(:name, :starttime, :endtime, :person_id, :number, :deltbet, :file)
     end
 end

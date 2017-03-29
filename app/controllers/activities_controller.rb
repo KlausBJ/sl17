@@ -1,7 +1,7 @@
 class ActivitiesController < ApplicationController
   let :admins, :all
-	skip_before_filter  :verify_authenticity_token, only: :toggle
-	before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
+  skip_before_filter  :verify_authenticity_token, only: :toggle
+  before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
 
   # GET /activities
   # GET /activities.json
@@ -65,21 +65,36 @@ class ActivitiesController < ApplicationController
   
   def import
     Activity.import(params[:file])
-    redirect_to root_url, notice: "Aktiviteter importeret."
+    redirect_to root_url, notice: 'Aktiviteter importeret.'
   end
-	
-	def toggle
-		dummy = activity_params
-		#Rails.logger.debug("Toggle: A:#{@activity.name}, People:#{activity_params[:person_ids]}")
-		respond_to do |format|
-			format.js do
-				# toggle ticket
-				@person_ids = activity_params[person_ids]
-				
-			end
-			format.html{ redirect_to :back } # this should never be called.
-		end
-	end
+
+  def toggle
+    respond_to do |format|
+      format.js do
+        current_people = @activity.people.where(member_id: toggle_params[:member_id])
+        to_be = toggle_params[:person_ids]
+        to_remove = current_people - to_be
+        to_add = to_be - current_people
+        if to_add.any?
+          to_add.each do |person|
+            if Ticket.create(activity: @activity, person: person)
+              noticetext = 'Billet tilføjet.'
+              # deaktivér konfliktende
+            else
+              noticetext = 'Billetten er desværre ikke tilgængelig.'
+              # opdatér aktiviteten
+            end
+          end
+        elsif to_remove.any?
+          to_remove.each do |person|
+            Ticket.find_by_activity_and_person(activity: @activity, person: person).destroy
+            noticetext = 'Billet slettet.'
+            # aktivér konfliktende
+          end
+        end
+      end
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -88,6 +103,10 @@ class ActivitiesController < ApplicationController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
+    def toggle_params
+      params.require(:activity).permit(:member_id, :person_ids)
+    end
+    
     def activity_params
       params.require(:activity).permit(:name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id, :member_id, person_ids:[])
     end

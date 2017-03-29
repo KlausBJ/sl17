@@ -13,20 +13,20 @@
       <th>Medlemsnr</th>
       <th>Navn</th>
       <th>Email</th>
-			<th>Antal</th>
+      <th>Antal</th>
     </tr>
   </thead>
   <% if @members.blank? %>
     <h4>Der er ingen medlemmer, som passer på '<%= params[:search] %>'.</h4>
   <% end %>
   <tbody>
-		<% smid = session[:member_id].to_i == 0 %>
+    <% smid = session[:member_id].to_i == 0 %>
     <% @members.each do |member| %>
       <tr>
         <td><%= link_to member.number, smid ? email_member_path(member) : member %></td>
         <td><%= link_to member.name, smid ? email_member_path(member) : member %></td>
         <td><%= link_to member.email, smid ? email_member_path(member) : member %></td>
-				<td><%= member.people.paid.any? ? member.invoices.where(paid: true).map{|i| i.people.count}.sum : nil %></td>
+        <td><%= member.people.paid.any? ? member.invoices.where(paid: true).map{|i| i.people.count}.sum : nil %></td>
       </tr>
     <% end %>
   </tbody>

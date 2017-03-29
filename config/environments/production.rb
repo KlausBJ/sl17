@@ -83,13 +83,13 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-	config.action_mailer.delivery_method = :smtp
-	config.action_mailer.smtp_settings = {
-		:address => "supersonic.webhostserver.biz",
-		:port => 25,
-		:domain => "giftedchildren.dk",
-		:user_name => "opgave@giftedchildren.dk",
-		:password => "KP)V90g8i0n5",
-		:authentication => :login
-	}
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :address => "supersonic.webhostserver.biz",
+    :port => 25,
+    :domain => "giftedchildren.dk",
+    :user_name => "opgave@giftedchildren.dk",
+    :password => "KP)V90g8i0n5",
+    :authentication => :login
+  }
 end

@@ -1,7 +1,7 @@
 class TicketsController < ApplicationController
   let :admins, :all
-	before_action :set_ticket, only: [:show, :edit, :update, :destroy]
-	
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy]
+  
   # GET /tickets
   # GET /tickets.json
   def index
@@ -39,17 +39,17 @@ class TicketsController < ApplicationController
   end
 
   def create_or_destroy
-		@ticket = Ticket.where("person_id = ? AND activity_id = ?", "#{ticket_params[:person_id]}", "#{ticket_params[:activity_id]}")
-		
-		if @ticket
-			@ticket.destroy
-		else
-			@ticket = Ticket.new(ticket_params)
-			@ticket.save
-		end
-	end
-		
-	# PATCH/PUT /tickets/1
+    @ticket = Ticket.where("person_id = ? AND activity_id = ?", "#{ticket_params[:person_id]}", "#{ticket_params[:activity_id]}")
+    
+    if @ticket
+      @ticket.destroy
+    else
+      @ticket = Ticket.new(ticket_params)
+      @ticket.save
+    end
+  end
+    
+  # PATCH/PUT /tickets/1
   # PATCH/PUT /tickets/1.json
   def update
     respond_to do |format|

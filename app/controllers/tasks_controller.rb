@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
   let :admins, :all
-	before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :set_task, only: [:show, :edit, :update, :destroy]
 
   # GET /tasks
   # GET /tasks.json
@@ -61,8 +61,8 @@ class TasksController < ApplicationController
       format.json { head :no_content }
     end
   end
-	
-	def import
+  
+  def import
     Task.import(params[:file])
     redirect_to root_url, notice: "Deltagere importeret."
   end

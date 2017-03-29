@@ -1,7 +1,7 @@
 class PtypesController < ApplicationController
   let :admins, :all
-	before_action :set_ptype, only: [:show, :edit, :update, :destroy]
-	
+  before_action :set_ptype, only: [:show, :edit, :update, :destroy]
+  
   # GET /ptypes
   # GET /ptypes.json
   def index

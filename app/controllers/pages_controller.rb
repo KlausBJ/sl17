@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
   let :all, :all
-	
-	def betingelser
+  
+  def betingelser
   end
 end

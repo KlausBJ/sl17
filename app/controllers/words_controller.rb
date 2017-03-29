@@ -1,7 +1,7 @@
 class WordsController < ApplicationController
-	let :admins, :all
-	before_action :set_word, only: [:show, :edit, :update, :destroy]
-	
+  let :admins, :all
+  before_action :set_word, only: [:show, :edit, :update, :destroy]
+  
   # GET /words
   # GET /words.json
   def index

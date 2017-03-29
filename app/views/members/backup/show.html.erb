@@ -1,9 +1,9 @@
 <p id="notice"><%= notice %></p>
 <% if @member.nil? %>
-	<% @member = Member.find(params["person"]["member_id"]) %>
-	<% if local_assigns[:person] %>
-		<% @person = Person.new(local_assigns[:person]) %>
-	<% end %>
+  <% @member = Member.find(params["person"]["member_id"]) %>
+  <% if local_assigns[:person] %>
+    <% @person = Person.new(local_assigns[:person]) %>
+  <% end %>
 <% end %>
 <%= render 'members/form', member: @member %>
 
@@ -26,7 +26,7 @@
   <tbody>
     <% @member.people.each do |person| %>
       <tr>
-				<td><%= person.name %></td>
+        <td><%= person.name %></td>
         <td><%= person.ptype.name %></td>
         <td><%= person.koen %></td>
         <td><% unless person.aargang.nil? %><%= person.aargang.strftime("%Y") %><% end %></td>
@@ -35,11 +35,11 @@
   </tbody>
 </table>
 <% if @member.invoices.where(paid: false).joins(:people).any? || @member.invoices.where(paid: false).joins(:tickets).any? %>
-	<% @member.invoices.where(paid: false).each do |invoice| %>
-		<% if (invoice.people.map{|p| p.ptype.price}.sum + invoice.tickets.map{|t| t.activity.deltbet.to_i}.sum) > 0 %>
-			<%= link_to "Faktura nr. #{invoice.id}, gå til betaling...", invoice_path(invoice) %>
-		<% end %>
-	<% end %>
+  <% @member.invoices.where(paid: false).each do |invoice| %>
+    <% if (invoice.people.map{|p| p.ptype.price}.sum + invoice.tickets.map{|t| t.activity.deltbet.to_i}.sum) > 0 %>
+      <%= link_to "Faktura nr. #{invoice.id}, gå til betaling...", invoice_path(invoice) %>
+    <% end %>
+  <% end %>
 <% end %>
 <br>
 <br>

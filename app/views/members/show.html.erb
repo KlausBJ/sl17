@@ -1,151 +1,151 @@
 <p id="notice"><%= notice %></p>
 <% if @member.nil? %>
-	<% @member = Member.find(params["person"]["member_id"]) %>
+  <% @member = Member.find(params["person"]["member_id"]) %>
 <% end %>
 <% if @cm.nil? && session[:member_id] && session[:member_id] != 0 %>
-	<% @cm = Member.find(session[:member_id]) %>
+  <% @cm = Member.find(session[:member_id]) %>
 <% end %>
 <table>
-	<thead>
-		<tr>
-			<th colspan="2">Medlemsinfo:</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>Medlemsnr.</td><td><%= @member.number %><%= " - #{@member.password.password}" if @cm && @cm.admin? %></td>
-		</tr>
-		<tr>
-			<td>Navn:</td><td><%= @member.name %></td>
-		</tr>
-		<tr>
-			<td>Email:</td><td><%= @member.email %> <%= link_to "Redigér email", email_member_path(@member) if @member.editable?(@cm) %></td>
-		</tr>
-	</tbody>
+  <thead>
+    <tr>
+      <th colspan="2">Medlemsinfo:</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Medlemsnr.</td><td><%= @member.number %><%= " - #{@member.password.password}" if @cm && @cm.admin? %></td>
+    </tr>
+    <tr>
+      <td>Navn:</td><td><%= @member.name %></td>
+    </tr>
+    <tr>
+      <td>Email:</td><td><%= @member.email %> <%= link_to "Redigér email", email_member_path(@member) if @member.editable?(@cm) %></td>
+    </tr>
+  </tbody>
 </table>
 
 <% if session[:member_id] != 0 && @member.people.any? %>
-	<h2>Tilmeldte:</h2>
-	<table>
-		<thead>
-			<tr>
-				<th>Navn</th>
-				<th>Billettype</th>
-				<th>Køn</th>
-				<th>Fødselsdag</th>
-				<th>Mobilnr.</th>
-				<th>Indkvartering</th>
-				<% if @member.hostmember %><th><%= "Værtsfamilie" %></th><% end %>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-			</tr>
-		</thead>
+  <h2>Tilmeldte:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Navn</th>
+        <th>Billettype</th>
+        <th>Køn</th>
+        <th>Fødselsdag</th>
+        <th>Mobilnr.</th>
+        <th>Indkvartering</th>
+        <% if @member.hostmember %><th><%= "Værtsfamilie" %></th><% end %>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
 
-		<tbody>
-			<% @member.people.each do |person| %>
-				<tr>
-					<td><%= person.invoice.paid ? '' : '* ' %><%= person.name %></td>
-					<td><%= person.ptype.name %></td>
-					<td><%= person.koen %></td>
-					<td><%= person.fdag %></td>
-					<td><%= person.phone %></td>
-					<td><%= person.housing %></td>
-					<% if @member.hostmember %><td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td><% end %>
-					<td><%= link_to 'Redigér', edit_person_path(person) if @member.editable?(@cm) %></td>
-					<td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if person.deletable?(@cm) %></td>
-				</tr>
-			<% end %>
-			<% if @member.guest_people.any? %>
-				<tr><td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td><td>&nbsp;</td><td>&nbsp;</td></tr>
-				<% @member.guest_people.each do |person| %>
-					<tr>
-						<td><%= person.name %> (<%= person.member.number %>)</td>
-						<td><%= person.ptype.name %></td>
-						<td><%= person.koen %></td>
-						<td><%= person.fdag %></td>
-						<td><%= person.phone %></td>
-						<td><%= person.housing %></td>
-						<% if @member.hostmember %><td>&nbsp;</td><% end %>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-				<% end %>
-			<% end %>
-		</tbody>
-	</table>
+    <tbody>
+      <% @member.people.each do |person| %>
+        <tr>
+          <td><%= person.invoice.paid ? '' : '* ' %><%= person.name %></td>
+          <td><%= person.ptype.name %></td>
+          <td><%= person.koen %></td>
+          <td><%= person.fdag %></td>
+          <td><%= person.phone %></td>
+          <td><%= person.housing %></td>
+          <% if @member.hostmember %><td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td><% end %>
+          <td><%= link_to 'Redigér', edit_person_path(person) if @member.editable?(@cm) %></td>
+          <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if person.deletable?(@cm) %></td>
+        </tr>
+      <% end %>
+      <% if @member.guest_people.any? %>
+        <tr><td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <% @member.guest_people.each do |person| %>
+          <tr>
+            <td><%= person.name %> (<%= person.member.number %>)</td>
+            <td><%= person.ptype.name %></td>
+            <td><%= person.koen %></td>
+            <td><%= person.fdag %></td>
+            <td><%= person.phone %></td>
+            <td><%= person.housing %></td>
+            <% if @member.hostmember %><td>&nbsp;</td><% end %>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
 <% end %>
-	
+  
 <% if @cm && @member.editable?(@cm) && @member.inv? %>
-	<br>
-	<table>
-	<% @member.invoices.each do |invoice| %>
-		<% if invoice.people.none? && invoice.tickets.none? %>
-			<% next %>
-		<% end %>
-		<tr>
-			<td>
-			<% if invoice.paid %>
-				<strong><%= link_to "Faktura nr. #{invoice.id}, betalt", invoice_path(invoice) %></strong>
-			<% elsif invoice.free? %>
-				<%= link_to "Faktura nr. #{invoice.id}, afslut...", invoice_path(invoice) %>
-			<% else %>
-				<%= link_to "Faktura nr. #{invoice.id}, gå til betaling...", invoice_path(invoice) %>
-			<% end %>
-			</td>
-		</tr>
-	<% end %>
-	</table>
+  <br>
+  <table>
+  <% @member.invoices.each do |invoice| %>
+    <% if invoice.people.none? && invoice.tickets.none? %>
+      <% next %>
+    <% end %>
+    <tr>
+      <td>
+      <% if invoice.paid %>
+        <strong><%= link_to "Faktura nr. #{invoice.id}, betalt", invoice_path(invoice) %></strong>
+      <% elsif invoice.free? %>
+        <%= link_to "Faktura nr. #{invoice.id}, afslut...", invoice_path(invoice) %>
+      <% else %>
+        <%= link_to "Faktura nr. #{invoice.id}, gå til betaling...", invoice_path(invoice) %>
+      <% end %>
+      </td>
+    </tr>
+  <% end %>
+  </table>
 <% end %>
 
 <br>
 <% if @member.editable?(@cm) %>
-	<h2>Tilmeld deltager</h2>
+  <h2>Tilmeld deltager</h2>
 
-	<%= render 'people/form', member: @member, person: Person.new %>
+  <%= render 'people/form', member: @member, person: Person.new %>
 <% end %>
 
 <% if @cm && @cm.admin? %>
-	<br>
-	<br>
-	<table>
-		<thead>
-			<tr>
-				<th>Aktivitet</th>
-				<% @member.people.each do |person| %>
-					<th><%= person.name.split(" ")[0] %></th>
-				<% end %>
-			</tr>
-		</thead>
-		<tbody>
-		<% @activities.each do |a| %>
-			<tr>
-			<%# partial begin %>
-			<%= form_for(a, {remote: true, url: toggle_activity_path(a), method: :post}) do |f| %>
-				<%= f.hidden_field :member_id, :value => @member.id %>
-				<td><%= a.name %></td>
-				<%= f.collection_check_boxes :person_ids, @member.people, :id, :name do |b| %>
-					<% p = Person.find(b.value) %>
-					<% if a.age?(p) %>
-						<% optns = { onchange: %Q[$("#edit_activity_#{a.id}").submit();] } %>
-						<% if p.ticket?(a) %>
-							<% optns[:checked] = "checked" %>
-							<% if Ticket.find_by(person: p, activity: a).invoice.paid %>
-								<% optns[:disabled] = "disabled" %>
-							<% end %>
-							<td><%= b.check_box( optns ) %></td>
-						<% elsif a.for_sale?(p) %>
-							<td><%= b.check_box( optns ) %></td>
-						<% else %>
-							<td></td>
-						<% end %>
-					<% else %>
-						<td></td>
-					<% end %>
-				<% end %>
-			<% end %>
-			<%# partial end %>
-			</tr>
-		<% end %>
-		</tbody>
-	</table>
+  <br>
+  <br>
+  <table>
+    <thead>
+      <tr>
+        <th>Aktivitet</th>
+        <% @member.people.each do |person| %>
+          <th><%= person.name.split(" ")[0] %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+    <% @activities.each do |a| %>
+      <tr>
+      <%# partial begin %>
+      <%= form_for(a, {remote: true, url: toggle_activity_path(a), method: :post}) do |f| %>
+        <%= f.hidden_field :member_id, :value => @member.id %>
+        <td><%= a.name %></td>
+        <%= f.collection_check_boxes :person_ids, @member.people, :id, :name do |b| %>
+          <% p = Person.find(b.value) %>
+          <% if a.age?(p) %>
+            <% optns = { onchange: %Q[$("#edit_activity_#{a.id}").submit();] } %>
+            <% if p.ticket?(a) %>
+              <% optns[:checked] = "checked" %>
+              <% if Ticket.find_by(person: p, activity: a).invoice.paid %>
+                <% optns[:disabled] = "disabled" %>
+              <% end %>
+              <td><%= b.check_box( optns ) %></td>
+            <% elsif a.for_sale?(p) %>
+              <td><%= b.check_box( optns ) %></td>
+            <% else %>
+              <td></td>
+            <% end %>
+          <% else %>
+            <td></td>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%# partial end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 <% end %>

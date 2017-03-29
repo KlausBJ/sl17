@@ -1,20 +1,20 @@
 class MembersController < ApplicationController
   let :admins, [:index, :edit, :show, :email, :generate_password, :update, :import]
-	let :guests, [:index, :email, :generate_password, :update]
-	let :members, [:index, :show, :email, :generate_password, :update]
+  let :guests, [:index, :email, :generate_password, :update]
+  let :members, [:index, :show, :email, :generate_password, :update]
 
-	before_action :set_member, only: [:show, :edit, :update, :destroy, :generate_password, :email]
+  before_action :set_member, only: [:show, :edit, :update, :destroy, :generate_password, :email]
   
   # GET /members
   # GET /members.json
   def index
-		if session[:member_id] 
-			if session[:member_id] != 0
-			#redirect_to member_path(Member.find(session[:member_id]))
-			end
-		else
-			#redirect_to login_path
-		end
+    if session[:member_id] 
+      if session[:member_id] != 0
+      #redirect_to member_path(Member.find(session[:member_id]))
+      end
+    else
+      #redirect_to login_path
+    end
     @members = Member.all.order(:number)
     if params[:search]
       @members = Member.search(params[:search]).order("number ASC")
@@ -24,17 +24,17 @@ class MembersController < ApplicationController
   # GET /members/1
   # GET /members/1.json
   def show
-		if @member.password.nil?
-			@member.generate_password 
-			@member.reload
-		end
-		@activities = Activity.all
-		@person = Person.new
-		@invoice = @member.invoices.where(paid: false).last if @member.invoices.any?
+    if @member.password.nil?
+      @member.generate_password 
+      @member.reload
+    end
+    @activities = Activity.all
+    @person = Person.new
+    @invoice = @member.invoices.where(paid: false).last if @member.invoices.any?
   end
-	
-	def email
-	end
+  
+  def email
+  end
   
   # GET /members/new
   def new
@@ -44,9 +44,9 @@ class MembersController < ApplicationController
   # GET /members/1/edit
   def edit
   end
-	
-	def pay
-	end
+  
+  def pay
+  end
   
   # POST /members
   # POST /members.json
@@ -69,13 +69,13 @@ class MembersController < ApplicationController
   def update
     respond_to do |format|
       if @member.update(member_params)
-				@member.generate_password
-				Membermailer.pwmail(@member).deliver_now
+        @member.generate_password
+        Membermailer.pwmail(@member).deliver_now
         if session[:member_id] == 0
-					format.html { redirect_to login_path, notice: 'Medlemsnr. og adgangskode er sendt til dig i en email.' }
-				else
-					format.html { redirect_to @member, notice: 'Email opdateret. Medlemsnr. og adgangskode er sendt til dig i en email.' }
-				end
+          format.html { redirect_to login_path, notice: 'Medlemsnr. og adgangskode er sendt til dig i en email.' }
+        else
+          format.html { redirect_to @member, notice: 'Email opdateret. Medlemsnr. og adgangskode er sendt til dig i en email.' }
+        end
       else
         format.html { render :edit }
       end
@@ -91,18 +91,18 @@ class MembersController < ApplicationController
       format.json { head :no_content }
     end
   end
-	
+  
   def import
     Member.import(params[:file])
     redirect_to root_url, notice: "Medlemmer importeret."
   end
   
   private
-	# Use callbacks to share common setup or constraints between actions.
-	def set_member
-		@member = Member.find(params[:id])
+  # Use callbacks to share common setup or constraints between actions.
+  def set_member
+    @member = Member.find(params[:id])
   end
-	
+  
   # Never trust parameters from the scary internet, only allow the white list through.
   def member_params
   params.require(:member).permit(:number, :name, :email, :search)

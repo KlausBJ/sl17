@@ -20,7 +20,7 @@
   <tbody>
     <% @member.people.each do |person| %>
       <tr>
-				<td><%= person.name %></td>
+        <td><%= person.name %></td>
         <td><%= person.ptype.name %></td>
         <td><%= person.koen %></td>
         <td><% unless person.aargang.nil? %><%= person.aargang.strftime("%Y") %><% end %></td>
@@ -37,20 +37,20 @@
 <table>
   <thead>
     <tr>
-			<th>Aktivitet</th>
-			<% @member.people.each do |person| %>
-				<th><%= person.name.split(" ")[0] %></th>
-			<% end %>
+      <th>Aktivitet</th>
+      <% @member.people.each do |person| %>
+        <th><%= person.name.split(" ")[0] %></th>
+      <% end %>
     </tr>
   </thead>
   <tbody>
   <% @activities.each do |activity| %>
-		<tr><%= form_for(:activity, remote: true, url: '/activities', html: { class: 'my-form' }) do |f| %>
-			<td><%= activity.name %></td>
-			<% @member.people.each do |person| %>
-				<td><%= check_box_tag("Bestil", activity.toggle, data: { remote: true, url: url_for(action: toggle, id: activity.id), method: 'PUT'}) %></td>
-			<% end %>
-		<% end %></tr>
+    <tr><%= form_for(:activity, remote: true, url: '/activities', html: { class: 'my-form' }) do |f| %>
+      <td><%= activity.name %></td>
+      <% @member.people.each do |person| %>
+        <td><%= check_box_tag("Bestil", activity.toggle, data: { remote: true, url: url_for(action: toggle, id: activity.id), method: 'PUT'}) %></td>
+      <% end %>
+    <% end %></tr>
   <% end %>
-	</tbody>
+  </tbody>
 </table>
