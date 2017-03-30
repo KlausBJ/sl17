@@ -20,7 +20,7 @@ a.button {
   transition: all 0.3s ease;
   margin: 20px;
   padding: 10px 20px;
-  
+
   &.red {
     @include gradient(#DBA551, #85202c);
   }
@@ -32,20 +32,20 @@ a.button {
   &.green {
     @include gradient(#B7CF4F, #298520);
   }
-  
-  background-size: 250% 100% !important;  
-  background-position: 100% 0% !important; 
-  
+
+  background-size: 250% 100% !important;
+  background-position: 100% 0% !important;
+
   &:hover {
     background-position: 0% !important;
     box-shadow: 0 0px 12px #BBB;
     transition: all 0.3s ease;
     transform: translateY(-1px);
 }
-  
+
   &:active {
     transform: translateY(0);
     background-position: 50% !important;
   }
-  
+
 }

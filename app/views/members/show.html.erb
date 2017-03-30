@@ -1,6 +1,6 @@
-<p id="notice"><%= notice %></p>
+<p id='notice'><%= notice %></p>
 <% if @member.nil? %>
-  <% @member = Member.find(params["person"]["member_id"]) %>
+  <% @member = Member.find(params['person']['member_id']) %>
 <% end %>
 <% if @cm.nil? && session[:member_id] && session[:member_id] != 0 %>
   <% @cm = Member.find(session[:member_id]) %>
@@ -8,7 +8,7 @@
 <table>
   <thead>
     <tr>
-      <th colspan="2">Medlemsinfo:</th>
+      <th colspan='2'>Medlemsinfo:</th>
     </tr>
   </thead>
   <tbody>
@@ -19,7 +19,7 @@
       <td>Navn:</td><td><%= @member.name %></td>
     </tr>
     <tr>
-      <td>Email:</td><td><%= @member.email %> <%= link_to "Redigér email", email_member_path(@member) if @member.editable?(@cm) %></td>
+      <td>Email:</td><td><%= @member.email %> <%= link_to 'Redigér email', email_member_path(@member) if @member.editable?(@cm) %></td>
     </tr>
   </tbody>
 </table>
@@ -35,7 +35,7 @@
         <th>Fødselsdag</th>
         <th>Mobilnr.</th>
         <th>Indkvartering</th>
-        <% if @member.hostmember %><th><%= "Værtsfamilie" %></th><% end %>
+        <% if @member.hostmember %><th><%= 'Værtsfamilie' %></th><% end %>
         <th>&nbsp;</th>
         <th>&nbsp;</th>
       </tr>
@@ -74,7 +74,7 @@
     </tbody>
   </table>
 <% end %>
-  
+
 <% if @cm && @member.editable?(@cm) && @member.inv? %>
   <br>
   <table>
@@ -112,7 +112,7 @@
       <tr>
         <th>Aktivitet</th>
         <% @member.people.each do |person| %>
-          <th><%= person.name.split(" ")[0] %></th>
+          <th><%= person.name.split(' ')[0] %></th>
         <% end %>
       </tr>
     </thead>
@@ -121,16 +121,16 @@
       <tr>
       <%# partial begin %>
       <%= form_for(a, {remote: true, url: toggle_activity_path(a), method: :post}) do |f| %>
-        <%= f.hidden_field :member_id, :value => @member.id %>
+        <%= f.hidden_field :member_id, value: @member.id %>
         <td><%= a.name %></td>
         <%= f.collection_check_boxes :person_ids, @member.people, :id, :name do |b| %>
           <% p = Person.find(b.value) %>
           <% if a.age?(p) %>
             <% optns = { onchange: %Q[$("#edit_activity_#{a.id}").submit();] } %>
             <% if p.ticket?(a) %>
-              <% optns[:checked] = "checked" %>
+              <% optns[:checked] = 'checked' %>
               <% if Ticket.find_by(person: p, activity: a).invoice.paid %>
-                <% optns[:disabled] = "disabled" %>
+                <% optns[:disabled] = 'disabled' %>
               <% end %>
               <td><%= b.check_box( optns ) %></td>
             <% elsif a.for_sale?(p) %>

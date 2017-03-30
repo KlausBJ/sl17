@@ -1,7 +1,7 @@
 class HousingTypesController < ApplicationController
   let :admins, :all
   before_action :set_housing_type, only: [:show, :edit, :update, :destroy]
-  
+
   # GET /housing_types
   # GET /housing_types.json
   def index
@@ -10,8 +10,7 @@ class HousingTypesController < ApplicationController
 
   # GET /housing_types/1
   # GET /housing_types/1.json
-  def show
-  end
+  def show end
 
   # GET /housing_types/new
   def new
@@ -19,8 +18,7 @@ class HousingTypesController < ApplicationController
   end
 
   # GET /housing_types/1/edit
-  def edit
-  end
+  def edit end
 
   # POST /housing_types
   # POST /housing_types.json

@@ -1,7 +1,7 @@
 class WordsController < ApplicationController
   let :admins, :all
   before_action :set_word, only: [:show, :edit, :update, :destroy]
-  
+
   # GET /words
   # GET /words.json
   def index
@@ -10,8 +10,7 @@ class WordsController < ApplicationController
 
   # GET /words/1
   # GET /words/1.json
-  def show
-  end
+  def show end
 
   # GET /words/new
   def new
@@ -19,8 +18,7 @@ class WordsController < ApplicationController
   end
 
   # GET /words/1/edit
-  def edit
-  end
+  def edit end
 
   # POST /words
   # POST /words.json

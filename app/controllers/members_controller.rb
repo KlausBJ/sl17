@@ -3,56 +3,53 @@ class MembersController < ApplicationController
   let :guests, [:index, :email, :generate_password, :update]
   let :members, [:index, :show, :email, :generate_password, :update]
 
-  before_action :set_member, only: [:show, :edit, :update, :destroy, :generate_password, :email]
-  
+  before_action :set_member, only: [:show, :edit, :update, :destroy, :email]
+
   # GET /members
   # GET /members.json
   def index
-    if session[:member_id] 
+    if session[:member_id]
       if session[:member_id] != 0
-      #redirect_to member_path(Member.find(session[:member_id]))
+      # r edirect_to member_path(Member.find(session[:member_id]))
       end
     else
-      #redirect_to login_path
+      # r edirect_to login_path
     end
     @members = Member.all.order(:number)
     if params[:search]
-      @members = Member.search(params[:search]).order("number ASC")
+      @members = Member.search(params[:search]).order('number ASC')
     end
   end
-  
+
   # GET /members/1
   # GET /members/1.json
   def show
     if @member.password.nil?
-      @member.generate_password 
+      @member.generate_password
       @member.reload
     end
     @activities = Activity.all
     @person = Person.new
     @invoice = @member.invoices.where(paid: false).last if @member.invoices.any?
   end
-  
-  def email
-  end
-  
+
+  def email end
+
   # GET /members/new
   def new
     @member = Member.new
   end
-  
+
   # GET /members/1/edit
-  def edit
-  end
-  
-  def pay
-  end
-  
+  def edit end
+
+  def pay end
+
   # POST /members
   # POST /members.json
   def create
     @member = Member.new(member_params)
-    
+
     respond_to do |format|
       if @member.save
         format.html { redirect_to @member, notice: 'Member was successfully created.' }
@@ -63,7 +60,7 @@ class MembersController < ApplicationController
       end
     end
   end
-  
+
   # PATCH/PUT /members/1
   # PATCH/PUT /members/1.json
   def update
@@ -81,7 +78,7 @@ class MembersController < ApplicationController
       end
     end
   end
-  
+
   # DELETE /members/1
   # DELETE /members/1.json
   def destroy
@@ -91,18 +88,18 @@ class MembersController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   def import
     Member.import(params[:file])
-    redirect_to root_url, notice: "Medlemmer importeret."
+    redirect_to root_url, notice: 'Medlemmer importeret.'
   end
-  
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_member
     @member = Member.find(params[:id])
   end
-  
+
   # Never trust parameters from the scary internet, only allow the white list through.
   def member_params
   params.require(:member).permit(:number, :name, :email, :search)

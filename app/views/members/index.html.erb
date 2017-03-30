@@ -1,10 +1,10 @@
-<p id="notice"><%= notice %></p>
+<p id='notice'><%= notice %></p>
 
 <h1>Medlemmer</h1>
 
-<%= form_tag(members_path, :method => "get", id: "search-form") do %>
-    <%= text_field_tag :search, params[:search], placeholder: "Søg medlem" %>
-    <%= submit_tag "Søg", :name => nil %>
+<%= form_tag(members_path, method: 'get', id: 'search-form') do %>
+    <%= text_field_tag :search, params[:search], placeholder: 'Søg medlem' %>
+    <%= submit_tag 'Søg', name: nil %>
 <% end %>
 
 <table>
@@ -36,7 +36,7 @@
 <h3>Import a CSV File</h3>
   <%= form_tag import_members_path, multipart: true do %>
     <%= file_field_tag :file %>
-    <%= submit_tag "Import CSV" %>
+    <%= submit_tag 'Import CSV' %>
   <% end %>
 </div>
 <% end %>

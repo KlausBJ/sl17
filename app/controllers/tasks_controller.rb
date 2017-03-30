@@ -10,8 +10,7 @@ class TasksController < ApplicationController
 
   # GET /tasks/1
   # GET /tasks/1.json
-  def show
-  end
+  def show end
 
   # GET /tasks/new
   def new
@@ -19,8 +18,7 @@ class TasksController < ApplicationController
   end
 
   # GET /tasks/1/edit
-  def edit
-  end
+  def edit end
 
   # POST /tasks
   # POST /tasks.json
@@ -61,10 +59,10 @@ class TasksController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   def import
     Task.import(params[:file])
-    redirect_to root_url, notice: "Deltagere importeret."
+    redirect_to root_url, notice: 'Deltagere importeret.'
   end
 
 

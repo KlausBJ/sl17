@@ -1,7 +1,7 @@
 <%= form_for(place) do |f| %>
   <% if place.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(place.errors.count, "error") %> prohibited this place from being saved:</h2>
+    <div id='error_explanation'>
+      <h2><%= pluralize(place.errors.count, 'error') %> prohibited this place from being saved:</h2>
 
       <ul>
       <% place.errors.full_messages.each do |message| %>
@@ -11,22 +11,22 @@
     </div>
   <% end %>
 
-  <div class="field">
+  <div class='field'>
     <%= f.label :name %>
     <%= f.text_field :name %>
   </div>
 
-  <div class="field">
+  <div class='field'>
     <%= f.label :description %>
     <%= f.text_area :description %>
   </div>
 
-  <div class="field">
+  <div class='field'>
     <%= f.label :limited %>
     <%= f.text_field :limited %>
   </div>
 
-  <div class="actions">
+  <div class='actions'>
     <%= f.submit %>
   </div>
 <% end %>

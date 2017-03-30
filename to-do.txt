@@ -18,7 +18,7 @@ hmmm, kan beregnes ud fra aargang og start-tid.
 det skal være nemt ved oprettelse af aktiviteter...
 
 1. Hvis aargang ikke matcher billettypen, skal man smides tilbage med besked om, at det er forkert (flash) og helst med data stadig udfyldt...
-	Redirect ( : back ), :notice => "something went wrong.try again" ?
+	Redirect ( : back ), notice: "something went wrong.try again" ?
 - (håndteres i Person) 2. Der skal være et felt til indkvartering (eller 2) for Member, required
 +3. Der skal være et (frivilligt) felt til indkvartering for Person, og Member.indkvartering bruges, hvis det andet ikke er udfyldt (Hvis det ikke er den samme som 	resten af familien... eller noget...)
 4. Der skal være et Værtsfamilie-felt, hvis man tilmelder ikke-voksne uden voksen, required

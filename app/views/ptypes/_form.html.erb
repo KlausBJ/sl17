@@ -1,7 +1,7 @@
 <%= form_for(ptype) do |f| %>
   <% if ptype.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(ptype.errors.count, "error") %> prohibited this ptype from being saved:</h2>
+    <div id='error_explanation'>
+      <h2><%= pluralize(ptype.errors.count, 'error') %> prohibited this ptype from being saved:</h2>
 
       <ul>
       <% ptype.errors.full_messages.each do |message| %>
@@ -11,22 +11,22 @@
     </div>
   <% end %>
 
-  <div class="field">
+  <div class='field'>
     <%= f.label :name, 'Navn' %>
     <%= f.text_field :name %>
   </div>
 
-  <div class="field">
+  <div class='field'>
     <%= f.label :price, 'Pris' %>
     <%= f.text_field :price %>
   </div>
 
-  <div class="field">
+  <div class='field'>
     <%= f.label :datereq, 'Fødselsdag krævet' %>
     <%= f.check_box :datereq %>
   </div>
 
-  <div class="actions">
+  <div class='actions'>
     <%= f.submit 'Gem' %>
   </div>
 <% end %>

@@ -2,8 +2,8 @@ class PeopleController < ApplicationController
   let :admins, :all
   let :guests, [:index]
   let :members, [:new, :create, :edit, :update, :destroy]
-  
-  before_action :set_person, only: [:show, :edit, :update, :destroy, :toggle_buy]
+
+  before_action :set_person, only: [:show, :edit, :update, :destroy]
 
   # GET /people
   # GET /people.json
@@ -13,23 +13,21 @@ class PeopleController < ApplicationController
 
   # GET /people/1
   # GET /people/1.json
-  def show
-  end
+  def show end
 
   # GET /people/1/edit
-  def edit
-  end
-  
+  def edit end
+
   # POST /people
     # POST /people.json
   def create
     @person = Person.new(person_params)
-    #Rails.logger.debug("Fødselsdagscheck: Ptype #{@person.ptype.name} Fødselsdag #{@person.aargang}.")
+    # R ails.logger.debug("Fødselsdagscheck: Ptype #{@person.ptype.name} Fødselsdag #{@person.aargang}.")
     if @person.ptype.datereq && ((@person.ptype_id == 4 && @person.aargang < Date.new(2013,7,8)) || (@person.ptype_id == 3 && @person.aargang > Date.new(2013,7,15))) # 3 = 4-17, 4 = 0-3
       flash.now[:notice] = 'Fødselsdagen passer ikke med billettypen.'
-      render :template => 'members/show'
+      render template: 'members/show'
     else
-      if @person.ptype_id == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where("id <> ?",@person.id || 0).any?) || (@person.host_member && Member.find_by_number(@person.host_member) && Member.find_by_number(@person.host_member).people.where(ptype_id: 1).any?)
+      if @person.ptype_id == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where('id <> ?',@person.id || 0).any?) || (@person.host_member && Member.find_by_number(@person.host_member) && Member.find_by_number(@person.host_member).people.where(ptype_id: 1).any?)
         if @person.ptype == 1 || @person.member.number == @person.host_member
           @person.host_member = nil
         end
@@ -47,7 +45,7 @@ class PeopleController < ApplicationController
             @person.housing_number = nil
           end
         end
-        
+
         unless @person.ptype.datereq
           @person.aargang = nil
         end
@@ -64,7 +62,7 @@ class PeopleController < ApplicationController
         end
       else
         flash.now[:notice] = 'Tilmeld voksne først, eller udfyld feltet Værtsfamilie med et andet medlemsnr., som har voksne tilmeldt.'
-        render :template => 'members/show'
+        render template: 'members/show'
       end
     end
   end
@@ -72,29 +70,29 @@ class PeopleController < ApplicationController
 
   # PATCH/PUT /people/1
   # PATCH/PUT /people/1.json
-  def update 
+  def update
     # ptid = ptype_id fra formular, @person.ptype.id eller @person.ptype_id er den "gamle" værdi
-    ptid = person_params[:ptype_id].to_i 
-    
+    ptid = person_params[:ptype_id].to_i
+
     # bdate er en dato konstrueret ud fra data fra formularen, altså den "nye" (fordi den ikke findes som en helhed i person_params)
     bdate = Date.new(person_params['aargang(1i)'].to_i,person_params['aargang(2i)'].to_i,person_params['aargang(3i)'].to_i) if Ptype.find(ptid).datereq
-    
+
     # Debug deaktiveret - aktivér hvis validering ikke virker som forventet
     # Rails.logger.debug("if #{Ptype.find(ptid).datereq} && ((#{ptid} (#{ptid.class}) == 4 (#{4.class}) (#{ptid == 4}) && #{bdate}(#{bdate.class}) < #{Date.new(2013,7,8)}(#{Date.new(2013,7,8).class}) (#{bdate < Date.new(2013,7,8)})) || (#{ptid} (#{ptid.class}) == 3 (#{3.class}) (#{ptid == 3}) && #{bdate}(#{bdate.class}) > #{Date.new(2013,7,15)}(#{Date.new(2013,7,15).class}) #{bdate > Date.new(2013,7,15)}))")
     if Ptype.find(ptid).datereq && ((ptid == 4 && bdate < Date.new(2013,7,8)) || (ptid == 3 && bdate > Date.new(2013,7,15)))
-      flash.now[:notice] = "Fødselsdagen passer ikke med billettypen."
-      render :edit 
-    elsif ptid != 1 && @person.member.people.where(ptype_id: 1).where("id <> ?", @person.id).none? && @person.member.people.where("ptype_id <> 1").where("host_member IS NULL").any?
-      flash.now[:notice] = "Den eneste tilmeldte voksen kan ikke konverteres til en anden billettype, så længe der er ikke-voksne uden værtsfamilie."
-      render :edit 
+      flash.now[:notice] = 'Fødselsdagen passer ikke med billettypen.'
+      render :edit
+    elsif ptid != 1 && @person.member.people.where(ptype_id: 1).where('id <> ?', @person.id).none? && @person.member.people.where('ptype_id <> 1').where('host_member IS NULL').any?
+      flash.now[:notice] = 'Den eneste tilmeldte voksen kan ikke konverteres til en anden billettype, så længe der er ikke-voksne uden værtsfamilie.'
+      render :edit
     else
       pphm = person_params[:host_member]
-      if ptid == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where("id <> ?",@person.id).any?) || (pphm && Member.find_by_number(pphm) && Member.find_by_number(pphm).people.where(ptype_id: 1).any?)
+      if ptid == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where('id <> ?',@person.id).any?) || (pphm && Member.find_by_number(pphm) && Member.find_by_number(pphm).people.where(ptype_id: 1).any?)
         respond_to do |format|
           unless @person.ptype.datereq
             @person.aargang = nil
           end
-          
+
           if @person.update(person_params)
             if @person.ptype_id ==1 || @person.member.number == @person.host_member
               @person.host_member = nil
@@ -137,10 +135,10 @@ class PeopleController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   def import
     Person.import(params[:file])
-    redirect_to root_url, notice: "Deltagere importeret."
+    redirect_to root_url, notice: 'Deltagere importeret.'
   end
 
   private

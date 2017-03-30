@@ -1,7 +1,7 @@
 class AssignmentsController < ApplicationController
   let :admins, :all
   before_action :set_assignment, only: [:show, :edit, :update, :destroy]
-  
+
   # GET /assignments
   # GET /assignments.json
   def index
@@ -10,8 +10,7 @@ class AssignmentsController < ApplicationController
 
   # GET /assignments/1
   # GET /assignments/1.json
-  def show
-  end
+  def show end
 
   # GET /assignments/new
   def new
@@ -19,8 +18,7 @@ class AssignmentsController < ApplicationController
   end
 
   # GET /assignments/1/edit
-  def edit
-  end
+  def edit end
 
   # POST /assignments
   # POST /assignments.json

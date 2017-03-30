@@ -11,8 +11,7 @@ class ActivitiesController < ApplicationController
 
   # GET /activities/1
   # GET /activities/1.json
-  def show
-  end
+  def show end
 
   # GET /activities/new
   def new
@@ -20,8 +19,7 @@ class ActivitiesController < ApplicationController
   end
 
   # GET /activities/1/edit
-  def edit
-  end
+  def edit end
 
   # POST /activities
   # POST /activities.json
@@ -62,7 +60,7 @@ class ActivitiesController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   def import
     Activity.import(params[:file])
     redirect_to root_url, notice: 'Aktiviteter importeret.'
@@ -106,7 +104,7 @@ class ActivitiesController < ApplicationController
     def toggle_params
       params.require(:activity).permit(:member_id, :person_ids)
     end
-    
+
     def activity_params
       params.require(:activity).permit(:name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id, :member_id, person_ids:[])
     end

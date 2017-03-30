@@ -1,7 +1,7 @@
 class PtypesController < ApplicationController
   let :admins, :all
   before_action :set_ptype, only: [:show, :edit, :update, :destroy]
-  
+
   # GET /ptypes
   # GET /ptypes.json
   def index
@@ -10,8 +10,7 @@ class PtypesController < ApplicationController
 
   # GET /ptypes/1
   # GET /ptypes/1.json
-  def show
-  end
+  def show end
 
   # GET /ptypes/new
   def new
@@ -19,8 +18,7 @@ class PtypesController < ApplicationController
   end
 
   # GET /ptypes/1/edit
-  def edit
-  end
+  def edit end
 
   # POST /ptypes
   # POST /ptypes.json
@@ -29,7 +27,7 @@ class PtypesController < ApplicationController
 
     respond_to do |format|
       if @ptype.save
-        format.html { redirect_to action: "index", notice: 'Billettype oprettet.' }
+        format.html { redirect_to action: 'index', notice: 'Billettype oprettet.' }
         format.json { render :show, status: :created, location: @ptype }
       else
         format.html { render :new }
@@ -43,7 +41,7 @@ class PtypesController < ApplicationController
   def update
     respond_to do |format|
       if @ptype.update(ptype_params)
-        format.html { redirect_to action: "index", notice: 'Billettype opdateret.' }
+        format.html { redirect_to action: 'index', notice: 'Billettype opdateret.' }
         format.json { render :show, status: :ok, location: @ptype }
       else
         format.html { render :edit }

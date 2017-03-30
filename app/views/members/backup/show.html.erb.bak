@@ -55,6 +55,6 @@
 <% end %>
 <br>
 <br>
-<%= button_to '<< Tilbage til medlemssøgning', members_url, :class => "create", method: "get" %>
+<%= button_to '<< Tilbage til medlemssøgning', members_url, class: "create", method: "get" %>
 <br>
 <br>

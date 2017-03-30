@@ -28,4 +28,3 @@ production:
   database: Sl17_production
   username: Sl17
   password: <%= ENV['Sl17_DATABASE_PASSWORD'] %>
-  

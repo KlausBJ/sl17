@@ -5,9 +5,9 @@
     <% if a.age?(p) %>
       <% optns = { onchange: %Q[$("#edit_activity_#{a.id}").submit();] } %>
       <% if p.ticket?(a) %>
-        <% optns[:checked] = "checked" %>
+        <% optns[:checked] = 'checked' %>
         <% if Ticket.find_by(person: p, activity: a).invoice.paid %>
-          <% optns[:disabled] = "disabled" %>
+          <% optns[:disabled] = 'disabled' %>
         <% end %>
         <td><%= b.check_box( optns ) %></td>
       <% elsif a.for_sale?(p) %>

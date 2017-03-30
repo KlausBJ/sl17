@@ -5,7 +5,7 @@ deltageren skal tilmeldes hvis:
 	der er ledige pladser
 	der ikke er overlappende aktiviteter for deltageren
 
-people_controller skal kontrollere for overlap 
+people_controller skal kontrollere for overlap
 
 hvis slut er før-eller-på dennes start eller start er på-eller-efter dennes slut: ok
 ellers konflikt!
@@ -29,7 +29,7 @@ alternativ: (bedre kode!)
 hvis slut er efter dennes start OG start er før dennes slut: konflikt! <- scope :conflict
 @ticket.save unless @person.activities.conflict(@activity).any? or @activity.full?
 
-ved klik: 
+ved klik:
 flueben
 	gennemfør køb hvis stadig muligt
 	opdater checkbox + alle med konflikt sættes inaktiv.

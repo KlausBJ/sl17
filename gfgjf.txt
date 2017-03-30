@@ -1,4 +1,4 @@
-document.getElementById("person_host_member").required = false; 
+document.getElementById("person_host_member").required = false;
 
 Jeg har fundet følgende:
 
@@ -16,7 +16,7 @@ Jeg mangler følgende:
 - kontrol for, at der er en voksen tilmeldt (så du ikke kan tilmelde et barn eller myndig uden også der er en voksen. Herunder også et tjek op mod om man hører til en anden over 21).
 
 
-Første login: 
+Første login:
 sommerlejr/kartoffelmel
 Man finder sig selv på listen, evt. ved hjælp af søgefeltet
 Flueben: Mailadressen er korrekt
