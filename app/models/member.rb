@@ -26,7 +26,6 @@ class Member < ApplicationRecord
 
   def roles_to_s
     return roles.any? ? "(#{roles.map{|r| r.name.capitalize}.join ', '})" : ''
-    # <%= session[:member_id].to_i > 0 && Member.find(session[:member_id]).roles.any? ? " (#{Member.find(session[:member_id]).roles.map{|r| r.name.to_s.capitalize}.join ', '})" : '' %>
   end
 
   def hostmember
@@ -43,26 +42,22 @@ class Member < ApplicationRecord
 
   def self.import(file)
     CSV.foreach(file.path, headers: true) do |row|
-      # u pdated = 0
-      # a dded = 0
       member_hash = row.to_hash
       member = Member.where(number: member_hash['number'])
 
       if member.count == 1
-        # s kip this member - or perhaps update?
+        # skip this member - or perhaps update?
         m = member[0]
         if m.people.paid.none?
           m.name = member_hash['name']
           m.email = member_hash['email']
           m.save
-          # u pdated += 1
         end
       else
         member.create!(member_hash)
-        # a dded += 1
-      end #if
-    end #CSV.foreach
-  end #self.import
+      end # if
+    end # CSV.foreach
+  end # self.import
 
   def self.search(search)
     where('name LIKE ? OR number LIKE ? OR email LIKE ?', "%#{search}%", "%#{search}%", "%#{search}%")
@@ -77,6 +72,5 @@ class Member < ApplicationRecord
     def clearance_levels
       roles.map{|r| r.name.to_sym}
     end
-
 
 end

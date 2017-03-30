@@ -1,11 +1,5 @@
 <p id='notice'><%= notice %></p>
-<% if @member.nil? %>
-  <% @member = Member.find(params['person']["member_id"]) %>
-  <% if local_assigns[:person] %>
-    <% @person = Person.new(local_assigns[:person]) %>
-  <% end %>
-<% end %>
-<%= render 'members/form', member: @member %>
+<%= render 'form', member: @member %>
 
 <h2>Tilmeld deltager</h2>
 
@@ -34,15 +28,26 @@
     <% end %>
   </tbody>
 </table>
-<% if @member.invoices.where(paid: false).joins(:people).any? || @member.invoices.where(paid: false).joins(:tickets).any? %>
-  <% @member.invoices.where(paid: false).each do |invoice| %>
-    <% if (invoice.people.map{|p| p.ptype.price}.sum + invoice.tickets.map{|t| t.activity.deltbet.to_i}.sum) > 0 %>
-      <%= link_to "Faktura nr. #{invoice.id}, gå til betaling...", invoice_path(invoice) %>
-    <% end %>
-  <% end %>
-<% end %>
 <br>
 <br>
 <%= link_to 'Tilbage til medlemssøgning', members_url %>
 <br>
 <br>
+
+<table>
+  <thead>
+    <tr>
+    <% @member.people.each do |person| %>
+      <th><%= person.name.split(' ')[0] %></th>
+    <% end %>
+    </tr>
+  </thead>
+  <tbody>
+  <% @activities.each do |activity| %>
+  <tr>
+  <% @member.people.each do |person| %>
+    <td><%= person.name.split(' ')[0] %></td>
+  <% end %>
+
+  </tr>
+  <% end %>

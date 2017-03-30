@@ -54,11 +54,10 @@ class Person < ApplicationRecord
       person = Person.where(name: person_hash['name'],member_id: (Member.find_by(number: person_hash['number'])).id)
 
       if person.count == 1
-        # s kip this person
+        # skip this person
       else
         person.create!(name: person_hash['name'], member_id: (Member.find_by(number: person_hash['number'])).id, ptype_id: person_hash['ticket_type_id'], aargang: person_hash['aargang'], koen: person_hash['koen'])
-      end #if
-    end #CSV.foreach
-  end #self.import
-
+      end # if
+    end # CSV.foreach
+  end # self.import
 end

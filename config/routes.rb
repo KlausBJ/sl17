@@ -2,16 +2,16 @@ Rails.application.routes.draw do
   get '/betingelser', to: 'pages#betingelser'
 
   # session (non resources, controller only)
-  get     '/login',   to: 'sessions#new', path: '/log_ind'
-  post     '/log_ind',   to: 'sessions#create'
-  delete   '/logout',   to: 'sessions#destroy', path: '/log_ud'
+  get '/login', to: 'sessions#new', path: '/log_ind'
+  post '/log_ind', to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy', path: '/log_ud'
 
-  # r esources:
+  # resources:
   # harmless:
   resources :housing_types, except: [:destroy], path: '/indkvarteringer'
   resources :places, except: [:destroy], path: '/steder'
   resources :assignments, except: [:destroy], path: '/opgavetildelinger'
-  resources :tickets, except: [:destroy],  path: '/billetter'
+  resources :tickets, except: [:destroy], path: '/billetter'
   resources :tasks, except: [:destroy], path: '/opgaver' do
     collection { post :import }
   end
@@ -42,5 +42,6 @@ Rails.application.routes.draw do
 
   # andet
   root to: 'members#index'
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # For details on the DSL available within this file, see
+  # http://guides.rubyonrails.org/routing.html
 end

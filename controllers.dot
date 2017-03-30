@@ -1,0 +1,38 @@
+digraph controllers_diagram {
+	graph [bb="-140.14,-150,289.54,196",
+		bgcolor=none,
+		overlap=false,
+		splines=true
+	];
+	node [label="\N"];
+	ActivitiesController	 [height=0.5,
+		pos="-19,118",
+		width=2.2567];
+	ApplicationController	 [height=0.5,
+		pos="119,48",
+		width=2.4734];
+	AssignmentsController	 [height=0.5,
+		pos="-6,-12",
+		width=2.5998];
+	InvoicesController	 [height=0.5,
+		pos="78,-72",
+		width=2.1665];
+	MembersController	 [height=0.5,
+		pos="171,108",
+		width=2.2567];
+	PeopleController	 [height=0.5,
+		pos="182,-12",
+		width=2.004];
+	PlacesController	 [height=0.5,
+		pos="61,178",
+		width=1.9679];
+	PtypesController	 [height=0.5,
+		pos="-68,58",
+		width=2.004];
+	TasksController	 [height=0.5,
+		pos="220,168",
+		width=1.9318];
+	TicketsController	 [height=0.5,
+		pos="74,-132",
+		width=2.0582];
+}

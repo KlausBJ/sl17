@@ -10,10 +10,10 @@ class MembersController < ApplicationController
   def index
     if session[:member_id]
       if session[:member_id] != 0
-      # r edirect_to member_path(Member.find(session[:member_id]))
+      # redirect_to member_path(Member.find(session[:member_id]))
       end
     else
-      # r edirect_to login_path
+      # redirect_to login_path
     end
     @members = Member.all.order(:number)
     if params[:search]
@@ -42,8 +42,6 @@ class MembersController < ApplicationController
 
   # GET /members/1/edit
   def edit end
-
-  def pay end
 
   # POST /members
   # POST /members.json
@@ -95,13 +93,15 @@ class MembersController < ApplicationController
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_member
-    @member = Member.find(params[:id])
-  end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def member_params
-  params.require(:member).permit(:number, :name, :email, :search)
-  end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_member
+      @member = Member.find(params[:id])
+    end
+
+    # Never trust parameters from the scary internet, only allow the white
+    # list through.
+    def member_params
+    params.require(:member).permit(:number, :name, :email, :search)
+    end
 end

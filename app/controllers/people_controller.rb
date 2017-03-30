@@ -19,10 +19,9 @@ class PeopleController < ApplicationController
   def edit end
 
   # POST /people
-    # POST /people.json
+  # POST /people.json
   def create
     @person = Person.new(person_params)
-    # R ails.logger.debug("Fødselsdagscheck: Ptype #{@person.ptype.name} Fødselsdag #{@person.aargang}.")
     if @person.ptype.datereq && ((@person.ptype_id == 4 && @person.aargang < Date.new(2013,7,8)) || (@person.ptype_id == 3 && @person.aargang > Date.new(2013,7,15))) # 3 = 4-17, 4 = 0-3
       flash.now[:notice] = 'Fødselsdagen passer ikke med billettypen.'
       render template: 'members/show'
@@ -67,18 +66,17 @@ class PeopleController < ApplicationController
     end
   end
 
-
   # PATCH/PUT /people/1
   # PATCH/PUT /people/1.json
   def update
-    # ptid = ptype_id fra formular, @person.ptype.id eller @person.ptype_id er den "gamle" værdi
+    # ptid = ptype_id fra formular, @person.ptype.id eller @person.ptype_id
+    # er den 'gamle' værdi
     ptid = person_params[:ptype_id].to_i
 
-    # bdate er en dato konstrueret ud fra data fra formularen, altså den "nye" (fordi den ikke findes som en helhed i person_params)
+    # bdate er en dato konstrueret ud fra data fra formularen, altså den
+    # 'nye' (fordi den ikke findes som en helhed i person_params)
     bdate = Date.new(person_params['aargang(1i)'].to_i,person_params['aargang(2i)'].to_i,person_params['aargang(3i)'].to_i) if Ptype.find(ptid).datereq
 
-    # Debug deaktiveret - aktivér hvis validering ikke virker som forventet
-    # Rails.logger.debug("if #{Ptype.find(ptid).datereq} && ((#{ptid} (#{ptid.class}) == 4 (#{4.class}) (#{ptid == 4}) && #{bdate}(#{bdate.class}) < #{Date.new(2013,7,8)}(#{Date.new(2013,7,8).class}) (#{bdate < Date.new(2013,7,8)})) || (#{ptid} (#{ptid.class}) == 3 (#{3.class}) (#{ptid == 3}) && #{bdate}(#{bdate.class}) > #{Date.new(2013,7,15)}(#{Date.new(2013,7,15).class}) #{bdate > Date.new(2013,7,15)}))")
     if Ptype.find(ptid).datereq && ((ptid == 4 && bdate < Date.new(2013,7,8)) || (ptid == 3 && bdate > Date.new(2013,7,15)))
       flash.now[:notice] = 'Fødselsdagen passer ikke med billettypen.'
       render :edit
@@ -142,13 +140,15 @@ class PeopleController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_person
       @person = Person.find(params[:id])
       @member = @person.member
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # Never trust parameters from the scary internet, only allow the white
+    # list through.
     def person_params
       params.require(:person).permit(:name, :member_id, :ptype_id, :aargang, :koen, :housing_type_id, :housing_number, :phone, :host_member, :invoice_id, :activity)
     end

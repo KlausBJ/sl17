@@ -61,12 +61,14 @@ class HousingTypesController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_housing_type
       @housing_type = HousingType.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # Never trust parameters from the scary internet, only allow the white
+    # list through.
     def housing_type_params
       params.require(:housing_type).permit(:name)
     end

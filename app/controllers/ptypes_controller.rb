@@ -61,12 +61,14 @@ class PtypesController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_ptype
       @ptype = Ptype.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+# Never trust parameters from the scary internet, only allow the white
+    # list through.
     def ptype_params
       params.require(:ptype).permit(:name, :price, :datereq)
     end

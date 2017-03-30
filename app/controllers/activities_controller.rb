@@ -1,6 +1,6 @@
 class ActivitiesController < ApplicationController
   let :admins, :all
-  skip_before_filter  :verify_authenticity_token, only: :toggle
+  skip_before_filter :verify_authenticity_token, only: :toggle
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
 
   # GET /activities
@@ -95,12 +95,14 @@ class ActivitiesController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_activity
       @activity = Activity.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # Never trust parameters from the scary internet, only allow the white
+    # list through.
     def toggle_params
       params.require(:activity).permit(:member_id, :person_ids)
     end

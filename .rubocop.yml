@@ -1,2 +1,12 @@
 EndOfLine:
   Enabled: false
+Metrics/LineLength:
+  Max: 80
+  IgnoredPatterns: ['\A#']
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+    - 'tmp/**/*'
+    - 'test/**/*'
+    - 'db/**/*'

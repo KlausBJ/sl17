@@ -1,4 +1,4 @@
-<p id="notice"><%= notice %></p>
+<p id='notice'><%= notice %></p>
 <%= render 'form', member: @member %>
 
 <h2>Tilmeld deltager</h2>
@@ -39,7 +39,7 @@
     <tr>
       <th>Aktivitet</th>
       <% @member.people.each do |person| %>
-        <th><%= person.name.split(" ")[0] %></th>
+        <th><%= person.name.split(' ')[0] %></th>
       <% end %>
     </tr>
   </thead>
@@ -48,7 +48,7 @@
     <tr><%= form_for(:activity, remote: true, url: '/activities', html: { class: 'my-form' }) do |f| %>
       <td><%= activity.name %></td>
       <% @member.people.each do |person| %>
-        <td><%= check_box_tag("Bestil", activity.toggle, data: { remote: true, url: url_for(action: toggle, id: activity.id), method: 'PUT'}) %></td>
+        <td><%= check_box_tag('Bestil', activity.toggle, data: { remote: true, url: url_for(action: toggle, id: activity.id), method: 'PUT'}) %></td>
       <% end %>
     <% end %></tr>
   <% end %>

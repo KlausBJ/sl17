@@ -1,0 +1,58 @@
+Hvordan disabler man en checkbox? (eller skal den simpelt hen slet ikke være der?)
+
+ved reservation af billet opfriskes tid på invoice
+
+Alder:
+min_alder,max_alder
+0-20 = alder i år pr startdato
+21 = kun voksne
+> 999 = årgang, begge incl.
+ikke angivet, ignoreres
+
+min_alder = 3, max_alder = 6 => 3-6 år
+min_alder = 12, max_alder = "" => 12 år eller ældre
+min_alder = 21, max_alder = "" => kun voksne
+min_alder = 2006, max_alder = 2000 => deltagere født i 2000-2006, begge incl.
+
+
+def	min_age?(person_id)
+	p = Person.find(person_id)
+	return min_age.nil? || min_age == "" || (min_age > 999 && ((p.ptype.datereq && p.aargang.year >= min_age) || !p.datereq)) || (min_age == 21 && p.ptype_id == 1) || (min_age < 21 && min_age >= 18 && p.ptype_id == 2) || (min_age < 18 && starttime - min_age.years >= p.aargang)
+end
+
+def max_age?(person_id)
+	p = Person.find(person_id)
+	return max_age.nil? || max_age == "" || (max_age > 999 && p.ptype.datereq && p.aargang.year <= min_age) || (max_age >= 18 && max_age <= 21 && p.ptype_id == 2) || (max_age < 18 && p.ptype.datereq && p.aargang >= starttime - max_age.years)
+end
+
+def	age?(person_id)
+	p = Person.find(person_id)
+	minage = min_age.nil? || min_age == "" || (min_age > 999 && ((p.ptype.datereq && p.aargang.year >= min_age) || !p.datereq)) || (min_age == 21 && p.ptype_id == 1) || (min_age < 21 && min_age >= 18 && p.ptype_id == 2) || (min_age < 18 && starttime - min_age.years >= p.aargang)
+	if minage
+		maxage = max_age.nil? || max_age == "" || (max_age > 999 && p.ptype.datereq && p.aargang.year <= min_age) || (max_age >= 18 && max_age <= 21 && p.ptype_id == 2) || (max_age < 18 && p.ptype.datereq && p.aargang >= starttime - max_age.years)
+	end
+	return minage && maxage
+end
+
+
+partial, som gennemløber .people med nedenstående og returnerer en checkbox-linje for @aktivitet, @member 
+(hvor .people er betalte og ubetalte på DENNE faktura - der må ikke kunne bookes aktiviteter for ikke-betalte)
+(slet person skal også slette billetter, arbejdsopgaver og ADVARE om aktiviteter uden tovholder osv.)
+
+checkbox skal vises, hvis
+	man matcher aldersgruppen && (man allerede har en billet eller reservation || der er billetter)
+		markeret hvis man allerede har
+			og disablet, hvis den er betalt
+		ikke-markeret, hvis man ingen har
+ellers
+	tomt felt
+slut
+
+def checkbox_line(ppl)
+	result = ""
+	ppl.each do |prsn|
+		if age?(p)
+			if people.include?(p)
+				if tickets.where(person: p)[0].paid
+					result += "<td>"
+			elsif 

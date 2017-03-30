@@ -5,17 +5,17 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     @person = people(:one)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get people_url
     assert_response :success
   end
 
-  test "should get new" do
+  test 'should get new' do
     get new_person_url
     assert_response :success
   end
 
-  test "should create person" do
+  test 'should create person' do
     assert_difference('Person.count') do
       post people_url, params: { person: { member_id: @person.member_id, name: @person.name, ptype_id: @person.ptype_id } }
     end
@@ -23,22 +23,22 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to person_url(Person.last)
   end
 
-  test "should show person" do
+  test 'should show person' do
     get person_url(@person)
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get edit_person_url(@person)
     assert_response :success
   end
 
-  test "should update person" do
+  test 'should update person' do
     patch person_url(@person), params: { person: { member_id: @person.member_id, name: @person.name, ptype_id: @person.ptype_id } }
     assert_redirected_to person_url(@person)
   end
 
-  test "should destroy person" do
+  test 'should destroy person' do
     assert_difference('Person.count', -1) do
       delete person_url(@person)
     end

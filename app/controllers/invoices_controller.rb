@@ -7,7 +7,7 @@ class InvoicesController < ApplicationController
   skip_before_action :set_cm, only: :callback
 
   before_action :set_invoice, only: [:show, :edit, :update, :destroy, :pay]
-  skip_before_filter  :verify_authenticity_token
+  skip_before_filter :verify_authenticity_token
   require 'quickpay/api/client'
   require 'openssl'
   require 'json'
@@ -15,7 +15,6 @@ class InvoicesController < ApplicationController
   def sign(base, private_key)
     OpenSSL::HMAC.hexdigest('sha256', private_key, base)
   end
-
 
   # GET /invoices
   # GET /invoices.json
@@ -53,28 +52,28 @@ class InvoicesController < ApplicationController
 
       if @invoice.payment_link
         payment = client.get("/payments/#{@invoice.payment_link}")
-        # l ink = {'url' => @invoice.payment_link}
+        # link = {'url' => @invoice.payment_link}
       else
         # payment = client.get("/payments/#{payment['id']}")
-        # payment ||= client.post('/payments', :order_id => (1000 + @invoice.id), currency: 'DKK')
-        payment = client.post('/payments', :order_id => (1000 + @invoice.id), currency: 'DKK')
+        # payment ||= client.post('/payments', order_id: (1000 + @invoice.id),
+        # currency: 'DKK')
+        payment = client.post('/payments', order_id: (1000 + @invoice.id), currency: 'DKK')
 
         @invoice.payment_link = payment['id']
         @invoice.save
       end
 
-      link = client.put("/payments/#{payment['id']}/link", amount: @invoice.total * 100, framed: true, language: 'da', :auto_fee => true, :auto_capture => true, :branding_id => 4455, :continue_url => member_url(@invoice.member), :cancel_url => member_url(@invoice.member))
+      link = client.put("/payments/#{payment['id']}/link", amount: @invoice.total * 100, framed: true, language: 'da', auto_fee: true, auto_capture: true, branding_id: 4455, continue_url: member_url(@invoice.member), cancel_url: member_url(@invoice.member))
 
       redirect_to link['url']
     end
   end
 
   def callback
-    # 
-     # Assuming that you are using Rack - https://github.com/rack/rack
+    # Assuming that you are using Rack - https://github.com/rack/rack
     Rails.logger.debug('Request is received. ')
     request_body = env['rack.input'].read
-    checksum     = sign(request_body, 'e9d66d600a92022a7c65d0796258d2e2fa77b38109af4175e58422356fe1b1c8')
+    checksum = sign(request_body, 'e9d66d600a92022a7c65d0796258d2e2fa77b38109af4175e58422356fe1b1c8')
 
     if checksum == env['HTTP_QUICKPAY_CHECKSUM_SHA256']
       Rails.logger.debug('Request is authenticated. ')
@@ -128,12 +127,14 @@ class InvoicesController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_invoice
       @invoice = Invoice.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # Never trust parameters from the scary internet, only allow the white
+    # list through.
     def invoice_params
       params.require(:invoice).permit(:member_id, :paid, :order)
     end

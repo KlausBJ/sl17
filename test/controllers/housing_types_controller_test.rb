@@ -5,12 +5,12 @@ class HousingTypesControllerTest < ActionDispatch::IntegrationTest
     @housing_type = housing_types(:one)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get housing_types_url
     assert_response :success
   end
 
-  test "should get new" do
+  test 'should get new' do
     get new_housing_type_url
     assert_response :success
   end
@@ -28,7 +28,7 @@ class HousingTypesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get edit_housing_type_url(@housing_type)
     assert_response :success
   end

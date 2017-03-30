@@ -1,1 +1,0 @@
-json.partial! "ptypes/ptype", ptype: @ptype

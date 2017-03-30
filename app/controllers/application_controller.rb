@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
     def check_login
       if session[:member_id] == nil
         flash[:notice] = 'Log ind'
@@ -45,14 +46,14 @@ class ApplicationController < ActionController::Base
         member = Member.find(session[:member_id])
         clearance_levels = member.roles.map{|r| r.name.to_sym}
         if clearance_levels == []
-          # c learance_levels = [:member]
+          # clearance_levels = [:member]
         end
       else
-        # c learance_levels = [:guest]
+        # clearance_levels = [:guest]
       end
 
       # Choose a redirection path
-      # r eturn login_path  if clearance_levels.include? :guest
+      # return login_path if clearance_levels.include? :guest
       login_path
     end
 
