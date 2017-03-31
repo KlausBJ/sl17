@@ -23,42 +23,34 @@ class ActivitiesController < ApplicationController
   def edit; end
 
   # POST /activities
-  # POST /activities.json
   def create
     @activity = Activity.new(activity_params)
 
     respond_to do |format|
       if @activity.save
-        format.html { redirect_to @activity, notice: 'Activity was successfully created.' }
-        format.json { render :show, status: :created, location: @activity }
+        format.html { redirect_to @activity }
       else
         format.html { render :new }
-        format.json { render json: @activity.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /activities/1
-  # PATCH/PUT /activities/1.json
   def update
     respond_to do |format|
       if @activity.update(activity_params)
-        format.html { redirect_to @activity, notice: 'Activity was successfully updated.' }
-        format.json { render :show, status: :ok, location: @activity }
+        format.html { redirect_to @activity, notice: 'Activity updated.' }
       else
         format.html { render :edit }
-        format.json { render json: @activity.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /activities/1
-  # DELETE /activities/1.json
   def destroy
     @activity.destroy
     respond_to do |format|
-      format.html { redirect_to activities_url, notice: 'Activity was successfully destroyed.' }
-      format.json { head :no_content }
+      format.html { redirect_to activities_url, notice: 'Activity destroyed.' }
     end
   end
 
@@ -70,7 +62,8 @@ class ActivitiesController < ApplicationController
   def toggle
     respond_to do |format|
       format.js do
-        current_people = @activity.people.where(member_id: toggle_params[:member_id])
+        current_people = @activity.people.where(member_id:
+          toggle_params[:member_id])
         to_be = toggle_params[:person_ids]
         to_remove = current_people - to_be
         to_add = to_be - current_people
@@ -86,7 +79,10 @@ class ActivitiesController < ApplicationController
           end
         elsif to_remove.any?
           to_remove.each do |person|
-            Ticket.find_by_activity_and_person(activity: @activity, person: person).destroy
+            Ticket.find_by_activity_and_person(
+              activity: @activity,
+              person: person
+            ).destroy
             noticetext = 'Billet slettet.'
             # aktivér konfliktende
           end
@@ -109,6 +105,9 @@ class ActivitiesController < ApplicationController
   end
 
   def activity_params
-    params.require(:activity).permit(:name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id, :member_id, person_ids: [])
+    params.require(:activity).permit(
+      :name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id,
+      :member_id, person_ids: []
+    )
   end
 end

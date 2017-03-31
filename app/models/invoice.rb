@@ -5,10 +5,17 @@ class Invoice < ApplicationRecord
   has_many :people, dependent: :destroy
 
   def total
-    return people.map{|p| p.ptype.price}.sum + tickets.map{|t| t.activity.deltbet.to_i}.sum
+    people.map { |p| p.ptype.price }.sum +
+      tickets.map { |t| t.activity.deltbet.to_i }.sum
   end
 
   def free?
-    return (people.map{|p| p.ptype.price}.sum + tickets.map{|t| t.activity.deltbet.to_i}.sum) == 0
+    (
+      people.map do |p|
+        p.ptype.price
+      end.sum + tickets.map do |t|
+        t.activity.deltbet.to_i
+      end.sum
+    ).zero?
   end
 end

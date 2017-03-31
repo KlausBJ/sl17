@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
   private
 
   def check_login
-    return if !session[:member_id].nil?
+    return unless session[:member_id].nil?
     flash[:notice] = 'Log ind'
     redirect_to login_path
   end
@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
     return [:pre_login] if session[:member_id].nil?
     return [:guest] if session[:member_id].zero?
     member = Member.find(session[:member_id])
-    return member.roles.map{ |r| r.name.to_sym } if member.roles.any?
+    return member.roles.map { |r| r.name.to_sym } if member.roles.any?
     [:member]
   end
 

@@ -9,36 +9,41 @@ class Member < ApplicationRecord
   has_many :clearances
   has_many :roles, through: :clearances
   validates :name, presence: true
-  validates_format_of :email, with: /\A([a-z0-9]+[_\-.+]+)*[a-z0-9]+@((\w+\-+)|(\w+\.))*\w{1,63}\.[a-z]{2,}\z/i
+  email_val =
+    /\A([a-z0-9]+[_\-.+]+)*[a-z0-9]+@((\w+\-+)|(\w+\.))*\w{1,63}\.[a-z]{2,}\z/i
+  validates_format_of :email, with: email_val
 
   require 'csv'
 
   def inv?
-    return invoices.map{|i| i.people.any? || i.tickets.any?}.reduce(:|)
+    invoices.map { |i| i.people.any? || i.tickets.any? }.reduce(:|)
   end
 
   def guest_people
-    return Person.where(host_member: number).map{|p| p if p.invoice.paid}
+    Person.where(host_member: number).map { |p| p if p.invoice.paid }
   end
 
   def admin?
-    return clearance_levels.include? :admin
+    clearance_levels.include? :admin
   end
 
   def roles_to_s
-    return roles.any? ? "(#{roles.map{|r| r.name.capitalize}.join ', '})" : ''
+    roles.any? ? "(#{roles.map { |r| r.name.capitalize }.join ', '})" : ''
   end
 
   def hostmember
-    return people.where('host_member IS NOT NULL').any?
+    people.where('host_member IS NOT NULL').any?
   end
 
   def editable?(cm)
-    return cm && ((cm.roles.any? && cm.roles.map{|r| r.name.to_sym}.include?(:admin)) || (cm.nil? && invoices.none?) || (cm.id == id))
+    cm && ((cm.roles.any? && cm.roles.map do |r|
+      r.name.to_sym
+    end.include?(:admin)) ||
+    (cm.nil? && invoices.none?) || (cm.id == id))
   end
 
   def housing
-    return "#{housing_type.name if housing_type} #{housing_number}"
+    "#{housing_type.name if housing_type} #{housing_number}"
   end
 
   def self.import(file)
@@ -61,17 +66,21 @@ class Member < ApplicationRecord
   end # self.import
 
   def self.search(search)
-    where('name LIKE ? OR number LIKE ? OR email LIKE ?', "%#{search}%", "%#{search}%", "%#{search}%")
+    where(
+      'name LIKE ? OR number LIKE ? OR email LIKE ?', "%#{search}%",
+      "%#{search}%", "%#{search}%"
+    )
   end
 
   def generate_password
-    password ||= Password.create(password: Word.all[id % Word.count].word + (id % 90 + 10).to_s, member_id: id)
+    password ||= Password.create(password: Word.all[id % Word.count].word +
+      (id % 90 + 10).to_s, member_id: id)
     save
   end
 
   private
-  
+
   def clearance_levels
-    roles.map{ |r| r.name.to_sym }
+    roles.map { |r| r.name.to_sym }
   end
 end

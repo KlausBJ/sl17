@@ -4,13 +4,11 @@ class PtypesController < ApplicationController
   before_action :set_ptype, only: [:show, :edit, :update, :destroy]
 
   # GET /ptypes
-  # GET /ptypes.json
   def index
     @ptypes = Ptype.all
   end
 
   # GET /ptypes/1
-  # GET /ptypes/1.json
   def show; end
 
   # GET /ptypes/new
@@ -22,41 +20,38 @@ class PtypesController < ApplicationController
   def edit; end
 
   # POST /ptypes
-  # POST /ptypes.json
   def create
     @ptype = Ptype.new(ptype_params)
 
     respond_to do |format|
       if @ptype.save
-        format.html { redirect_to action: 'index', notice: 'Billettype oprettet.' }
-        format.json { render :show, status: :created, location: @ptype }
+        format.html do
+          redirect_to action: 'index', notice: 'Billettype oprettet.'
+        end
       else
         format.html { render :new }
-        format.json { render json: @ptype.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /ptypes/1
-  # PATCH/PUT /ptypes/1.json
   def update
     respond_to do |format|
       if @ptype.update(ptype_params)
-        format.html { redirect_to action: 'index', notice: 'Billettype opdateret.' }
-        format.json { render :show, status: :ok, location: @ptype }
+        format.html do
+          redirect_to action: 'index', notice: 'Billettype opdateret.'
+        end
       else
         format.html { render :edit }
-        format.json { render json: @ptype.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /ptypes/1
-  # DELETE /ptypes/1.json
   def destroy
     @ptype.destroy
     respond_to do |format|
-      format.html { redirect_to ptypes_url, notice: 'Ptype was successfully destroyed.' }
+      format.html { redirect_to ptypes_url, notice: 'Ptype destroyed.' }
       format.json { head :no_content }
     end
   end
