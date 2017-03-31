@@ -1,0 +1,4 @@
+member def pwcheck -> password.pwcheck
+password def pwcheck
+  casecmp
+
