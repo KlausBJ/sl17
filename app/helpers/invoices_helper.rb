@@ -1,3 +1,4 @@
+# Helper for invoices
 module InvoicesHelper
   include ActionView::Helpers::NumberHelper
 

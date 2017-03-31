@@ -1,3 +1,4 @@
+# Controller for people
 class PeopleController < ApplicationController
   let :admins, :all
   let :guests, [:index]
@@ -13,51 +14,46 @@ class PeopleController < ApplicationController
 
   # GET /people/1
   # GET /people/1.json
-  def show end
+  def show; end
 
   # GET /people/1/edit
-  def edit end
+  def edit; end
 
   # POST /people
   # POST /people.json
   def create
     @person = Person.new(person_params)
-    if @person.ptype.datereq && ((@person.ptype_id == 4 && @person.aargang < Date.new(2013,7,8)) || (@person.ptype_id == 3 && @person.aargang > Date.new(2013,7,15))) # 3 = 4-17, 4 = 0-3
+    if @person.ptype.datereq && ((@person.ptype_id == 4 && @person.aargang < Date.new(2013, 7, 8)) || (@person.ptype_id == 3 && @person.aargang > Date.new(2013, 7, 15)))
       flash.now[:notice] = 'Fødselsdagen passer ikke med billettypen.'
       render template: 'members/show'
-    else
-      if @person.ptype_id == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where('id <> ?',@person.id || 0).any?) || (@person.host_member && Member.find_by_number(@person.host_member) && Member.find_by_number(@person.host_member).people.where(ptype_id: 1).any?)
-        if @person.ptype == 1 || @person.member.number == @person.host_member
-          @person.host_member = nil
-        end
-        # move housing to member if not already set there
-        if @person.member.housing_type_id.nil? && @person.member.housing_number.nil? && (@person.housing_number || @person.housing_type_id)
-          @person.member.housing_type_id = @person.housing_type_id
-          @person.member.housing_number = @person.housing_number
-          @person.housing_type_id = nil
-          @person.housing_number = nil
-          @person.member.save
-        else
-          # don't save housing if it matches the member housing (redundant)
-          if @person.member.housing_type_id == @person.housing_type_id && @person.member.housing_number == @person.housing_number
-            @person.housing_type_id = nil
-            @person.housing_number = nil
-          end
-        end
+    elsif @person.ptype_id == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where('id <> ?', @person.id || 0).any?) || (@person.host_member && Member.find_by_number(@person.host_member) && Member.find_by_number(@person.host_member).people.where(ptype_id: 1).any?)
+      if @person.ptype == 1 || @person.member.number == @person.host_member
+        @person.host_member = nil
+      end
+      # move housing to member if not already set there
+      if @person.member.housing_type_id.nil? && @person.member.housing_number.nil? && (@person.housing_number || @person.housing_type_id)
+        @person.member.housing_type_id = @person.housing_type_id
+        @person.member.housing_number = @person.housing_number
+        @person.housing_type_id = nil
+        @person.housing_number = nil
+        @person.member.save
+      elsif @person.member.housing_type_id == @person.housing_type_id && @person.member.housing_number == @person.housing_number
+        # don't save housing if it matches the member housing (redundant)
+        @person.housing_type_id = nil
+        @person.housing_number = nil
+      end
 
-        unless @person.ptype.datereq
-          @person.aargang = nil
-        end
-        @person.invoice = @person.member.invoices.where(paid: false).last
-        @person.invoice ||= Invoice.create(member: @person.member, paid: false)
-        respond_to do |format|
-          if @person.save
-            format.html { redirect_to @person.member, notice: 'Deltager tilføjet.' }
-            format.json { render :show, status: :created, location: @person }
-          else
-            format.html { render :new }
-            format.json { render json: @person.errors, status: :unprocessable_entity }
-          end
+      @person.aargang = nil unless @person.ptype.datereq
+
+      @person.invoice = @person.member.invoices.where(paid: false).last
+      @person.invoice ||= Invoice.create(member: @person.member, paid: false)
+      respond_to do |format|
+        if @person.save
+          format.html { redirect_to @person.member, notice: 'Deltager tilføjet.' }
+          format.json { render :show, status: :created, location: @person }
+        else
+          format.html { render :new }
+          format.json { render json: @person.errors, status: :unprocessable_entity }
         end
       else
         flash.now[:notice] = 'Tilmeld voksne først, eller udfyld feltet Værtsfamilie med et andet medlemsnr., som har voksne tilmeldt.'
@@ -75,9 +71,9 @@ class PeopleController < ApplicationController
 
     # bdate er en dato konstrueret ud fra data fra formularen, altså den
     # 'nye' (fordi den ikke findes som en helhed i person_params)
-    bdate = Date.new(person_params['aargang(1i)'].to_i,person_params['aargang(2i)'].to_i,person_params['aargang(3i)'].to_i) if Ptype.find(ptid).datereq
+    bdate = Date.new(person_params['aargang(1i)'].to_i, person_params['aargang(2i)'].to_i, person_params['aargang(3i)'].to_i) if Ptype.find(ptid).datereq
 
-    if Ptype.find(ptid).datereq && ((ptid == 4 && bdate < Date.new(2013,7,8)) || (ptid == 3 && bdate > Date.new(2013,7,15)))
+    if Ptype.find(ptid).datereq && ((ptid == 4 && bdate < Date.new(2013, 7, 8)) || (ptid == 3 && bdate > Date.new(2013, 7, 15)))
       flash.now[:notice] = 'Fødselsdagen passer ikke med billettypen.'
       render :edit
     elsif ptid != 1 && @person.member.people.where(ptype_id: 1).where('id <> ?', @person.id).none? && @person.member.people.where('ptype_id <> 1').where('host_member IS NULL').any?
@@ -85,14 +81,12 @@ class PeopleController < ApplicationController
       render :edit
     else
       pphm = person_params[:host_member]
-      if ptid == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where('id <> ?',@person.id).any?) || (pphm && Member.find_by_number(pphm) && Member.find_by_number(pphm).people.where(ptype_id: 1).any?)
+      if ptid == 1 || (@person.member.people.any? && @person.member.people.where(ptype_id: 1).where('id <> ?', @person.id).any?) || (pphm && Member.find_by_number(pphm) && Member.find_by_number(pphm).people.where(ptype_id: 1).any?)
         respond_to do |format|
-          unless @person.ptype.datereq
-            @person.aargang = nil
-          end
+          @person.aargang = nil unless @person.ptype.datereq
 
           if @person.update(person_params)
-            if @person.ptype_id ==1 || @person.member.number == @person.host_member
+            if @person.ptype_id == 1 || @person.member.number == @person.host_member
               @person.host_member = nil
               @person.save
             end
@@ -103,13 +97,11 @@ class PeopleController < ApplicationController
               @person.housing_number = nil
               @person.member.save
               @person.save
-            else
+            elsif @person.member.housing_type_id == @person.housing_type_id && @person.member.housing_number == @person.housing_number
               # don't save housing if it matches the member housing (redundant)
-              if @person.member.housing_type_id == @person.housing_type_id && @person.member.housing_number == @person.housing_number
-                @person.housing_type_id = nil
-                @person.housing_number = nil
-                @person.save
-              end
+              @person.housing_type_id = nil
+              @person.housing_number = nil
+              @person.save
             end
 
             format.html { redirect_to @person.member, notice: 'Deltager opdateret.' }
@@ -141,15 +133,15 @@ class PeopleController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_person
-      @person = Person.find(params[:id])
-      @member = @person.member
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_person
+    @person = Person.find(params[:id])
+    @member = @person.member
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def person_params
-      params.require(:person).permit(:name, :member_id, :ptype_id, :aargang, :koen, :housing_type_id, :housing_number, :phone, :host_member, :invoice_id, :activity)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def person_params
+    params.require(:person).permit(:name, :member_id, :ptype_id, :aargang, :koen, :housing_type_id, :housing_number, :phone, :host_member, :invoice_id, :activity)
+  end
 end

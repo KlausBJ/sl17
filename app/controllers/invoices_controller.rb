@@ -1,3 +1,4 @@
+# Controller for invoices - payment magic here
 class InvoicesController < ApplicationController
   let :admins, :all
   let :members, [:sign, :new, :show, :pay]
@@ -32,7 +33,7 @@ class InvoicesController < ApplicationController
 
   # GET /invoices/1
   # GET /invoices/1.json
-  def show end
+  def show; end
 
   # GET /invoices/new
   def new
@@ -40,10 +41,10 @@ class InvoicesController < ApplicationController
   end
 
   # GET /invoices/1/edit
-  def edit end
+  def edit; end
 
   def pay
-    if @invoice.total == 0
+    if @invoice.total.zero?
       @invoice.paid = true
       @invoice.save
       redirect_to @invoice.member, notice: 'Faktura afsluttet.'
@@ -80,8 +81,6 @@ class InvoicesController < ApplicationController
       invoice = Invoice.find(JSON.parse(request_body)['order_id'].to_i - 1000)
       invoice.paid = JSON.parse(request_body)['accepted']
       invoice.save
-    else
-      # Request is NOT authenticated
     end
   end
 
@@ -128,14 +127,14 @@ class InvoicesController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_invoice
-      @invoice = Invoice.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_invoice
+    @invoice = Invoice.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def invoice_params
-      params.require(:invoice).permit(:member_id, :paid, :order)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def invoice_params
+    params.require(:invoice).permit(:member_id, :paid, :order)
+  end
 end

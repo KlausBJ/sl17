@@ -1,3 +1,4 @@
+# Participants, related to Member
 class Person < ApplicationRecord
   belongs_to :member
   belongs_to :ptype
@@ -28,35 +29,28 @@ class Person < ApplicationRecord
   end
 
   def housing
-    if housing_type || housing_number
-      return "#{housing_type.name if housing_type} #{housing_number}"
-    else
-      return member.housing
-    end
+    return "#{housing_type.name if housing_type} #{housing_number}" if housing_type || housing_number
+    return member.housing
   end
 
   def fdag
-    if aargang.nil?
-      return ''
-    else
-      return aargang.strftime('%d') + '/' + aargang.strftime('%m') + '-' + aargang.strftime('%Y')
-    end
+    return '' if aargang.nil?
+    return aargang.strftime('%d') + '/' + aargang.strftime('%m') + '-' + aargang.strftime('%Y')
   end
 
   def deletable?(cm)
-    return cm && !invoice.paid && ((cm.roles.any? && cm.roles.map{|r| r.name.to_sym}.include?(:admin)) || cm.id == member_id) && (ptype_id != 1 || member.people.where(ptype_id: 1).where('id <> ?', id).any? || member.people.where('ptype_id <> 1').where('host_member IS NULL').none?)
+    cm && !invoice.paid && ((cm.roles.any? && cm.roles.map{ |r| r.name.to_sym }.include?(:admin)) || cm.id == member_id) && (ptype_id != 1 || member.people.where(ptype_id: 1).where('id <> ?', id).any? || member.people.where('ptype_id <> 1').where('host_member IS NULL').none?)
   end
 
   def self.import(file)
-    CSV.foreach(file.path, headers: true,) do |row|
-
+    CSV.foreach(file.path, headers: true) do |row|
       person_hash = row.to_hash
-      person = Person.where(name: person_hash['name'],member_id: (Member.find_by(number: person_hash['number'])).id)
+      person = Person.where(name: person_hash['name'], member_id: Member.find_by(number: person_hash['number']).id)
 
       if person.count == 1
         # skip this person
       else
-        person.create!(name: person_hash['name'], member_id: (Member.find_by(number: person_hash['number'])).id, ptype_id: person_hash['ticket_type_id'], aargang: person_hash['aargang'], koen: person_hash['koen'])
+        person.create! name: person_hash['name'], member_id: Member.find_by(number: person_hash['number']).id, ptype_id: person_hash['ticket_type_id'], aargang: person_hash['aargang'], koen: person_hash['koen']
       end # if
     end # CSV.foreach
   end # self.import

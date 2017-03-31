@@ -1,3 +1,4 @@
+# The central class
 class Member < ApplicationRecord
   add_access_utilities
 
@@ -69,8 +70,8 @@ class Member < ApplicationRecord
   end
 
   private
-    def clearance_levels
-      roles.map{|r| r.name.to_sym}
-    end
-
+  
+  def clearance_levels
+    roles.map{ |r| r.name.to_sym }
+  end
 end

@@ -1,3 +1,4 @@
+# Controller for HousingTypes - predefined categories
 class HousingTypesController < ApplicationController
   let :admins, :all
   before_action :set_housing_type, only: [:show, :edit, :update, :destroy]
@@ -10,7 +11,7 @@ class HousingTypesController < ApplicationController
 
   # GET /housing_types/1
   # GET /housing_types/1.json
-  def show end
+  def show; end
 
   # GET /housing_types/new
   def new
@@ -18,7 +19,7 @@ class HousingTypesController < ApplicationController
   end
 
   # GET /housing_types/1/edit
-  def edit end
+  def edit; end
 
   # POST /housing_types
   # POST /housing_types.json
@@ -62,14 +63,14 @@ class HousingTypesController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_housing_type
-      @housing_type = HousingType.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_housing_type
+    @housing_type = HousingType.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def housing_type_params
-      params.require(:housing_type).permit(:name)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def housing_type_params
+    params.require(:housing_type).permit(:name)
+  end
 end

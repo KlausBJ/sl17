@@ -1,3 +1,4 @@
+# Activities for participants, some of which are payable
 class Activity < ApplicationRecord
   belongs_to :person
   belongs_to :place
@@ -25,7 +26,7 @@ class Activity < ApplicationRecord
   end
 
   def for_sale?(person)
-  return any_left? && person.tickets.none? || ((person.tickets.map(&:activity_id) & conflicts.map(&:id)).none?)
+    return any_left? && person.tickets.none? || ((person.tickets.map(&:activity_id) & conflicts.map(&:id)).none?)
   end
 
   def any_left?

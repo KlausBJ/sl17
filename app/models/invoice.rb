@@ -1,3 +1,4 @@
+# Central class for payment of participation and/or activities
 class Invoice < ApplicationRecord
   belongs_to :member
   has_many :tickets, dependent: :destroy

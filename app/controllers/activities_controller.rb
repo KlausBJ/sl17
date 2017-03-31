@@ -1,3 +1,4 @@
+# Controller for activities - handles ajax calls to book tickets
 class ActivitiesController < ApplicationController
   let :admins, :all
   skip_before_filter :verify_authenticity_token, only: :toggle
@@ -11,7 +12,7 @@ class ActivitiesController < ApplicationController
 
   # GET /activities/1
   # GET /activities/1.json
-  def show end
+  def show; end
 
   # GET /activities/new
   def new
@@ -19,7 +20,7 @@ class ActivitiesController < ApplicationController
   end
 
   # GET /activities/1/edit
-  def edit end
+  def edit; end
 
   # POST /activities
   # POST /activities.json
@@ -96,18 +97,18 @@ class ActivitiesController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_activity
-      @activity = Activity.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_activity
+    @activity = Activity.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def toggle_params
-      params.require(:activity).permit(:member_id, :person_ids)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def toggle_params
+    params.require(:activity).permit(:member_id, :person_ids)
+  end
 
-    def activity_params
-      params.require(:activity).permit(:name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id, :member_id, person_ids:[])
-    end
+  def activity_params
+    params.require(:activity).permit(:name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id, :member_id, person_ids: [])
+  end
 end

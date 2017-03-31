@@ -1,9 +1,12 @@
+SymbolArray:
+  Enabled: false
 EndOfLine:
   Enabled: false
 Metrics/LineLength:
   Max: 80
   IgnoredPatterns: ['\A#']
 AllCops:
+  TargetRubyVersion: 2.2
   Exclude:
     - 'vendor/**/*'
     - 'spec/fixtures/**/*'

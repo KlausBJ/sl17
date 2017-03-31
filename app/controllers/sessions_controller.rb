@@ -1,3 +1,4 @@
+# Controller for sessions - used for login
 class SessionsController < ApplicationController
   skip_before_action :check_login
 

@@ -1,3 +1,4 @@
+# Linking tasks to people
 class AssignmentsController < ApplicationController
   let :admins, :all
   before_action :set_assignment, only: [:show, :edit, :update, :destroy]
@@ -10,7 +11,7 @@ class AssignmentsController < ApplicationController
 
   # GET /assignments/1
   # GET /assignments/1.json
-  def show end
+  def show; end
 
   # GET /assignments/new
   def new
@@ -18,7 +19,7 @@ class AssignmentsController < ApplicationController
   end
 
   # GET /assignments/1/edit
-  def edit end
+  def edit; end
 
   # POST /assignments
   # POST /assignments.json
@@ -63,13 +64,13 @@ class AssignmentsController < ApplicationController
   private
 
   # Use callbacks to share common setup or constraints between actions.
-    def set_assignment
-      @assignment = Assignment.find(params[:id])
-    end
+  def set_assignment
+    @assignment = Assignment.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def assignment_params
-      params.require(:assignment).permit(:person_id, :task_id)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def assignment_params
+    params.require(:assignment).permit(:person_id, :task_id)
+  end
 end

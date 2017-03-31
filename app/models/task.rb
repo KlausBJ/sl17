@@ -1,3 +1,4 @@
+# Task for Person
 class Task < ApplicationRecord
   belongs_to :activity
   has_many :assignments

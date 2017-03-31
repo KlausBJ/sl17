@@ -1,3 +1,4 @@
+# Controller for Ptypes, used to determine age and eligibility for activities
 class PtypesController < ApplicationController
   let :admins, :all
   before_action :set_ptype, only: [:show, :edit, :update, :destroy]
@@ -10,7 +11,7 @@ class PtypesController < ApplicationController
 
   # GET /ptypes/1
   # GET /ptypes/1.json
-  def show end
+  def show; end
 
   # GET /ptypes/new
   def new
@@ -18,7 +19,7 @@ class PtypesController < ApplicationController
   end
 
   # GET /ptypes/1/edit
-  def edit end
+  def edit; end
 
   # POST /ptypes
   # POST /ptypes.json
@@ -62,14 +63,14 @@ class PtypesController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_ptype
-      @ptype = Ptype.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_ptype
+    @ptype = Ptype.find(params[:id])
+  end
 
-# Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def ptype_params
-      params.require(:ptype).permit(:name, :price, :datereq)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def ptype_params
+    params.require(:ptype).permit(:name, :price, :datereq)
+  end
 end

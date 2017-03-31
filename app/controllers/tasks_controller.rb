@@ -1,3 +1,4 @@
+# Controller for tasks
 class TasksController < ApplicationController
   let :admins, :all
   before_action :set_task, only: [:show, :edit, :update, :destroy]
@@ -10,7 +11,7 @@ class TasksController < ApplicationController
 
   # GET /tasks/1
   # GET /tasks/1.json
-  def show end
+  def show; end
 
   # GET /tasks/new
   def new
@@ -18,7 +19,7 @@ class TasksController < ApplicationController
   end
 
   # GET /tasks/1/edit
-  def edit end
+  def edit; end
 
   # POST /tasks
   # POST /tasks.json
@@ -67,14 +68,14 @@ class TasksController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_task
-      @task = Task.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_task
+    @task = Task.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-      # list through.
-    def task_params
-      params.require(:task).permit(:name, :description, :activity_id)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def task_params
+    params.require(:task).permit(:name, :description, :activity_id)
+  end
 end

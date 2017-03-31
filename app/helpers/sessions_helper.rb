@@ -1,3 +1,4 @@
+# Helper for sessions
 module SessionsHelper
   def guest_log_in
     session[:member_id] = 0

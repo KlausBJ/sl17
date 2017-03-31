@@ -1,3 +1,4 @@
+# Controller for words
 class WordsController < ApplicationController
   let :admins, :all
   before_action :set_word, only: [:show, :edit, :update, :destroy]
@@ -10,7 +11,7 @@ class WordsController < ApplicationController
 
   # GET /words/1
   # GET /words/1.json
-  def show end
+  def show; end
 
   # GET /words/new
   def new
@@ -18,7 +19,7 @@ class WordsController < ApplicationController
   end
 
   # GET /words/1/edit
-  def edit end
+  def edit; end
 
   # POST /words
   # POST /words.json
@@ -62,14 +63,14 @@ class WordsController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_word
-      @word = Word.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_word
+    @word = Word.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white
-    # list through.
-    def word_params
-      params.require(:word).permit(:word)
-    end
+  # Never trust parameters from the scary internet, only allow the white
+  # list through.
+  def word_params
+    params.require(:word).permit(:word)
+  end
 end
