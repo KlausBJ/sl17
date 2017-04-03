@@ -50,6 +50,8 @@ class Activity < ApplicationRecord
   end
   
   def ptoggle(member_id, person_ids)
+    Rails.logger.debug(member_id)
+    Rails.logger.debug(person_ids)
     crnt = current member_id
     to_be = (person_ids - ['']).map { |p| p.to_i }
     add (to_be - crnt)

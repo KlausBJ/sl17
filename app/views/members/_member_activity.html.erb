@@ -1,33 +1,34 @@
 <%= form_for(
-  @activity, {
+  activity, {
     remote: true, 
-    url: toggle_activity_path(@activity), 
+    url: toggle_activity_path(activity),
     method: :post
   }
 ) do |f| %>
-  <td><%= @activity.name %></td>
+  <%= f.hidden_field :member_id, :value => member.id %>
+  <td><%= activity.name %></td>
   <%= f.collection_check_boxes  :person_ids, 
-                                @member.people, 
+                                member.people,
                                 :id, 
                                 :name do |b| %>
     <% p = Person.find(b.value) %>
-    <% if @activity.age?(p) %>
+    <% if activity.age?(p) %>
       <% optns = {
-        onchange: %Q[$("#edit_activity_#{@activity.id}").submit();] 
+        onchange: %Q[$("#edit_activity_#{activity.id}").submit();]
       } %>
-      <% if p.ticket?(@activity) %>
+      <% if p.ticket?(activity) %>
         <% optns[:checked] = 'checked' %>
-        <% if Ticket.find_by(person: p, activity: @activity).invoice.paid %>
+        <% if Ticket.find_by(person: p, activity: activity).invoice.paid %>
           <% optns[:disabled] = 'disabled' %>
         <% end %>
-        <td><%= b.check_box( optns ) %></td>
-      <% elsif @activity.for_sale?(p) %>
-        <td><%= b.check_box( optns ) %></td>
+        <td id="has_ticket"><%= b.check_box( optns ) %></td>
+      <% elsif activity.for_sale?(p) %>
+        <td id="for_sale"><%= b.check_box( optns ) %></td>
       <% else %>
-        <td></td>
+        <td id="not_for_sale"></td>
       <% end %>
     <% else %>
-      <td></td>
+      <td id="wrong_age"></td>
     <% end %>
   <% end %>
 <% end %>

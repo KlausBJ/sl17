@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   helper_method :set_cm
 
   def set_cm
-    return if session[:member_id].zero?
+    return if session[:member_id].nil? || session[:member_id].zero?
     @cm = Member.find(session[:member_id])
   end
 

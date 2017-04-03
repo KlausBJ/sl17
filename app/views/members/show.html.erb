@@ -118,9 +118,9 @@
     </thead>
     <tbody>
     <% @activities.each do |a| %>
-      <tr>
+      <tr id="form_act_<%= a.id %>">
       <%# partial begin %>
-      <%= render 'member_activity' %>
+      <%= render partial: 'member_activity', locals: { activity: a, member: @member } %>
       <%# partial end %>
       </tr>
     <% end %>

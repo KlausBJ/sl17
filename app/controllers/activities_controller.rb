@@ -60,10 +60,14 @@ class ActivitiesController < ApplicationController
   end
 
   def toggle
+    set_activity
+    tp = toggle_params
     respond_to do |format|
       format.js do
-        @activity.ptoggle toggle_params[:member_id],
-                          toggle_params[:person_ids]
+        @activity.ptoggle tp[:member_id],
+                          tp[:person_ids]
+        @member = Member.find(tp[:member_id])
+        render layout: false
       end
     end
   end
@@ -78,7 +82,7 @@ class ActivitiesController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white
   # list through.
   def toggle_params
-    params.require(:activity).permit(:member_id, :person_ids)
+    params.require(:activity).permit(:member_id, person_ids: [])
   end
 
   def activity_params
