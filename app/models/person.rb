@@ -12,13 +12,13 @@ class Person < ApplicationRecord
 
   KOEN_TYPES = ['M', 'K'].freeze
 
-  scope :paid, lambda do
+  scope :paid, lambda {
     order(:member_id).joins(:invoice).where('invoices.paid = true')
-  end
+  }
 
-  scope :unpaid, lambda do
+  scope :unpaid, lambda {
     order(:member_id).joins(:invoice).where('invoices.paid <> true')
-  end
+  }
 
   validate do |person|
     if person.ptype.datereq

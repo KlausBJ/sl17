@@ -3,17 +3,17 @@ Rails.application.configure do
   # config/application.rb.
 
   # Code is not reloaded between requests.
-  config.cache_classes = false
+  config.cache_classes = true
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
   # and those relying on copy on write to perform better.
   # Rake tasks automatically ignore this option for performance.
-  config.eager_load = false
+  config.eager_load = true
 
   # Full error reports are disabled and caching is turned on.
-  config.consider_all_requests_local = true
-  config.action_controller.perform_caching = false
+  config.consider_all_requests_local = false
+  config.action_controller.perform_caching = true
 
   # Disable serving static files from the `/public` folder by default
   # since
@@ -72,7 +72,7 @@ Rails.application.configure do
   config.i18n.fallbacks = true
 
   # Send deprecation notices to registered listeners.
-  #   config.active_support.deprecation = :notify
+  config.active_support.deprecation = :notify
 
   # Use default logging formatter so that PID and timestamp are not
   # suppressed.

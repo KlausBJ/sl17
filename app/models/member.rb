@@ -73,7 +73,7 @@ class Member < ApplicationRecord
   end
 
   def generate_password
-    password ||= Password.create(password: Word.all[id % Word.count].word +
+    self.password ||= Password.create(password: Word.all[id % Word.count].word +
       (id % 90 + 10).to_s, member_id: id)
     save
   end

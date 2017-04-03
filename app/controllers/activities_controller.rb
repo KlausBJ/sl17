@@ -62,31 +62,8 @@ class ActivitiesController < ApplicationController
   def toggle
     respond_to do |format|
       format.js do
-        current_people = @activity.people.where(member_id:
-          toggle_params[:member_id])
-        to_be = toggle_params[:person_ids]
-        to_remove = current_people - to_be
-        to_add = to_be - current_people
-        if to_add.any?
-          to_add.each do |person|
-            if Ticket.create(activity: @activity, person: person)
-              noticetext = 'Billet tilføjet.'
-              # deaktivér konfliktende
-            else
-              noticetext = 'Billetten er desværre ikke tilgængelig.'
-              # opdatér aktiviteten
-            end
-          end
-        elsif to_remove.any?
-          to_remove.each do |person|
-            Ticket.find_by_activity_and_person(
-              activity: @activity,
-              person: person
-            ).destroy
-            noticetext = 'Billet slettet.'
-            # aktivér konfliktende
-          end
-        end
+        @activity.ptoggle toggle_params[:member_id],
+                          toggle_params[:person_ids]
       end
     end
   end

@@ -25,6 +25,36 @@ class Activity < ApplicationRecord
     end
     minage && maxage
   end
+  
+  def current(member_id)
+    people.where(member_id: member_id).map(&:id)
+  end
+  
+  def add(person_ids)
+    person_ids.each do |person_id|
+      person = Person.find(person_id)
+      invoice = person.member.invoices.where(paid: false).last
+      invoice ||= Invoice.create(member: person.member, paid: false)
+      Ticket.create activity_id: id,
+                    person_id: person_id,
+                    invoice_id: invoice.id
+    end
+  end
+  
+  def remove(person_ids)
+    person_ids.each do |person_id|
+      ticket = Ticket.find_by activity_id: id,
+                              person_id: person_id
+      ticket.destroy
+    end
+  end
+  
+  def ptoggle(member_id, person_ids)
+    crnt = current member_id
+    to_be = (person_ids - ['']).map { |p| p.to_i }
+    add (to_be - crnt)
+    remove (crnt - to_be)
+  end
 
   def conflicts
     Activity.where(

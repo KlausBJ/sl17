@@ -1,16 +1,27 @@
-<%= form_for(a, {remote: true, url: toggle_activity_path(a), method: :post}) do |f| %>
-  <td><%= a.name %></td>
-  <%= f.collection_check_boxes :person_ids, @member.people, :id, :name do |b| %>
+<%= form_for(
+  @activity, {
+    remote: true, 
+    url: toggle_activity_path(@activity), 
+    method: :post
+  }
+) do |f| %>
+  <td><%= @activity.name %></td>
+  <%= f.collection_check_boxes  :person_ids, 
+                                @member.people, 
+                                :id, 
+                                :name do |b| %>
     <% p = Person.find(b.value) %>
-    <% if a.age?(p) %>
-      <% optns = { onchange: %Q[$("#edit_activity_#{a.id}").submit();] } %>
-      <% if p.ticket?(a) %>
+    <% if @activity.age?(p) %>
+      <% optns = {
+        onchange: %Q[$("#edit_activity_#{@activity.id}").submit();] 
+      } %>
+      <% if p.ticket?(@activity) %>
         <% optns[:checked] = 'checked' %>
-        <% if Ticket.find_by(person: p, activity: a).invoice.paid %>
+        <% if Ticket.find_by(person: p, activity: @activity).invoice.paid %>
           <% optns[:disabled] = 'disabled' %>
         <% end %>
         <td><%= b.check_box( optns ) %></td>
-      <% elsif a.for_sale?(p) %>
+      <% elsif @activity.for_sale?(p) %>
         <td><%= b.check_box( optns ) %></td>
       <% else %>
         <td></td>
