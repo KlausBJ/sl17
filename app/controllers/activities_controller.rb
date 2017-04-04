@@ -2,7 +2,7 @@
 class ActivitiesController < ApplicationController
   let :admins, :all
   skip_before_filter :verify_authenticity_token, only: :toggle
-  before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
+  before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle, :member]
 
   # GET /activities
   # GET /activities.json
@@ -72,6 +72,13 @@ class ActivitiesController < ApplicationController
     end
   end
 
+  def member
+    mp = member_params
+    @activity = Activity.find(mp[:id])
+    @member = Member.find(mp[:member_id])
+    render layout: false
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -81,8 +88,19 @@ class ActivitiesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white
   # list through.
+  def member_params
+    [:id, :member_id].each_with_object(params) do |key, obj|
+      obj.require(key)
+    end
+  end
+
   def toggle_params
-    params.require(:activity).permit(:member_id, person_ids: [])
+    # hmmm, samme øvelse som ovenstående kunne måske hjælpe? kræver form_tag, tror jeg...
+    # url på samme måde som activities#member og kun person_ids: [] i form
+    [:id, :member_id, :person_ids].each_with_object(params) do |key, obj|
+      obj.require(key)
+    end
+    #params.require(:activity).permit(:id, :member_id, person_ids: [])
   end
 
   def activity_params

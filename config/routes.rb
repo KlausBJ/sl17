@@ -17,7 +17,9 @@ Rails.application.routes.draw do
   end
   resources :activities, except: [:destroy], path: '/aktiviteter' do
     collection { post :import }
-    member { post :toggle }
+    member do
+      post :toggle
+    end
   end
   resources :people, except: [:new], path: '/deltagere'
   resources :ptypes, except: [:destroy]
@@ -41,6 +43,8 @@ Rails.application.routes.draw do
   end
 
   # andet
+  get 'aktiviteter/:id/member/:member_id', to: 'activities#member', as: :activity_member
+
   root to: 'members#index'
   # For details on the DSL available within this file, see
   # http://guides.rubyonrails.org/routing.html

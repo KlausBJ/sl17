@@ -1,19 +1,8 @@
 <%# opdatér @activity %>
-$("#form_act_<%= @activity.id %>").html('<%= escape_javascript(
-  "#{ render partial: 'members/member_activity',
-  locals: {
-    activity: @activity,
-    member: @member
-  } }" %>');
+$("#form_act_<%= @activity.id %>").load('<%= activity_member_path(@activity, @member) %>');
 <%# opdatér @activity.conflicts %>
 <% @activity.conflicts.each do |conflict| %>
-$("#form_act_<%= conflict.id %>").html('<%= escape_javascript(
-  "#{ render partial: 'members/member_activity',
-  locals: {
-    activity: conflict,
-    member: @member
-  } }"
-) %>');
+$("#form_act_<%= conflict.id %>").load('<%= activity_member_path(conflict, @member) %>');
 <% end %>
 <%# http://stackoverflow.com/questions/11127934/rendering-partial-in-js-erb-file %>
 <%# hver form i sin egen div med id eller class, hvad der så end er nemmest at opdatere fra js %>
