@@ -110,18 +110,18 @@
   <table>
     <thead>
       <tr>
-        <th>Aktivitet</th>
+        <th width="200" align="left">Aktivitet</th>
         <% @member.people.each do |person| %>
-          <th><%= person.name.split(' ')[0] %></th>
+          <th width="70" align="left"><%= person.name.split(' ')[0] %></th>
         <% end %>
       </tr>
     </thead>
     <tbody>
     <% @activities.each do |a| %>
-      <tr id="form_act_<%= a.id %>">
-      <%# partial begin %>
-      <%= render partial: 'member_activity', locals: { activity: a, member: @member } %>
-      <%# partial end %>
+      <tr>
+        <td colspan="<%= @member.people.count + 1 %>" id="form_act_<%= a.id %>">
+          <%= render partial: 'member_activity', locals: { :activity => a, :member => @member }, :as => :activity %>
+        </td>
       </tr>
     <% end %>
     </tbody>

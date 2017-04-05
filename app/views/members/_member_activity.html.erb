@@ -1,29 +1,39 @@
-<%= form_tag(toggle_activity_path(activity), id: "edit_activity_#{activity.id}", remote: true) do %>
-  <%= hidden_field_tag :member_id, member.id %>
-  <td><%= activity.name %></td>
-  <%= collection_check_boxes  @people,
-                              :person_ids,
-                              member.people,
-                              :id,
-                              :name do |b| %>
+<% @activity = Activity.find(activity.id) %>
+<% @member = Member.find(member.id) %>
+<%= form_for(
+  @activity, {
+    remote: true,
+    multiple: true,
+    url: toggle_activity_path(@activity),
+    method: :post
+  }
+) do |f| %>
+      <table><tr>
+
+  <td width="200"><%= f.hidden_field :member_id, :value => @member.id %><%= @activity.name %></td>
+  <%= f.collection_check_boxes  :person_ids,
+                                @member.people,
+                                :id,
+                                :name do |b| %>
     <% p = Person.find(b.value) %>
-    <% if activity.age?(p) %>
+    <% if @activity.age?(p) %>
       <% optns = {
-        onchange: %Q[$('#edit_activity_#{activity.id}').submit();]
+        onchange: %Q[$("#edit_activity_#{@activity.id}").submit();]
       } %>
-      <% if p.ticket?(activity) %>
+      <% if p.ticket?(@activity) %>
         <% optns[:checked] = 'checked' %>
-        <% if Ticket.find_by(person: p, activity: activity).invoice.paid %>
+        <% if Ticket.find_by(person: p, activity: @activity).invoice.paid %>
           <% optns[:disabled] = 'disabled' %>
         <% end %>
-        <td id="has_ticket"><%= b.check_box( optns ) %></td>
-      <% elsif activity.for_sale?(p) %>
-        <td id="for_sale"><%= b.check_box( optns ) %></td>
+        <td width="70"><%= b.check_box( optns ) %></td>
+      <% elsif @activity.for_sale?(p) %>
+        <td width="70"><%= b.check_box( optns ) %></td>
       <% else %>
-        <td id="not_for_sale"></td>
+        <td width="70"></td>
       <% end %>
     <% else %>
-      <td id="wrong_age"></td>
+      <td width="70"></td>
     <% end %>
   <% end %>
+      </tr></table>
 <% end %>

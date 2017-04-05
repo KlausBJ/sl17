@@ -1,0 +1,29 @@
+<%= form_tag(toggle_activity_path(activity), multipart: true, remote: true, id: "edit_activity_#{activity.id}") do %>
+  <%= hidden_field_tag :member_id, member.id %>
+  <td><%= activity.name %></td>
+  <%= collection_check_boxes  @people,
+                              :person_ids,
+                              member.people,
+                              :id,
+                              :name do |b| %>
+    <% p = Person.find(b.value) %>
+    <% if activity.age?(p) %>
+      <% optns = {
+        onchange: %Q[$('#edit_activity_#{activity.id}').submit();]
+      } %>
+      <% if p.ticket?(activity) %>
+        <% optns[:checked] = 'checked' %>
+        <% if Ticket.find_by(person: p, activity: activity).invoice.paid %>
+          <% optns[:disabled] = 'disabled' %>
+        <% end %>
+        <td id="has_ticket"><%= b.check_box( optns ) %></td>
+      <% elsif activity.for_sale?(p) %>
+        <td id="for_sale"><%= b.check_box( optns ) %></td>
+      <% else %>
+        <td id="not_for_sale"></td>
+      <% end %>
+    <% else %>
+      <td id="wrong_age"></td>
+    <% end %>
+  <% end %>
+<% end %>

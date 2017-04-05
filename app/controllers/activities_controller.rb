@@ -60,22 +60,19 @@ class ActivitiesController < ApplicationController
   end
 
   def toggle
-    set_activity
-    tp = toggle_params
     respond_to do |format|
       format.js do
-        @activity.ptoggle tp[:member_id],
-                          tp[:person_ids]
-        @member = Member.find(tp[:member_id])
+        @activity.ptoggle activity_params[:member_id],
+                          activity_params[:person_ids]
+        @member = Member.find(activity_params[:member_id])
         render layout: false
       end
     end
   end
 
   def member
-    mp = member_params
-    @activity = Activity.find(mp[:id])
-    @member = Member.find(mp[:member_id])
+    @activity = Activity.find(member_params[:id])
+    @member = Member.find(member_params[:member_id])
     render layout: false
   end
 
@@ -89,6 +86,8 @@ class ActivitiesController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white
   # list through.
   def member_params
+    #ap = activity_params
+
     [:id, :member_id].each_with_object(params) do |key, obj|
       obj.require(key)
     end
@@ -97,10 +96,10 @@ class ActivitiesController < ApplicationController
   def toggle_params
     # hmmm, samme øvelse som ovenstående kunne måske hjælpe? kræver form_tag, tror jeg...
     # url på samme måde som activities#member og kun person_ids: [] i form
-    [:id, :member_id, :person_ids].each_with_object(params) do |key, obj|
-      obj.require(key)
-    end
-    #params.require(:activity).permit(:id, :member_id, person_ids: [])
+    #[:id, :member_id, :person_ids].each_with_object(params) do |key, obj|
+    #  obj.require(key)
+    #end
+    params.require(:activity).permit(:id, :member_id, person_ids: [])
   end
 
   def activity_params
