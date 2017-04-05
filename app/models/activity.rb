@@ -32,12 +32,14 @@ class Activity < ApplicationRecord
   
   def add(person_ids)
     person_ids.each do |person_id|
-      person = Person.find(person_id)
-      invoice = person.member.invoices.where(paid: false).last
-      invoice ||= Invoice.create(member: person.member, paid: false)
-      Ticket.create activity_id: id,
-                    person_id: person_id,
-                    invoice_id: invoice.id
+      if any_left?
+        person = Person.find(person_id)
+        invoice = person.member.invoices.where(paid: false).last
+        invoice ||= Invoice.create(member: person.member, paid: false)
+        Ticket.create activity_id: id,
+                      person_id: person_id,
+                      invoice_id: invoice.id
+      end
     end
   end
   
@@ -69,12 +71,20 @@ class Activity < ApplicationRecord
   end
 
   def for_sale?(person)
-    any_left? && person.tickets.none? || (person.tickets.map(&:activity_id) &
-      conflicts.map(&:id)).none?
+    any_left? && (
+      person.tickets.none? || (
+        person.tickets.map(&:activity_id) &
+        conflicts.map(&:id)
+      ).none?
+    )
+  end
+
+  def blocked_by(person)
+    (conflicts.map(&:id) & person.tickets.map(&:activity_id)).map { |c| Activity.find(c).name }.join(', ')
   end
 
   def any_left?
-    number.nil? || number > sold + reserved
+    number.nil? || number.zero? || number > sold + reserved
   end
 
   def sold
@@ -92,24 +102,26 @@ class Activity < ApplicationRecord
       activity = Activity.where(
         name: activity_hash['navn'],
         place_id: Place.find_by(name: activity_hash['sted']).id
-      )
+      ) # mulighed for ens navne, hvis tiderne er forskellige
 
       if activity.none?
-        mid = Member.find_by(number: activity_hash['number']).id
-        fname = activity_hash['name'].split(' ')[0]
+        mid = Member.find_by(number: activity_hash['tovholdermedlemsnr']).id
+        fname = activity_hash['tovholdernavn'].split(' ')[0]
         activity.create!  name: activity_hash['navn'],
                           person_id: Person.where(member_id: mid).where(
                             'name like ?', fname + '%'
                           )[0].id,
-                          starttime: activity_hash['tid'].to_datetime,
+                          starttime: activity_hash['starttid'].to_datetime,
                           endtime: (
-                            (activity_hash['tid']).to_datetime.to_time + 1.hours
+                            (activity_hash['sluttid']).to_datetime.to_time + 1.hours
                           ).to_datetime,
-                          number: activity_hash['number'],
+                          number: activity_hash['antal'],
                           place_id: Place.find_by(
                             name: activity_hash['sted']
                           ).id,
-                          deltbet: activity_hash['deltbet']
+                          deltbet: activity_hash['deltagerbetaling'],
+                          min_age: activity_hash['min_alder'],
+                          max_age: activity_hash['max_alder']
       end # if
     end # CSV.foreach
   end # self.import

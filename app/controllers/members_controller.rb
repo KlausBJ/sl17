@@ -20,7 +20,7 @@ class MembersController < ApplicationController
       @member.generate_password
       @member.reload
     end
-    @activities = Activity.all
+    @activities = Activity.order(:starttime, :endtime)
     @person = Person.new
     @invoice = @member.invoices.where(paid: false).last if @member.invoices.any?
   end
