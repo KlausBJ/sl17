@@ -1,7 +1,7 @@
 # Controller for invoices - payment magic here
 class InvoicesController < ApplicationController
   let :admins, :all
-  let :members, [:sign, :new, :show, :pay]
+  let [:members, :testers], [:sign, :new, :show, :pay]
   let :all, :callback
 
   skip_before_action :check_login, only: :callback

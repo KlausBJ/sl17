@@ -8,38 +8,39 @@
     method: :post
   }
 ) do |f| %>
-      <table><tr>
-
-  <td style="width: 200px; text-align: left;"><%= f.hidden_field :member_id, :value => @member.id %><%= @activity.name %></td>
-  <%= f.collection_check_boxes  :person_ids,
-                                @member.people,
-                                :id,
-                                :name do |b| %>
-    <% p = Person.find(b.value) %>
-    <% optns = {
-        onchange: %Q[$("#edit_activity_#{@activity.id}").submit();],
-        title: p.name.split(' ')[0]
-    } %>
-    <% if @activity.age?(p) %>
-      <% if p.ticket?(@activity) %>
-        <% optns[:checked] = 'checked' %>
-        <% if Ticket.find_by(person: p, activity: @activity).invoice.paid %>
+  <table>
+    <tr>
+      <td style="width: 200px; text-align: left;"><%= f.hidden_field :member_id, :value => @member.id %><%= @activity.name %></td>
+      <%= f.collection_check_boxes  :person_ids,
+                                    @member.people,
+                                    :id,
+                                    :name do |b| %>
+        <% p = Person.find(b.value) %>
+        <% optns = {
+            onchange: %Q[$("#edit_activity_#{@activity.id}").submit();],
+            title: p.name.split(' ')[0]
+        } %>
+        <% if @activity.age?(p) %>
+          <% if p.ticket?(@activity) %>
+            <% optns[:checked] = 'checked' %>
+            <% if Ticket.find_by(person: p, activity: @activity).invoice.paid %>
+              <% optns[:disabled] = 'disabled' %>
+            <% end %>
+            <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
+          <% elsif @activity.for_sale?(p) %>
+            <% optns %>
+            <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
+          <% else %>
+            <% optns[:disabled] = 'disabled' %>
+            <% optns[:title] = (@activity.any_left? ? "Overlap: #{@activity.blocked_by(p)}" : 'Udsolgt') %>
+            <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
+          <% end %>
+        <% else %>
           <% optns[:disabled] = 'disabled' %>
+          <% optns[:title] = 'Forkert aldersgruppe' %>
+          <td style="width: 70px; text-align: center; align "><%= b.check_box( optns ) %></td>
         <% end %>
-        <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
-      <% elsif @activity.for_sale?(p) %>
-        <% optns %>
-        <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
-      <% else %>
-        <% optns[:disabled] = 'disabled' %>
-        <% optns[:title] = (@activity.any_left? ? "Overlap: #{@activity.blocked_by(p)}" : 'Udsolgt') %>
-        <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
       <% end %>
-    <% else %>
-      <% optns[:disabled] = 'disabled' %>
-      <% optns[:title] = 'Forkert aldersgruppe' %>
-      <td style="width: 70px; text-align: center; align "><%= b.check_box( optns ) %></td>
-    <% end %>
-  <% end %>
-      </tr></table>
+    </tr>
+  </table>
 <% end %>

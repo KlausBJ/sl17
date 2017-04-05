@@ -1,6 +1,6 @@
 # Task for Person
 class Task < ApplicationRecord
-  belongs_to :activity
+  belongs_to :activity, optional: true
   has_many :assignments
 
   require 'csv'

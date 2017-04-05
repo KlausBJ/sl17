@@ -1,0 +1,12 @@
+To-do:
+konfliktende deaktiveres i stedet for bare at mangle. - done!
+udsolgte skal mangle - er nu deaktiverede med Udsolgt-hover - done!
+periodisk opdatering af udsolgte + ikke-længere-udsolgte ? (nice-to-have)
+*hover med navn, hvis tilgængelige, grund hvis ikke ? (nice-to-have) - done!
+tester-rolle på serveren
+
+import af aktiviteter robust over for ombytning af fra og til for aldersgrænser
+opgaver kan hænges op på aktivitet, men er ikke et krav
+opgaver foreslås ud fra aktiviteter, hvis der er nogle + ud fra hvad der mangler
+opgaver: prioriteringsfelt? hvordan skal det virke?
+slutopgaver ikke til medlemmer med nr over 2500?

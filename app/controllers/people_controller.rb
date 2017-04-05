@@ -2,7 +2,7 @@
 class PeopleController < ApplicationController
   let :admins, :all
   let :guests, [:index]
-  let :members, [:new, :create, :edit, :update, :destroy]
+  let [:members, :testers], [:new, :create, :edit, :update, :destroy]
 
   before_action :set_person, only: [:show, :edit, :update, :destroy]
 

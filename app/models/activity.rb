@@ -98,30 +98,34 @@ class Activity < ApplicationRecord
 
   def self.import(file)
     CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8') do |row|
-      activity_hash = row.to_hash
+      ah = row.to_hash
       activity = Activity.where(
-        name: activity_hash['navn'],
-        place_id: Place.find_by(name: activity_hash['sted']).id
+        name: ah['navn'],
+        place_id: Place.find_by(name: ah['sted']).id
       ) # mulighed for ens navne, hvis tiderne er forskellige
 
       if activity.none?
-        mid = Member.find_by(number: activity_hash['tovholdermedlemsnr']).id
-        fname = activity_hash['tovholdernavn'].split(' ')[0]
-        activity.create!  name: activity_hash['navn'],
+        mid = Member.find_by(number: ah['tovholdermedlemsnr']).id
+        fname = ah['tovholdernavn'].split(' ')[0]
+        # switch if wrongly provided
+        if ah['max_age'] > 999 && ah['min_age'] > 999 && ah['min_age'] < ah['max_age']
+          ah['min_age'], ah['max_age'] = ah['max_age'], ah['min_age']
+        end
+        activity.create!  name: ah['navn'],
                           person_id: Person.where(member_id: mid).where(
                             'name like ?', fname + '%'
                           )[0].id,
-                          starttime: activity_hash['starttid'].to_datetime,
+                          starttime: ah['starttid'].to_datetime,
                           endtime: (
-                            (activity_hash['sluttid']).to_datetime.to_time + 1.hours
+                            (ah['sluttid']).to_datetime.to_time + 1.hours
                           ).to_datetime,
-                          number: activity_hash['antal'],
+                          number: ah['antal'],
                           place_id: Place.find_by(
-                            name: activity_hash['sted']
+                            name: ah['sted']
                           ).id,
-                          deltbet: activity_hash['deltagerbetaling'],
-                          min_age: activity_hash['min_alder'],
-                          max_age: activity_hash['max_alder']
+                          deltbet: ah['deltagerbetaling'],
+                          min_age: ah['min_alder'],
+                          max_age: ah['max_alder']
       end # if
     end # CSV.foreach
   end # self.import

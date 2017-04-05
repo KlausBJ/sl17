@@ -104,7 +104,7 @@
   <%= render 'people/form', member: @member, person: Person.new %>
 <% end %>
 
-<% if @cm && @cm.admin? %>
+<% if @cm && (@cm.admin? || @cm.tester?) && @member.people.any? %>
   <br>
   <br>
   <table>
@@ -123,12 +123,30 @@
       </tr>
     </thead>
     <tbody>
+    <% last_act = nil %>
     <% @activities.each do |a| %>
+      <% if last_act.nil? || last_act != a.starttime.to_date %>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td style="width: 200px; text-align:left;">
+                  <b>
+                    <%= I18n.t('date.day_names')[a.starttime.to_date.wday].capitalize +
+                            ', d. ' + I18n.localize(a.starttime.to_date, format: :long) %>
+                  </b>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      <% end %>
       <tr>
         <td id="form_act_<%= a.id %>">
           <%= render partial: 'member_activity', locals: { :activity => a, :member => @member }, :as => :activity %>
         </td>
       </tr>
+    <% last_act = a.starttime.to_date %>
     <% end %>
     </tbody>
   </table>

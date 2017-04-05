@@ -3,7 +3,7 @@ class MembersController < ApplicationController
   let :admins,
       [:index, :edit, :show, :email, :generate_password, :update, :import]
   let :guests, [:index, :email, :generate_password, :update]
-  let :members, [:index, :show, :email, :generate_password, :update]
+  let [:members, :testers], [:index, :show, :email, :generate_password, :update]
 
   before_action :set_member, only: [:show, :edit, :update, :destroy, :email]
 

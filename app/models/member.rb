@@ -27,6 +27,10 @@ class Member < ApplicationRecord
     clearance_levels.include? :admin
   end
 
+  def tester?
+    clearance_levels.include? :tester
+  end
+
   def roles_to_s
     roles.any? ? "(#{roles.map { |r| r.name.capitalize }.join ', '})" : ''
   end

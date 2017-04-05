@@ -1,6 +1,8 @@
 # Controller for activities - handles ajax calls to book tickets
 class ActivitiesController < ApplicationController
   let :admins, :all
+  let :all, [:toggle, :member]
+
   skip_before_filter :verify_authenticity_token, only: :toggle
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle, :member]
 
