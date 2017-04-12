@@ -32,6 +32,10 @@ class Person < ApplicationRecord
     tickets.where(activity: activity).any?
   end
 
+  def adults?
+    ptype_id == 1 || Person.where('member_id = ?', member_id).where('id <> ?', id).where(ptype_id: 1).any?
+  end
+
   def housing
     return "#{housing_type.name if housing_type} #{housing_number}" if
     housing_type || housing_number

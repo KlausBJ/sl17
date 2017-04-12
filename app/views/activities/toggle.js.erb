@@ -4,6 +4,7 @@ $("#form_act_<%= @activity.id %>").load('<%= j activity_member_path(@activity, @
 <% @activity.conflicts.each do |conflict| %>
 $("#form_act_<%= conflict.id %>").load('<%= j activity_member_path(conflict, @member) %>');
 <% end %>
+$("#faktura_<%= @invoice.id %>").html("<%= j render partial: 'members/invoice', locals: { :invoice => @invoice } %>")
 <%# http://stackoverflow.com/questions/11127934/rendering-partial-in-js-erb-file %>
 <%# hver form i sin egen div med id eller class, hvad der så end er nemmest at opdatere fra js %>
 <%# http://stackoverflow.com/questions/38898796/invoke-flash-notice-in-rails-using-action-js-erb %>

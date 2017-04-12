@@ -50,13 +50,19 @@
           <td><%= person.fdag %></td>
           <td><%= person.phone %></td>
           <td><%= person.housing %></td>
-          <% if @member.hostmember %><td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td><% end %>
+          <% if @member.hostmember %>
+            <td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td>
+          <% end %>
           <td><%= link_to 'Redigér', edit_person_path(person) if @member.editable?(@cm) %></td>
           <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if person.deletable?(@cm) %></td>
         </tr>
       <% end %>
       <% if @member.guest_people.any? %>
-        <tr><td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <tr>
+          <td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
         <% @member.guest_people.each do |person| %>
           <tr>
             <td><%= person.name %> (<%= person.member.number %>)</td>
@@ -83,14 +89,8 @@
       <% next %>
     <% end %>
     <tr>
-      <td>
-      <% if invoice.paid %>
-        <strong><%= link_to "Faktura nr. #{invoice.id}, betalt", invoice_path(invoice) %></strong>
-      <% elsif invoice.free? %>
-        <%= link_to "Faktura nr. #{invoice.id}, afslut...", invoice_path(invoice) %>
-      <% else %>
-        <%= link_to "Faktura nr. #{invoice.id}, gå til betaling...", invoice_path(invoice) %>
-      <% end %>
+      <td id="faktura_<%= invoice.id %>">
+      <%= render partial: 'invoice', locals: { :invoice => invoice } %>
       </td>
     </tr>
   <% end %>

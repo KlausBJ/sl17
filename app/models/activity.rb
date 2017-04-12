@@ -31,6 +31,7 @@ class Activity < ApplicationRecord
   end
   
   def add(person_ids)
+    invoice = nil
     person_ids.each do |person_id|
       if any_left?
         person = Person.find(person_id)
@@ -41,23 +42,26 @@ class Activity < ApplicationRecord
                       invoice_id: invoice.id
       end
     end
+    invoice
   end
   
   def remove(person_ids)
+    invoice = nil
     person_ids.each do |person_id|
       ticket = Ticket.find_by activity_id: id,
                               person_id: person_id
+      invoice = ticket.invoice
       ticket.destroy
     end
+    invoice
   end
   
   def ptoggle(member_id, person_ids)
-    Rails.logger.debug(member_id)
-    Rails.logger.debug(person_ids)
     crnt = current member_id
     to_be = (person_ids - ['']).map { |p| p.to_i }
-    add (to_be - crnt)
-    remove (crnt - to_be)
+    invoice_a = add( to_be - crnt)
+    invoice_r = remove(crnt - to_be)
+    invoice_a || invoice_r
   end
 
   def conflicts
