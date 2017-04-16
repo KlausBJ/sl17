@@ -66,8 +66,8 @@ class ActivitiesController < ApplicationController
   def toggle
     respond_to do |format|
       format.js do
-        @activity.ptoggle activity_params[:member_id],
-                          activity_params[:person_ids]
+        @invoice = @activity.ptoggle activity_params[:member_id],
+                                    activity_params[:person_ids]
         @member = Member.find(activity_params[:member_id])
         sold_out = @member.sold_out ? Activity.find(@member.sold_out.to_a.split(',')) : []
         @sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts

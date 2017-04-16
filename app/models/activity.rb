@@ -39,9 +39,15 @@ class Activity < ApplicationRecord
     people.where(member_id: member_id).map(&:id)
   end
   
+<<<<<<< HEAD
   def add(invoice_id, *person_ids)
     invoice = Invoice.find(invoice_id)
     person_ids.first.each do |person_id|
+=======
+  def add(person_ids)
+    invoice = nil
+    person_ids.each do |person_id|
+>>>>>>> 82e1af0da0ee3402925fc1fafe647c738a0d806a
       if any_left?
         Ticket.create activity_id: id,
                       person_id: person_id,
@@ -50,8 +56,10 @@ class Activity < ApplicationRecord
         end
       end
     end
+    invoice
   end
   
+<<<<<<< HEAD
   def remove(invoice_id, *person_ids)
     person_ids.each do |person_id|
       ticket = Ticket.find_by activity_id: id,
@@ -59,10 +67,21 @@ class Activity < ApplicationRecord
       ticket.destroy do |t|
         t.invoice.touch
       end
+=======
+  def remove(person_ids)
+    invoice = nil
+    person_ids.each do |person_id|
+      ticket = Ticket.find_by activity_id: id,
+                              person_id: person_id
+      invoice = ticket.invoice
+      ticket.destroy
+>>>>>>> 82e1af0da0ee3402925fc1fafe647c738a0d806a
     end
+    invoice
   end
   
   def ptoggle(member_id, person_ids)
+<<<<<<< HEAD
     member = Member.find(member_id)
     invoice = member.invoices.where(paid: false).last
     invoice ||= Invoice.create(member: member, paid: false)
@@ -73,6 +92,13 @@ class Activity < ApplicationRecord
     add invoice.id, to_add if to_add.any?
     to_remove = crnt - to_be
     remove invoice.id, to_remove if to_remove.any?
+=======
+    crnt = current member_id
+    to_be = (person_ids - ['']).map { |p| p.to_i }
+    invoice_a = add( to_be - crnt)
+    invoice_r = remove(crnt - to_be)
+    invoice_a || invoice_r
+>>>>>>> 82e1af0da0ee3402925fc1fafe647c738a0d806a
   end
 
   def conflicts

@@ -3,6 +3,7 @@ konfliktende deaktiveres i stedet for bare at mangle. - done!
 udsolgte skal mangle - er nu deaktiverede med Udsolgt-hover - done!
 periodisk opdatering af udsolgte + ikke-længere-udsolgte ? (nice-to-have)
 *hover med navn, hvis tilgængelige, grund hvis ikke ? (nice-to-have) - done!
+<<<<<<< HEAD
 tester-rolle på serveren - oprettet i test
 
 import af aktiviteter robust over for ombytning af fra og til for aldersgrænser - done!
@@ -16,3 +17,18 @@ Tid på aktiviteter
 links på faktura til medlem, deltager, aktivitet osv => target = _blank
 
 check på host_member strammes op!
+=======
+tester-rolle på serveren - done!
+import af aktiviteter robust over for ombytning af fra og til for aldersgrænser - done!
+opgaver kan hænges op på aktivitet, men er ikke et krav - done!
+
+opgaver foreslås ud fra aktiviteter, hvis der er nogle + ud fra hvad der mangler
+opgaver: prioriteringsfelt? hvordan skal det virke?
+	et antal pri.opgaver skal altid med på forslagslisten
+	"fyld"-opgaver kan evt. udelades
+
+nedprioriteret: slutopgaver ikke til medlemmer med nr over 2500?
+
+som tidligere nævnt (gentagne gange) synes jeg ikke, 
+vi skal opfinde opgaver for at have nok.
+>>>>>>> 82e1af0da0ee3402925fc1fafe647c738a0d806a

@@ -40,7 +40,7 @@ class PeopleController < ApplicationController
         1
       ).any?
     )
-      if @person.ptype == 1 || @person.member.number == @person.host_member
+      if @person.host_member && (@person.adults? || (@person.member.number == @person.host_member))
         @person.host_member = nil
       end
       # move housing to member if not already set there
