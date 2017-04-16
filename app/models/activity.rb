@@ -5,8 +5,17 @@ class Activity < ApplicationRecord
   has_many :tasks
   has_many :tickets
   has_many :people, through: :tickets
+  # just testing...
+  has_many :invoices, through: :tickets
 
   require 'csv'
+
+  scope :sold_out, lambda {
+    where('number > 0').
+        joins(:tickets, :invoices).
+        where('invoices.paid = true or invoices.updated_at > ?', Time.now - 20.minutes).
+        group('activities.id').having('count(tickets.id) >= activities.number')
+  }
 
   def age?(p)
     minage = min_age.nil? || min_age == '' || (
@@ -25,39 +34,45 @@ class Activity < ApplicationRecord
     end
     minage && maxage
   end
-  
+
   def current(member_id)
     people.where(member_id: member_id).map(&:id)
   end
   
-  def add(person_ids)
-    person_ids.each do |person_id|
+  def add(invoice_id, *person_ids)
+    invoice = Invoice.find(invoice_id)
+    person_ids.first.each do |person_id|
       if any_left?
-        person = Person.find(person_id)
-        invoice = person.member.invoices.where(paid: false).last
-        invoice ||= Invoice.create(member: person.member, paid: false)
         Ticket.create activity_id: id,
                       person_id: person_id,
-                      invoice_id: invoice.id
+                      invoice_id: invoice_id do |t|
+          t.invoice.touch
+        end
       end
     end
   end
   
-  def remove(person_ids)
+  def remove(invoice_id, *person_ids)
     person_ids.each do |person_id|
       ticket = Ticket.find_by activity_id: id,
                               person_id: person_id
-      ticket.destroy
+      ticket.destroy do |t|
+        t.invoice.touch
+      end
     end
   end
   
   def ptoggle(member_id, person_ids)
-    Rails.logger.debug(member_id)
-    Rails.logger.debug(person_ids)
+    member = Member.find(member_id)
+    invoice = member.invoices.where(paid: false).last
+    invoice ||= Invoice.create(member: member, paid: false)
+    invoice.refresh unless invoice.updated_at > Time.now - 20.minutes
     crnt = current member_id
     to_be = (person_ids - ['']).map { |p| p.to_i }
-    add (to_be - crnt)
-    remove (crnt - to_be)
+    to_add = to_be - crnt
+    add invoice.id, to_add if to_add.any?
+    to_remove = crnt - to_be
+    remove invoice.id, to_remove if to_remove.any?
   end
 
   def conflicts

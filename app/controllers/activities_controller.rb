@@ -14,7 +14,9 @@ class ActivitiesController < ApplicationController
 
   # GET /activities/1
   # GET /activities/1.json
-  def show; end
+  def show
+    @sold_out = Activity.sold_out
+  end
 
   # GET /activities/new
   def new
@@ -67,6 +69,8 @@ class ActivitiesController < ApplicationController
         @activity.ptoggle activity_params[:member_id],
                           activity_params[:person_ids]
         @member = Member.find(activity_params[:member_id])
+        sold_out = @member.sold_out ? Activity.find(@member.sold_out.to_a.split(',')) : []
+        @sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts
         render layout: false
       end
     end

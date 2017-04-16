@@ -20,6 +20,8 @@ class MembersController < ApplicationController
       @member.generate_password
       @member.reload
     end
+    @member.sold_out = Activity.sold_out.map(&:id).join(',')
+    @member.save
     @activities = Activity.order(:starttime, :endtime)
     @person = Person.new
     @invoice = @member.invoices.where(paid: false).last if @member.invoices.any?

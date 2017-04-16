@@ -18,4 +18,14 @@ class Invoice < ApplicationRecord
       end.sum
     ).zero?
   end
+
+  def refresh
+    Rails.logger.info("refresh")
+    return if tickets.none? # nothing to check
+    tickets.each do |ticket|
+      # destroy if no longer available
+      ticket.destroy unless ticket.activity.any_left?
+    end
+    touch
+  end
 end
