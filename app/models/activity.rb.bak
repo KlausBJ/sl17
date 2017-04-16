@@ -73,7 +73,6 @@ class Activity < ApplicationRecord
     add invoice.id, to_add if to_add.any?
     to_remove = crnt - to_be
     remove invoice.id, to_remove if to_remove.any?
-    invoice
   end
 
   def conflicts
