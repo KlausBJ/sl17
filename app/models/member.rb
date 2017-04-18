@@ -16,7 +16,7 @@ class Member < ApplicationRecord
   require 'csv'
 
   def inv?
-    invoices.map { |i| i.people.any? || i.tickets.any? }.reduce(:|)
+    invoices.includes(:people).includes(:tickets).map { |i| i.people.any? || i.tickets.any? }.reduce(:|)
   end
 
   def update_sold_out

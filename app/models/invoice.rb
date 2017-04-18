@@ -13,7 +13,7 @@ class Invoice < ApplicationRecord
     (
       people.map do |p|
         p.ptype.price
-      end.sum + tickets.map do |t|
+      end.sum + tickets.includes(:activity).map do |t|
         t.activity.deltbet.to_i
       end.sum
     ).zero?

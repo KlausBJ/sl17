@@ -125,7 +125,7 @@
     </thead>
     <tbody>
     <% last_act = nil %>
-    <% @activities.includes(:tickets).each do |a| %>
+    <% @activities.each do |a| %>
       <% if last_act.nil? || last_act != a.starttime.to_date %>
         <tr>
           <td>
