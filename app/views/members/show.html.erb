@@ -42,7 +42,7 @@
     </thead>
 
     <tbody>
-      <% @member.people.each do |person| %>
+      <% @member.people.includes(:invoice).includes(:ptype).includes(:housing_type).each do |person| %>
         <tr>
           <td><%= person.invoice.paid ? '' : '* ' %><%= person.name %></td>
           <td><%= person.ptype.name %></td>
@@ -105,9 +105,10 @@
 <% end %>
 
 <% if @cm && (@cm.admin? || @cm.tester?) && @member.people.any? %>
+  <% total_sold_out = @member.sold_out.blank? ? [] : @member.sold_out.split(',').map { |a| a.to_i } %>
   <br>
   <br>
-  <table>
+  <table class="table table-hover">
     <thead>
       <tr>
         <td>
@@ -124,7 +125,7 @@
     </thead>
     <tbody>
     <% last_act = nil %>
-    <% @activities.each do |a| %>
+    <% @activities.includes(:tickets).each do |a| %>
       <% if last_act.nil? || last_act != a.starttime.to_date %>
         <tr>
           <td>
@@ -141,9 +142,12 @@
           </td>
         </tr>
       <% end %>
-      <tr>
+      <tr id="tr_act_<%= a.id %>" class="<%= total_sold_out.include?(a.id) ? 'danger' : ''  %>">
         <td id="form_act_<%= a.id %>">
-          <%= render partial: 'member_activity', locals: { :activity => a, :member => @member }, :as => :activity %>
+          <%= render partial: 'member_activity', locals: {
+              :activity => a,
+              :member => @member
+          }, :as => :activity %>
         </td>
       </tr>
     <% last_act = a.starttime.to_date %>

@@ -30,6 +30,13 @@ gem 'jbuilder', '~> 2.5'
 # gem 'capistrano-rails', group: :development
 
 gem 'action_access'
+gem 'bootstrap-sass'
+gem 'autoprefixer-rails'
+
+gem 'ruby-growl', group: 'development'
+gem 'xmpp4r', group: 'development'
+
+gem 'bullet', group: 'development'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

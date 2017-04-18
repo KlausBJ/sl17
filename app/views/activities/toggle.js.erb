@@ -1,10 +1,26 @@
+<% total_sold_out = @member.sold_out.split(',').map { |a| a.to_i } %>
 <%# opdatér @activity %>
 $("#form_act_<%= @activity.id %>").load('<%= j activity_member_path(@activity, @member) %>');
+<% if total_sold_out.include?(@activity.id) %>
+$("#tr_act_<%= @activity.id %>").attr("class", "danger");
+<% else %>
+$("#tr_act_<%= @activity.id %>").attr("class", "");
+<% end %>
 <%# opdatér @activity.conflicts %>
 <% @activity.conflicts.each do |conflict| %>
-$("#form_act_<%= conflict.id %>").load('<%= j activity_member_path(conflict, @member) %>');
+  $("#form_act_<%= conflict.id %>").load('<%= j activity_member_path(conflict, @member) %>');
+  <% if total_sold_out.include?(conflict.id) %>
+$("#tr_act_<%= conflict.id %>").attr("class", "danger");
+  <% else %>
+$("#tr_act_<%= conflict.id %>").attr("class", "");
+  <% end %>
 <% end %>
 <% @sold_out.each do |sold_out| %>
-$("#form_act_<%= sold_out.id %>").load('<%= j activity_member_path(sold_out, @member) %>');
+  $("#form_act_<%= sold_out.id %>").load('<%= j activity_member_path(sold_out, @member) %>');
+  <% if total_sold_out.include?(sold_out.id) %>
+$("#tr_act_<%= sold_out.id %>").attr("class", "danger");
+  <% else %>
+$("#tr_act_<%= sold_out.id %>").attr("class", "");
+  <% end %>
 <% end %>
 $("#faktura_<%= @invoice.id %>").html("<%= j render partial: 'members/invoice', locals: { :invoice => @invoice } %>")

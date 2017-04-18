@@ -1,47 +1,70 @@
-<% @activity = Activity.find(activity.id) %>
-<% style = @activity.any_left? ? '' : ' background: grey;' %>
-<% @member = Member.find(member.id) %>
+<% style = '' %>
+<% Rails.logger.debug("Starting activity #{activity.id}") %>
+<% any_left = activity.any_left? %>
+<% Rails.logger.debug('Preparing people hash') %>
+<% people = {} %>
+<% member.people.each do |p| %>
+  <% people[p.id] = p %>
+<% end %>
+<% Rails.logger.debug('Starting form') %>
 <%= form_for(
-  @activity, {
+  activity, {
     remote: true,
     multiple: true,
-    url: toggle_activity_path(@activity),
+    url: toggle_activity_path(activity),
     method: :post
   }
 ) do |f| %>
   <table>
     <tr>
-      <td style="width: 200px; text-align: left;<%= style %>"><%= f.hidden_field :member_id, :value => @member.id %><%= @activity.name %></td>
+      <td style="width: 200px; text-align: left;<%= style %>"><%= f.hidden_field :member_id, :value => member.id %>
+        <% if any_left %><b><% end %>
+        <%= activity.name %>
+        <% if any_left %></b><% end %>
+      </td>
+      <% Rails.logger.debug('Starting checkboxes') %>
       <%= f.collection_check_boxes  :person_ids,
-                                    @member.people,
+                                    member.people,
                                     :id,
                                     :name do |b| %>
-        <% p = Person.find(b.value) %>
+        <% p = people[b.value] %>
         <% optns = {
-            onchange: %Q[$("#edit_activity_#{@activity.id}").submit();],
+            onchange: %Q[$("#edit_activity_#{activity.id}").submit();],
             title: p.name.split(' ')[0]
         } %>
-        <% if @activity.age?(p) %>
-          <% if p.ticket?(@activity) %>
+        <% Rails.logger.debug('age?') %>
+        <% if activity.age?(p) %>
+          <% Rails.logger.debug('age: ja, p.ticket?') %>
+          <% if p.ticket?(activity) %>
+            <% Rails.logger.debug('p.ticket: ja') %>
             <% optns[:checked] = 'checked' %>
-            <% if Ticket.find_by(person: p, activity: @activity).invoice.paid %>
+            <% Rails.logger.debug('paid?') %>
+            <% if Ticket.find_by(person: p, activity: activity).invoice.paid %>
+              <% Rails.logger.debug('paid: ja') %>
               <% optns[:disabled] = 'disabled' %>
             <% end %>
             <td style="width: 70px; text-align: center;<%= style %>"><%= b.check_box( optns ) %></td>
-          <% elsif @activity.for_sale?(p) %>
-            <% optns %>
+          <% elsif activity.for_sale?(p) %>
+            <% Rails.logger.debug('p.ticket: nej, for_sale: ja') %>
             <td style="width: 70px; text-align: center;<%= style %>"><%= b.check_box( optns ) %></td>
           <% else %>
+            <% Rails.logger.debug('for_sale: nej') %>
             <% optns[:disabled] = 'disabled' %>
-            <% optns[:title] = (@activity.any_left? ? "Overlap: #{@activity.blocked_by(p)}" : 'Udsolgt') %>
+            <% optns[:title] = (any_left ? "Overlap: #{activity.blocked_by(p)}" : 'Udsolgt') %>
             <td style="width: 70px; text-align: center;<%= style %>"><%= b.check_box( optns ) %></td>
           <% end %>
         <% else %>
+          <% Rails.logger.debug('age: nej') %>
           <% optns[:disabled] = 'disabled' %>
           <% optns[:title] = 'Forkert aldersgruppe' %>
           <td style="width: 70px; text-align: center;<%= style %>"><%= b.check_box( optns ) %></td>
         <% end %>
       <% end %>
+      <td>
+        <% unless any_left %>
+          <b>Udsolgt!</b>
+        <% end %>
+      </td>
     </tr>
   </table>
 <% end %>

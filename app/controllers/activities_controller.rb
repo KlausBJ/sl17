@@ -69,8 +69,11 @@ class ActivitiesController < ApplicationController
         @invoice = @activity.ptoggle activity_params[:member_id],
                           activity_params[:person_ids]
         @member = Member.find(activity_params[:member_id])
-        sold_out = @member.sold_out ? Activity.find(@member.sold_out.to_a.split(',')) : []
+        sold_out = @member.sold_out.blank? ? [] : Activity.find(@member.sold_out.split(','))
         @sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts
+        # @sold_out = (Activity.sold_out - sold_out)
+        # @not_sold_out = (sold_out - Activity.sold_out)
+        @member.update_sold_out
         render layout: false
       end
     end

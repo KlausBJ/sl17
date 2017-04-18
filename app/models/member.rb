@@ -19,6 +19,11 @@ class Member < ApplicationRecord
     invoices.map { |i| i.people.any? || i.tickets.any? }.reduce(:|)
   end
 
+  def update_sold_out
+    self.sold_out = Activity.sold_out.map(&:id).join(',')
+    save
+  end
+
   def guest_people
     Person.where(host_member: number).map { |p| p if p.invoice.paid }
   end
