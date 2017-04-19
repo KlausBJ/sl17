@@ -3,10 +3,12 @@
 <%# Rails.logger.debug('Preparing people hash') %>
 <% ptickets = {} %>
 <% hpeople = {} %>
+<%# Rails.logger.info('Setting hpeople and ptickets hashes') %>
 <% people.each do |p| %>
   <% ptickets[p.id] = p.tickets.map(&:activity_id) %>
   <% hpeople[p.id] = p %>
 <% end %>
+<%# Rails.logger.info('Setting conflicts hash and conflict_ids array') %>
 <% conflict_ids = activity.conflicts.map(&:id) %>
 <% conflicts = {} %>
 <% activity.conflicts.map { |c| conflicts[c.id] = c.name } %>
