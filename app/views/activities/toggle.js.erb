@@ -1,6 +1,10 @@
 <% total_sold_out = @member.sold_out.split(',').map { |a| a.to_i } %>
-<%# opdatér @activity %>
-$("#form_act_<%= @activity.id %>").load('<%= j activity_member_path(@activity, @member) %>');
+<%# opdatér @activity - skal nok ikke være .load, hvis det skal performe bedre - og @people mangler %>
+$("#form_act_<%= @activity.id %>").html("<%= j render partial: 'members/member_activity', locals: {
+              :activity => @activity,
+              :member => @member,
+              :people => @people
+          }, :as => :activity %>");
 <% if total_sold_out.include?(@activity.id) %>
 $("#tr_act_<%= @activity.id %>").attr("class", "danger");
 <% else %>
@@ -8,7 +12,11 @@ $("#tr_act_<%= @activity.id %>").attr("class", "");
 <% end %>
 <%# opdatér @activity.conflicts %>
 <% @activity.conflicts.each do |conflict| %>
-  $("#form_act_<%= conflict.id %>").load('<%= j activity_member_path(conflict, @member) %>');
+  $("#form_act_<%= conflict.id %>").html("<%= j render partial: 'members/member_activity', locals: {
+              :activity => conflict,
+              :member => @member,
+              :people => @people
+          }, :as => :activity %>");
   <% if total_sold_out.include?(conflict.id) %>
 $("#tr_act_<%= conflict.id %>").attr("class", "danger");
   <% else %>
@@ -16,7 +24,11 @@ $("#tr_act_<%= conflict.id %>").attr("class", "");
   <% end %>
 <% end %>
 <% @sold_out.each do |sold_out| %>
-  $("#form_act_<%= sold_out.id %>").load('<%= j activity_member_path(sold_out, @member) %>');
+  $("#form_act_<%= sold_out.id %>").html("<%= j render partial: 'members/member_activity', locals: {
+              :activity => sold_out,
+              :member => @member,
+              :people => @people
+          }, :as => :activity %>");
   <% if total_sold_out.include?(sold_out.id) %>
 $("#tr_act_<%= sold_out.id %>").attr("class", "danger");
   <% else %>

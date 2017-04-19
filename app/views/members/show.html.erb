@@ -146,7 +146,8 @@
         <td id="form_act_<%= a.id %>">
           <%= render partial: 'member_activity', locals: {
               :activity => a,
-              :member => @member
+              :member => @member,
+              :people => @people
           }, :as => :activity %>
         </td>
       </tr>

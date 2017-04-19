@@ -76,7 +76,7 @@ class Activity < ApplicationRecord
     invoice
   end
 
-  def conflicts
+  def conflicts # skal være en relation med conditions
     Activity.where(
       'id <> ?', id
     ).where(

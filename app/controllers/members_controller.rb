@@ -23,6 +23,7 @@ class MembersController < ApplicationController
     @member.update_sold_out
     @activities = Activity.order(:starttime, :endtime)
     @person = Person.new
+    @people = @member.people.includes(:tickets)
     @invoice = @member.invoices.where(paid: false).last if @member.invoices.any?
   end
 

@@ -20,7 +20,6 @@ class Invoice < ApplicationRecord
   end
 
   def refresh
-    Rails.logger.info("refresh")
     return if tickets.none? # nothing to check
     tickets.each do |ticket|
       # destroy if no longer available

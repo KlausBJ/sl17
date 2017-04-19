@@ -1,10 +1,10 @@
 # Controller for activities - handles ajax calls to book tickets
 class ActivitiesController < ApplicationController
   let :admins, :all
-  let :all, [:toggle, :member]
+  let :all, [:toggle]
 
   skip_before_filter :verify_authenticity_token, only: :toggle
-  before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle, :member]
+  before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
 
   # GET /activities
   # GET /activities.json
@@ -73,16 +73,11 @@ class ActivitiesController < ApplicationController
         @sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts
         # @sold_out = (Activity.sold_out - sold_out)
         # @not_sold_out = (sold_out - Activity.sold_out)
-        @member.update_sold_out
+        @member.update_sold_out # To-do: update sold_out and return previous value in one
+        @people = @member.people.includes(:tickets) # performance
         render layout: false
       end
     end
-  end
-
-  def member
-    @activity = Activity.find(member_params[:id])
-    @member = Member.find(member_params[:member_id])
-    render layout: false
   end
 
   private
