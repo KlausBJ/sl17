@@ -147,7 +147,11 @@
           <%= render partial: 'member_activity', locals: {
               :activity => a,
               :member => @member,
-              :people => @people
+              :people => @people,
+              :conflicts => @conflicts,
+              :activity_names => @activity_names,
+              :tickets => @tickets,
+              :paid_tickets => @paid_tickets
           }, :as => :activity %>
         </td>
       </tr>

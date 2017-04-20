@@ -5,6 +5,8 @@ class MembersController < ApplicationController
   let :guests, [:index, :email, :generate_password, :update]
   let [:members, :testers], [:index, :show, :email, :generate_password, :update]
 
+  include ActivityMember
+
   before_action :set_member, only: [:show, :edit, :update, :destroy, :email]
 
   # GET /members
@@ -24,7 +26,8 @@ class MembersController < ApplicationController
     @activities = Activity.order(:starttime, :endtime).includes(:tickets).includes(:people)
     @person = Person.new
     @people = @member.people.includes(:tickets)
-    @invoice = @member.invoices.where(paid: false).last if @member.invoices.any?
+    find_tickets(@member.invoices.includes(:tickets).order('tickets.activity_id'))
+    find_conflicts(@activities)
   end
 
   def email; end

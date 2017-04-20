@@ -3,6 +3,8 @@ class ActivitiesController < ApplicationController
   let :admins, :all
   let :all, [:toggle]
 
+  include ActivityMember
+
   skip_before_filter :verify_authenticity_token, only: :toggle
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
 
@@ -75,6 +77,8 @@ class ActivitiesController < ApplicationController
         # @not_sold_out = (sold_out - Activity.sold_out)
         @member.update_sold_out # To-do: update sold_out and return previous value in one
         @people = @member.people.includes(:tickets) # performance
+        find_tickets(@member.invoices.includes(:tickets).order('tickets.activity_id'))
+        find_conflicts(Activity.order(:starttime, :endtime).includes(:tickets).includes(:people))
         render layout: false
       end
     end

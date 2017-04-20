@@ -1,18 +1,8 @@
-<%# Rails.logger.debug("Starting activity #{activity.id}") %>
 <% any_left = !member.sold_out.split(',').include?(activity.id.to_s) %>
-<%# Rails.logger.debug('Preparing people hash') %>
-<% ptickets = {} %>
 <% hpeople = {} %>
-<%# Rails.logger.info('Setting hpeople and ptickets hashes') %>
 <% people.each do |p| %>
-  <% ptickets[p.id] = p.tickets.map(&:activity_id) %>
   <% hpeople[p.id] = p %>
 <% end %>
-<%# Rails.logger.info('Setting conflicts hash and conflict_ids array') %>
-<% conflict_ids = activity.conflicts.map(&:id) %>
-<% conflicts = {} %>
-<% activity.conflicts.map { |c| conflicts[c.id] = c.name } %>
-<%# Rails.logger.debug('Starting form') %>
 <%= form_for(
   activity, {
     remote: true,
@@ -28,44 +18,36 @@
         <%= activity.name %>
         <% if any_left %></b><% end %>
       </td>
-      <%# Rails.logger.debug('Starting checkboxes') %>
       <%= f.collection_check_boxes  :person_ids,
                                     people,
                                     :id,
                                     :name do |b| %>
         <% p = hpeople[b.value] %>
-        <% ticket_ids = ptickets[b.value] %>
         <% optns = {
             onchange: %Q[$("#edit_activity_#{activity.id}").submit();],
             title: p.name.split(' ')[0]
         } %>
-        <%# Rails.logger.debug('age?') %>
         <% if activity.age?(p) %>
-          <%# Rails.logger.debug('age: ja, p.ticket?') %>
-          <% if ticket_ids.include?(activity.id) %>
-            <%# Rails.logger.debug('p.ticket: ja') %>
+          <% if (tickets[b.value] || []).include?(activity.id) %>
             <% optns[:checked] = 'checked' %>
-            <%# Rails.logger.debug('paid?') %>
-            <% if Ticket.find_by(person: p, activity: activity).invoice.paid %>
-              <%# Rails.logger.debug('paid: ja') %>
+            <% if (paid_tickets[b.value] || []).include?(activity.id) %>
               <% optns[:disabled] = 'disabled' %>
             <% end %>
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
-          <% elsif any_left && (ticket_ids & conflict_ids).none? %>
-            <%# Rails.logger.debug('p.ticket: nej, for_sale: ja') %>
+          <% elsif any_left && ((tickets[b.value] || []) & (conflicts[activity.id] || [])).none? %>
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
           <% else %>
-            <%# Rails.logger.debug('for_sale: nej') %>
             <% optns[:disabled] = 'disabled' %>
             <% optns[:title] = (
               any_left ?
-                "Overlap: #{(conflict_ids & ticket_ids).map { |c| conflicts[c] }.join(', ')}" :
+                "Overlap: #{((conflicts[activity.id] || []) & (tickets[b.value] || [])).map {
+                    |c| activity_names[c]
+                }.join(', ')}" :
                   'Udsolgt'
             ) %>
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
           <% end %>
         <% else %>
-          <%# Rails.logger.debug('age: nej') %>
           <% optns[:disabled] = 'disabled' %>
           <% optns[:title] = 'Forkert aldersgruppe' %>
           <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>

@@ -3,7 +3,11 @@
 $("#form_act_<%= @activity.id %>").html("<%= j render partial: 'members/member_activity', locals: {
               :activity => @activity,
               :member => @member,
-              :people => @people
+              :people => @people,
+              :conflicts => @conflicts,
+              :activity_names => @activity_names,
+              :tickets => @tickets,
+              :paid_tickets => @paid_tickets
           }, :as => :activity %>");
 <% if total_sold_out.include?(@activity.id) %>
 $("#tr_act_<%= @activity.id %>").attr("class", "danger");
@@ -15,7 +19,11 @@ $("#tr_act_<%= @activity.id %>").attr("class", "");
   $("#form_act_<%= conflict.id %>").html("<%= j render partial: 'members/member_activity', locals: {
               :activity => conflict,
               :member => @member,
-              :people => @people
+              :people => @people,
+              :conflicts => @conflicts,
+              :activity_names => @activity_names,
+              :tickets => @tickets,
+              :paid_tickets => @paid_tickets
           }, :as => :activity %>");
   <% if total_sold_out.include?(conflict.id) %>
 $("#tr_act_<%= conflict.id %>").attr("class", "danger");
@@ -27,7 +35,11 @@ $("#tr_act_<%= conflict.id %>").attr("class", "");
   $("#form_act_<%= sold_out.id %>").html("<%= j render partial: 'members/member_activity', locals: {
               :activity => sold_out,
               :member => @member,
-              :people => @people
+              :people => @people,
+              :conflicts => @conflicts,
+              :activity_names => @activity_names,
+              :tickets => @tickets,
+              :paid_tickets => @paid_tickets
           }, :as => :activity %>");
   <% if total_sold_out.include?(sold_out.id) %>
 $("#tr_act_<%= sold_out.id %>").attr("class", "danger");
