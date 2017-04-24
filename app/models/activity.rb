@@ -35,18 +35,10 @@ class Activity < ApplicationRecord
     minage && maxage
   end
 
-  def age_placeholder
-    if min_age.nil? && max_age.nil?
-      ptypes_ok = [1,2,3,4]
-    elsif false
-      #
-    end
-  end
-
   def current(member_id)
     people.where(member_id: member_id).map(&:id)
   end
-  
+
   def add(invoice_id, *person_ids)
     invoice = Invoice.find(invoice_id)
     person_ids.first.each do |person_id|
@@ -59,7 +51,7 @@ class Activity < ApplicationRecord
       end
     end
   end
-  
+
   def remove(invoice_id, *person_ids)
     person_ids.each do |person_id|
       ticket = Ticket.find_by activity_id: id,
@@ -69,7 +61,7 @@ class Activity < ApplicationRecord
       end
     end
   end
-  
+
   def ptoggle(member_id, person_ids)
     member = Member.find(member_id)
     invoice = member.invoices.where(paid: false).last
@@ -122,7 +114,8 @@ class Activity < ApplicationRecord
   end
 
   def self.import(file)
-    CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8') do |row|
+    CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8', col_sep: ';') do |row|
+      Rails.logger.info(row.to_hash)
       ah = row.to_hash
       activity = Activity.where(
         name: ah['navn'],
@@ -130,49 +123,57 @@ class Activity < ApplicationRecord
       ) # mulighed for ens navne, hvis tiderne er forskellige
 
       if activity.none?
+        starttime = ah['starttid']
+        endtime = ah['sluttid']
         mid = Member.find_by(number: ah['tovholdermedlemsnr']).id
+        min_age = ah['min_alder'].to_i
+        max_age = ah['max_alder'].to_i
         fname = ah['tovholdernavn'].split(' ')[0]
         # switch if wrongly provided
-        if ah['max_age'] > 999 && ah['min_age'] > 999 && ah['min_age'] < ah['max_age']
-          ah['min_age'], ah['max_age'] = ah['max_age'], ah['min_age']
+        if max_age && min_age && max_age > 999 && min_age > 999 && min_age < max_age
+          min_age, max_age = max_age, min_age
         end
 
         # process min_age and max_age
-        if min_age.nil? && max_age.nil?
+        if min_age.zero? && max_age.zero?
           ptypes_ok = "1,2,3,4"
         else
           last_date = min_age.to_i > 999 ? "#{min_age}-12-31".to_date :
-              starttime.to_date - min_age.to_i.years
+            starttime.to_date - min_age.to_i.years
           first_date = max_age.to_i > 999 ? "#{max_age}-01-01".to_date :
-              starttime.to_date - max_age.to_i.years
-
-          # now extract ptypes_ok from the ranges...
-          case
-            #
+            starttime.to_date - max_age.to_i.years
+          if first_date == starttime.to_date
+            first_date -= 100.years
+          else
+            first_date -= 1.years
           end
 
-          #if min_age.nil?
-          #  last_date = starttime.to_date
-          #else
-          #  last_date = min_age > 999 ? "#{min_age}-12-31".to_date : starttime - min_age.years
-          #end
+          ptypes_ok_array = []
+
+          ptypes_ok_array << 1 if (first_date..last_date).include? starttime.to_date - 22.years
+          ptypes_ok_array << 2 if (first_date..last_date).include? starttime.to_date - 19.years
+          ptypes_ok_array << 3 if (first_date..last_date).include? "1999-07-16".to_date.."2013-07-07".to_date
+          ptypes_ok_array << 4 if (first_date..last_date).include? "2013-07-16".to_date.."2017-07-07".to_date
+
+          ptypes_ok = ptypes_ok_array.join(',')
         end
 
         activity.create!  name: ah['navn'],
                           person_id: Person.where(member_id: mid).where(
                             'name like ?', fname + '%'
                           )[0].id,
-                          starttime: ah['starttid'].to_datetime,
-                          endtime: (
-                            (ah['sluttid']).to_datetime.to_time + 1.hours
-                          ).to_datetime,
+                          starttime: starttime.to_datetime,
+                          endtime: endtime.to_datetime,
                           number: ah['antal'],
                           place_id: Place.find_by(
                             name: ah['sted']
                           ).id,
                           deltbet: ah['deltagerbetaling'],
-                          min_age: ah['min_alder'],
-                          max_age: ah['max_alder']
+                          min_age: min_age,
+                          max_age: max_age,
+                          first_date: first_date,
+                          last_date: last_date,
+                          ptypes_ok: ptypes_ok
       end # if
     end # CSV.foreach
   end # self.import

@@ -62,7 +62,7 @@ class ActivitiesController < ApplicationController
 
   def import
     Activity.import(params[:file])
-    redirect_to root_url, notice: 'Aktiviteter importeret.'
+    redirect_to activities_path, notice: 'Aktiviteter importeret.'
   end
 
   def toggle
