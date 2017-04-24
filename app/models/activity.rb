@@ -17,7 +17,7 @@ class Activity < ApplicationRecord
         group('activities.id').having('count(tickets.id) >= activities.number')
   }
 
-  def age?(p)
+  def age?(p) # skal være en del af én query som finder ALT!
     minage = min_age.nil? || min_age == '' || (
       min_age > 999 && (
         (p.ptype.datereq && p.aargang.year >= min_age) ||
@@ -33,6 +33,14 @@ class Activity < ApplicationRecord
         p.ptype.datereq && p.aargang >= starttime - max_age.years)
     end
     minage && maxage
+  end
+
+  def age_placeholder
+    if min_age.nil? && max_age.nil?
+      ptypes_ok = [1,2,3,4]
+    elsif false
+      #
+    end
   end
 
   def current(member_id)
@@ -76,7 +84,7 @@ class Activity < ApplicationRecord
     invoice
   end
 
-  def conflicts # skal være en relation med conditions
+  def conflicts # skal være en del af én query som finder ALT!
     Activity.where(
       'id <> ?', id
     ).where(
@@ -86,7 +94,7 @@ class Activity < ApplicationRecord
     )
   end
 
-  def for_sale?(person)
+  def for_sale?(person) # skal være en del af én query som finder ALT!
     any_left? && (
       person.tickets.none? || (
         person.tickets.map(&:activity_id) &
@@ -99,7 +107,7 @@ class Activity < ApplicationRecord
     (conflicts.map(&:id) & person.tickets.map(&:activity_id)).map { |c| Activity.find(c).name }.join(', ')
   end
 
-  def any_left?
+  def any_left? # skal være en del af én query som finder ALT!
     number.nil? || number.zero? || number > sold + reserved
   end
 
@@ -108,8 +116,9 @@ class Activity < ApplicationRecord
   end
 
   def reserved
-    tickets.includes(:invoice).where(invoices: { paid: false }).where(invoices:
-      { updated_at: (Time.now - 20.minutes)..Time.now }).count
+    tickets.includes(:invoice).where(invoices: { paid: false }).where(invoices: {
+        updated_at: (Time.now - 20.minutes)..Time.now
+    } ).count
   end
 
   def self.import(file)
@@ -127,6 +136,28 @@ class Activity < ApplicationRecord
         if ah['max_age'] > 999 && ah['min_age'] > 999 && ah['min_age'] < ah['max_age']
           ah['min_age'], ah['max_age'] = ah['max_age'], ah['min_age']
         end
+
+        # process min_age and max_age
+        if min_age.nil? && max_age.nil?
+          ptypes_ok = "1,2,3,4"
+        else
+          last_date = min_age.to_i > 999 ? "#{min_age}-12-31".to_date :
+              starttime.to_date - min_age.to_i.years
+          first_date = max_age.to_i > 999 ? "#{max_age}-01-01".to_date :
+              starttime.to_date - max_age.to_i.years
+
+          # now extract ptypes_ok from the ranges...
+          case
+            #
+          end
+
+          #if min_age.nil?
+          #  last_date = starttime.to_date
+          #else
+          #  last_date = min_age > 999 ? "#{min_age}-12-31".to_date : starttime - min_age.years
+          #end
+        end
+
         activity.create!  name: ah['navn'],
                           person_id: Person.where(member_id: mid).where(
                             'name like ?', fname + '%'

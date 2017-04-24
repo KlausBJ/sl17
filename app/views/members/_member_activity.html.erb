@@ -34,7 +34,8 @@
               <% optns[:disabled] = 'disabled' %>
             <% end %>
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
-          <% elsif any_left && ((tickets[b.value] || []) & (conflicts[activity.id] || [])).none? %>
+          <% elsif any_left && (([tickets[b.value]] || []) & (conflicts[activity.id] || [])).none? %>
+              # skulle tickets[b.value] have .to_a i ovenstående?
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
           <% else %>
             <% optns[:disabled] = 'disabled' %>
