@@ -1,0 +1,33 @@
+create ALGORITHM = MERGE view conf as select id, name, starttime, endtime from activities;
+create ALGORITHM = MERGE view acts_confs as select activities.*, 
+  group_concat(conf.id) as conflict_ids, group_concat(conf.name) as conflict_names 
+  from activities left outer join conf on activities.starttime < conf.endtime and 
+  conf.starttime < activities.endtime and activities.id <> conf.id group by activities.id;
+create ALGORITHM = MERGE view acts_free as select activities.id, activities.number - count(tickets.id) as free 
+  from activities left outer join tickets on tickets.activity_id = activities.id left outer join (
+    select * from invoices where invoices.paid = true 
+    or invoices.updated_at < DATE_SUB(NOW() , INTERVAL 20 MINUTE)
+  ) as active_invoices on tickets.invoice_id = active_invoices.id group by activities.id;
+create ALGORITHM = MERGE view acts_optimized as select acts_confs.*, free from acts_confs inner join acts_free on acts_confs.id = acts_free.id; <--- så kører det!
+  
+select * from acts_optimized where id = 127;
+
+select acts_confs.*, free from acts_confs inner join acts_free on acts_confs.id = acts_free.id;
+
+--create ALGORITHM = MERGE view active_invoices as select * from invoices where paid = true or updated_at > DATE_SUB(NOW() , INTERVAL 20 MINUTE);
+create ALGORITHM = MERGE view member_people as select 
+
+select people.id, people.name, group_concat(activity_id) as activity_ids
+  from people left outer join tickets on tickets.person_id = people.id inner join
+  invoices on tickets.invoice_id = invoices.id where invoices.paid = true or 
+  invoices.updated_at > DATE_SUB(NOW() , INTERVAL 20 MINUTE) group by people.id;
+
+create ALGORITHM = MERGE view acts_member_people as select activities.id, group_concat(people.id) as person_ids, group_concat(people.name) as person_names
+
+create ALGORITHM = MERGE view member_people as select members.id as member_id, 
+  group_concat(people.id) as person_ids, group_concat(people.name) as person_names 
+  from members left outer join people on members.id = people.member_id 
+  group by members.id;
+
+Aktiviteten med dens salgsstatus, aldersregler, konflikter, medlemmets deltagere med id og navn
+
