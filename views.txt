@@ -31,3 +31,40 @@ create ALGORITHM = MERGE view member_people as select members.id as member_id,
 
 Aktiviteten med dens salgsstatus, aldersregler, konflikter, medlemmets deltagere med id og navn
 
+create ALGORITHM = MERGE view active_tickets as select tickets.* from tickets 
+  inner join invoices on tickets.invoice_id = invoices.id
+  where invoices.paid = true or 
+  invoices.updated_at > DATE_SUB(NOW() , INTERVAL 20 MINUTE);
+
+select people.id, people.name, people.ptype_id, people.aargang,
+  group_concat(active_tickets.activity_id SEPARATOR ';') as activity_ids
+  from people left outer join active_tickets 
+  on active_tickets.person_id = people.id group by people.id;
+
+select people.id, people.name, people.ptype_id, people.aargang,
+  group_concat(active_tickets.activity_id SEPARATOR ';') as activity_ids
+  from people left outer join active_tickets 
+  on active_tickets.person_id = people.id
+  where people.member_id = 354
+  group by people.id;
+
+
+true/false:
+SELECT members.id, members.name, 
+       IF(services.mid IS NULL, FALSE, TRUE) as services
+FROM members
+LEFT JOIN services ON (members.id = services.mid)
+
+
+Skal joines med noget, hvor people stadig er adskilt.. 
+de skal have hver sin true/false
+SELECT acts_optimized.* IF(active_tickets.id IS NULL, FALSE, TRUE) as checked
+FROM acts_optimized
+LEFT JOIN active_tickets ON (acts_optimized.id = active_tickets.activity_id)
+
+Så er checked under kontrol. deactivated udestår.
+select people.id, people.name, people.ptype_id, people.aargang,
+  IF(active_tickets.activity_id IS NULL, FALSE, TRUE) as checked
+  from people left outer join active_tickets 
+  on active_tickets.person_id = people.id and active_tickets.activity_id = 138
+  where people.member_id = 354;
