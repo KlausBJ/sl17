@@ -1,0 +1,33 @@
+select 
+	a_main.id as activity_id, 
+	a_main.name as activity_name,
+	a_main.number,
+	people.id as person_id, 
+	people.name as person_name, 
+	group_concat(distinct paid_tickets.activity_id) as paid_activity_ids,
+	group_concat(distinct reserved_tickets.activity_id) as reserved_activity_ids
+	
+	from 
+	tickets as paid_tickets 
+	--	on people.id = paid_tickets.person_id 
+	left outer join invoices as paid_invoices
+		on paid_tickets.invoice_id = paid_invoices.id 
+			AND paid_invoices.paid = true
+
+  left outer join tickets as reserved_tickets 
+		on paid_tickets.person_id = reserved_tickets.person_id  
+	left outer join invoices as unpaid_invoices
+		on reserved_tickets.invoice_id = unpaid_invoices.id 
+			AND unpaid_invoices.paid = false 
+			AND unpaid_invoices.updated_at > DATE_SUB(NOW() , INTERVAL 20 MINUTE)
+      
+  left outer join activities as a_main 
+	on a_main.id = reserved_tickets.activity_id 
+		or a_main.id = paid_tickets.activity_id
+	inner join people 
+    on people.id = paid_tickets.person_id 
+      or people.id = reserved_tickets.id
+	
+	where people.member_id = 354
+	
+	group by a_main.id, people.id;
