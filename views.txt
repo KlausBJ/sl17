@@ -1,8 +1,33 @@
 create ALGORITHM = MERGE view conf as select id, name, starttime, endtime from activities;
-create ALGORITHM = MERGE view acts_confs as select activities.*, 
-  group_concat(conf.id) as conflict_ids, group_concat(conf.name) as conflict_names 
-  from activities left outer join conf on activities.starttime < conf.endtime and 
-  conf.starttime < activities.endtime and activities.id <> conf.id group by activities.id;
+create ALGORITHM = MERGE view acts_confs as 
+	select activities.id, group_concat(conf.id) as conflict_ids
+	from activities 
+		inner join conf 
+			on activities.starttime < conf.endtime and 
+				conf.starttime < activities.endtime and 
+				activities.id <> conf.id 
+	group by activities.id;
+
+
+    create ALGORITHM = MERGE view acts_confs as select activities.*, 
+      group_concat(conf.id) as conflict_ids, group_concat(conf.name) as conflict_names 
+      from activities left outer join conf on activities.starttime < conf.endtime and 
+      conf.starttime < activities.endtime and activities.id <> conf.id group by activities.id;
+
+create ALGORITHM = MERGE view acts_blocked_by as 
+	select activities.id, tickets.person_id, group_concat(conf.name) as blocked_by
+	from activities 
+		inner join conf 
+			on activities.starttime < conf.endtime and 
+  				conf.starttime < activities.endtime and 
+				  activities.id <> conf.id
+		inner join tickets 
+			on tickets.activity_id = activities.id
+		inner join invoices 
+			on tickets.invoice_id = invoices.id and
+				invoices.paid = true
+	group by activities.id;
+
 create ALGORITHM = MERGE view acts_free as select activities.id, activities.number - count(tickets.id) as free 
   from activities left outer join tickets on tickets.activity_id = activities.id left outer join (
     select * from invoices where invoices.paid = true 
@@ -68,3 +93,30 @@ select people.id, people.name, people.ptype_id, people.aargang,
   from people left outer join active_tickets 
   on active_tickets.person_id = people.id and active_tickets.activity_id = 138
   where people.member_id = 354;
+
+
+select activities.id, 
+	activities.name,
+	activities.ptypes_ok, 
+	people.id, 
+	people.name, 
+	case
+		when concat('0,', activities.ptypes_ok, ',0') like concat('%,', cast(people.ptype_id as char(10)),',%') then true
+		when people.ptype_id > 2 and activities.first_date < people.aargang and activities.last_date > people.aargang then true
+		else concat('0,', activities.ptypes_ok, ',0')
+		-- false
+	end as age_ok, 
+	-- people.ptype_id, 
+	tickets.id as ticket_id
+from activities 
+	cross join people
+	left outer join tickets 
+		on tickets.person_id = people.id 
+			and tickets.activity_id = activities.id
+	left outer join acts_confs
+		on activities.id = acts_confs.id 
+	left outer join acts_blocked_by
+		on people.id = acts_blocked_by.person_id 
+			and activities.id = acts_blocked_by.id
+order by activities.id, people.id
+;
