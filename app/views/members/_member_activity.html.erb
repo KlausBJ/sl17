@@ -3,6 +3,10 @@
 <% people.each do |p| %>
   <% hpeople[p.id] = p %>
 <% end %>
+
+<% Rails.logger.debug("Activity: #{activity.id} has the following conflicts:") %>
+<% Rails.logger.debug(conflicts[activity]) %>
+
 <%= form_for(
   activity, {
     remote: true,
@@ -22,6 +26,10 @@
                                     people,
                                     :id,
                                     :name do |b| %>
+        <% Rails.logger.debug('Tickets:') %>
+        <% Rails.logger.debug(tickets[b.value]) %>
+        <% Rails.logger.debug('Common:') %>
+        <% Rails.logger.debug(((tickets[b.value] || []) & (conflicts[activity] || []))) %>
         <% p = hpeople[b.value] %>
         <% optns = {
             onchange: %Q[$("#edit_activity_#{activity.id}").submit();],
@@ -34,8 +42,7 @@
               <% optns[:disabled] = 'disabled' %>
             <% end %>
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
-          <% elsif any_left && (([tickets[b.value]] || []) & (conflicts[activity.id] || [])).none? %>
-              # skulle tickets[b.value] have .to_a i ovenstående?
+          <% elsif any_left && ((([tickets[b.value]] || []) & (conflicts[activity.id] || [])).none?) %>
             <td style="width: 70px; text-align: center;"><%= b.check_box( optns ) %></td>
           <% else %>
             <% optns[:disabled] = 'disabled' %>

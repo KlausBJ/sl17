@@ -144,14 +144,9 @@
       <% end %>
       <tr id="tr_act_<%= a.id %>" class="<%= total_sold_out.include?(a.id) ? 'danger' : ''  %>">
         <td id="form_act_<%= a.id %>">
-          <%= render partial: 'member_activity', locals: {
+          <%= render partial: 'member_activity_separat', locals: {
               :activity => a,
-              :member => @member,
-              :people => @people,
-              :conflicts => @conflicts,
-              :activity_names => @activity_names,
-              :tickets => @tickets,
-              :paid_tickets => @paid_tickets
+              :member => @member
           }, :as => :activity %>
         </td>
       </tr>

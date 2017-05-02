@@ -17,7 +17,7 @@ class ActivitiesController < ApplicationController
   # GET /activities/1
   # GET /activities/1.json
   def show
-    @sold_out = Activity.sold_out
+    #@sold_out = Activity.sold_out
   end
 
   # GET /activities/new
@@ -71,14 +71,12 @@ class ActivitiesController < ApplicationController
         @invoice = @activity.ptoggle activity_params[:member_id],
                           activity_params[:person_ids]
         @member = Member.find(activity_params[:member_id])
-        sold_out = @member.sold_out.blank? ? [] : Activity.find(@member.sold_out.split(','))
-        @sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts
-        # @sold_out = (Activity.sold_out - sold_out)
-        # @not_sold_out = (sold_out - Activity.sold_out)
-        @member.update_sold_out # To-do: update sold_out and return previous value in one
-        @people = @member.people.includes(:tickets) # performance
-        find_tickets(@member.invoices.includes(:tickets).order('tickets.activity_id'))
-        find_conflicts(Activity.order(:starttime, :endtime).includes(:tickets).includes(:people))
+        #sold_out = @member.sold_out.blank? ? [] : Activity.find(@member.sold_out.split(','))
+        #@sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts
+        updated_activities = (@member.update_sold_out + (@activity.conflicts.map(&:id) << @activity.id)).join(',')
+        @activities = Activity.find_by_sql(
+          "select * from member_activities where member_id = #{@member.id} and member_activities.id in (#{updated_activities})"
+        )
         render layout: false
       end
     end

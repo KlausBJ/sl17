@@ -1,0 +1,101 @@
+  <% total_sold_out = @member.sold_out.blank? ? [] : @member.sold_out.split(',').map { |a| a.to_i } %>
+  <% names = @activities.first.p_names.split(',') %>
+  <br>
+  <br>
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <td>
+        <table>
+          <tr>
+            <td style="width: 200px; text-align:left;"><b>Aktivitet</b></td>
+            <% names.each do |name| %>
+                <td style="width: 70px; text-align: center;"><b><%= name.split(' ')[0] %></b></td>
+            <% end %>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    </thead>
+    <tbody>
+    <% last_act = nil %>
+    <% p_ids = @activities.first.p_ids.split(',') %>
+    <% @activities.each do |activity| %>
+      <% checked = activity.t_ids.split(',') %>
+      <% blocked_by = activity.blckd_by.split(',') %>
+      <% i_paid = activity.i_paid.split(',')%>
+      <% age_ok = activity.age_ok.split(',') %>
+      <% if last_act.nil? || last_act != activity.starttime.to_date %>
+          <tr>
+            <td>
+              <table>
+                <tr>
+                  <td style="width: 200px; text-align:left;"><br>
+                    <b>
+                      <%= I18n.t('date.day_names')[activity.starttime.to_date.wday].capitalize +
+                              ', d. ' + I18n.localize(activity.starttime.to_date, format: :long) %>
+                    </b>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+      <% end %>
+        <tr id="tr_act_<%= activity.id %>" class="<%= total_sold_out.include?(activity.id) ? 'danger' : ''  %>">
+        <td id="form_act_<%= activity.id %>">
+          <%# instead of render partial... %>
+          <%= form_for(
+                  activity, {
+                  remote: true,
+                  multiple: true,
+                  url: "/aktiviteter/#{activity.id}/toggle",
+                  method: :post
+              }
+              ) do |f| %>
+              <table>
+                <tr>
+                  <td style="width: 200px; text-align: left;"><%= f.hidden_field :member_id, :value => @member.id %>
+                    <% unless activity.s_out.nonzero? %><b><% end %>
+                    <%= activity.name %>
+                    <% unless activity.s_out.nonzero? %></b><% end %>
+                  </td>
+                  <% (0..p_ids.size - 1).each do |i| %>
+                      <%#= f.collection_check_boxes  :person_ids,
+                                    (0..p_ids.size - 1).zip(p_ids),
+                                    :last,
+                                    :last do |b| %>
+                      <% optns = {
+                          onchange: %Q[$("#edit_activity_#{activity.id}").submit();]
+                      } %>
+                      <% optns[:checked] = 'checked' if checked[i] != '-' %>
+                      <% optns[:disabled] = 'disabled' if (activity.s_out.nonzero? ||
+                          i_paid[i] == 1 ||
+                          blocked_by[i] != '-') %>
+                      <% optns[:title] = i_paid[i] == 1 ?
+                          'Betalt' :
+                          age_ok[i].to_i.zero? ?
+                              'Forkert aldersgruppe' :
+                              activity.s_out.nonzero? ?
+                                  'Udsolgt' :
+                                  blocked_by[i] != '-' ?
+                                      "Overlap: #{blocked_by[i]}" :
+                                      names[i].split(' ')[0]
+                      %>
+                      <td style="width: 70px; text-align: center;">
+                        <%= check_box_tag('activity[person_ids][]', p_ids[i], checked[i] != '-' ? true : false, optns) %>
+                      </td>
+                  <% end %>
+                  <td>
+                    <% if activity.s_out.nonzero? %>
+                        <b>Udsolgt!</b>
+                    <% end %>
+                  </td>
+                </tr>
+              </table>
+          <% end %>
+        </td>
+      </tr>
+      <% last_act = activity.starttime.to_date %>
+  <% end %>
+  </tbody>
+</table>

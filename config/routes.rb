@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     end
     member do
       get 'email'
+      get 'show2'
     end
   end
   resources :invoices, except: [:new, :edit, :create, :destroy, :update] do

@@ -1,19 +1,26 @@
 # Controller for members, the central class
 class MembersController < ApplicationController
   let :admins,
-      [:index, :edit, :show, :email, :generate_password, :update, :import]
+      [:index, :edit, :show, :email, :generate_password, :update, :import, :show2]
   let :guests, [:index, :email, :generate_password, :update]
   let [:members, :testers], [:index, :show, :email, :generate_password, :update]
 
   include ActivityMember
 
-  before_action :set_member, only: [:show, :edit, :update, :destroy, :email]
+  before_action :set_member, only: [:show, :edit, :update, :destroy, :email, :show2]
 
   # GET /members
   def index
     @members = Member.all.order(:number)
     return unless params[:search]
     @members = Member.search(params[:search]).order('number ASC')
+  end
+
+  def show2
+    @member.update_sold_out
+    @activities = Activity.find_by_sql(
+        "select * from member_activities where member_id = #{@member.id} order by starttime, endtime"
+    )
   end
 
   # GET /members/1
@@ -23,11 +30,14 @@ class MembersController < ApplicationController
       @member.reload
     end
     @member.update_sold_out
-    @activities = Activity.order(:starttime, :endtime).includes(:tickets).includes(:people)
+    #@activities = Activity.order(:starttime, :endtime).includes(:tickets).includes(:people)
+    @activities = Activity.find_by_sql(
+       "select * from member_activities where member_id = #{@member.id}"
+    )
     @person = Person.new
     @people = @member.people.includes(:tickets)
-    find_tickets(@member.invoices.includes(:tickets).order('tickets.activity_id'))
-    find_conflicts(@activities)
+    #find_tickets(@member.invoices.includes(:tickets).order('tickets.activity_id'))
+    #find_conflicts(@activities)
   end
 
   def email; end

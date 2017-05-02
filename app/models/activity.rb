@@ -68,10 +68,10 @@ class Activity < ApplicationRecord
     invoice ||= Invoice.create(member: member, paid: false)
     invoice.refresh unless invoice.updated_at > Time.now - 20.minutes
     crnt = current member_id
-    to_be = (person_ids - ['']).map { |p| p.to_i }
-    to_add = to_be - crnt
+    to_be = ((person_ids || []) - ['']).map { |p| p.to_i }
+    to_add = (to_be || []) - crnt
     add invoice.id, to_add if to_add.any?
-    to_remove = crnt - to_be
+    to_remove = crnt - (to_be || [])
     remove invoice.id, to_remove if to_remove.any?
     invoice
   end

@@ -20,8 +20,11 @@ class Member < ApplicationRecord
   end
 
   def update_sold_out
-    self.sold_out = Activity.sold_out.map(&:id).join(',')
+    old_sold_out = self.sold_out.split(',')
+    new_sold_out = Activity.sold_out.map(&:id)
+    self.sold_out = new_sold_out.join(',')
     save
+    (new_sold_out - old_sold_out) + (old_sold_out - new_sold_out)
   end
 
   def guest_people
