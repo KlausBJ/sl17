@@ -4,6 +4,7 @@ class ActivitiesController < ApplicationController
   let :all, [:toggle]
 
   include ActivityMember
+  helper_method :activity_line
 
   skip_before_filter :verify_authenticity_token, only: :toggle
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :toggle]
@@ -71,8 +72,6 @@ class ActivitiesController < ApplicationController
         @invoice = @activity.ptoggle activity_params[:member_id],
                           activity_params[:person_ids]
         @member = Member.find(activity_params[:member_id])
-        #sold_out = @member.sold_out.blank? ? [] : Activity.find(@member.sold_out.split(','))
-        #@sold_out = (Activity.sold_out - sold_out) + (sold_out - Activity.sold_out) - [@activity] - @activity.conflicts
         updated_activities = (@member.update_sold_out + (@activity.conflicts.map(&:id) << @activity.id)).join(',')
         @activities = Activity.find_by_sql(
           "select * from member_activities where member_id = #{@member.id} and member_activities.id in (#{updated_activities})"

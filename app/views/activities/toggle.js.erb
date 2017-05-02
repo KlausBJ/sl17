@@ -7,60 +7,12 @@
   <% blocked_by = activity.blckd_by.split(',') %>
   <% i_paid = activity.i_paid.split(',')%>
   <% age_ok = activity.age_ok.split(',') %>
-  <% optns_a = [] %>
-  <% (0..p_ids.size - 1).each do |i| %>
-    <% optns = {
-            onchange: %Q[$("#edit_activity_#{activity.id}").submit();],
-            title: names[i].split(' ')[0]
-        } %>
-    <% optns[:checked] = 'checked' if checked[i] != '-' %>
-    <% optns[:disabled] = 'disabled' if (activity.s_out.nonzero? || i_paid[i] == 1 || blocked_by[i] != '-') %>
-    <% optns[:title] = i_paid[i] == 1 ?
-                'Betalt' :
-                age_ok[i].to_i.zero? ?
-                  'Forkert aldersgruppe' :
-                  activity.s_out.nonzero? ?
-                    'Udsolgt' :
-                    blocked_by[i] != '-' ?
-                      "Overlap: #{blocked_by[i]}" :
-                      names[i].split(' ')[0]
-        %>
-    <% optns_a << optns %>
+  $("#form_act_<%= activity.id %>").html("<%= j activity_line(activity, p_ids, names, checked, blocked_by, i_paid, age_ok) %>");
+  <% if activity.s_out.nonzero? %>
+    $("#tr_act_<%= activity.id %>").attr("class", "danger");
+  <% else %>
+    $("#tr_act_<%= activity.id %>").attr("class", "");
   <% end %>
-  $("#form_act_<%= activity.id %>").html("<%= form_for(
-  activity, {
-    remote: true,
-    multiple: true,
-    url: toggle_activity_path(activity),
-    method: :post
-  }
-) do |f| %>
-<table>
-  <tr>
-    <td style='width: 200px; text-align: left;'><%= f.hidden_field :member_id, :value => @member.id %>
-        <% unless activity.s_out.nonzero? %><b><% end %>
-        <%= activity.name %>
-        <% unless activity.s_out.nonzero? %></b><% end %>
-    </td>
-    <% (0..p_ids.size - 1).each do |i| %>
-    <td style='width: 70px; text-align: center;'>
-      <%= check_box_tag('activity[person_ids][]', p_ids[i], checked[i] != '-' ? true : false, optns_a[i]) %>
-    </td>
-    <% end %>
-    <td>
-      <% if activity.s_out.nonzero? %>
-      <b>Udsolgt!</b>
-      <% end %>
-    </td>
-  </tr>
-</table>");
-<% end %>
-
-<% if activity.s_out.nonzero? %>
-$("#tr_act_<%= activity.id %>").attr("class", "danger");
-<% else %>
-$("#tr_act_<%= activity.id %>").attr("class", "");
-<% end %>
 <% end %>
 
 $("#faktura_<%= @invoice.id %>").html("<%= j render partial: 'members/invoice', locals: { :invoice => @invoice } %>");
