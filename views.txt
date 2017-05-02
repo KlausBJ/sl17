@@ -14,19 +14,50 @@ create ALGORITHM = MERGE view acts_confs as
       from activities left outer join conf on activities.starttime < conf.endtime and 
       conf.starttime < activities.endtime and activities.id <> conf.id group by activities.id;
 
+# select `activities`.`id` AS `id`, `tickets`.`person_id` AS `person_id`, group_concat(`conf`.`name` separator ',') AS `blocked_by` from (((`activities` join `conf` on (((`activities`.`starttime` < `conf`.`endtime`) and (`conf`.`starttime` < `activities`.`endtime`) and (`activities`.`id` <> `conf`.`id`)))) join `tickets` on((`tickets`.`activity_id` = `activities`.`id`))) join `invoices` on(((`tickets`.`invoice_id` = `invoices`.`id`) and (`invoices`.`paid` = TRUE)))) group by `activities`.`id`
+drop view acts_blocked_by;
 create ALGORITHM = MERGE view acts_blocked_by as 
-	select activities.id, tickets.person_id, group_concat(conf.name) as blocked_by
-	from activities 
-		inner join conf 
-			on activities.starttime < conf.endtime and 
-  				conf.starttime < activities.endtime and 
-				  activities.id <> conf.id
-		inner join tickets 
-			on tickets.activity_id = activities.id
-		inner join invoices 
-			on tickets.invoice_id = invoices.id and
-				invoices.paid = true
-	group by activities.id;
+  select activities.id, tickets.person_id, group_concat(conf.name separator ';') as blocked_by
+  from activities 
+    inner join conf 
+      on activities.starttime < conf.endtime and 
+          conf.starttime < activities.endtime and 
+          activities.id <> conf.id
+    inner join tickets 
+      on tickets.activity_id = conf.id
+    inner join invoices 
+      on tickets.invoice_id = invoices.id
+  group by activities.id, person_id;
+
+
+  create ALGORITHM = MERGE view acts_blocked_by as 
+    select activities.id, tickets.person_id, group_concat(conf.name) as blocked_by
+    from activities 
+      inner join conf 
+        on activities.starttime < conf.endtime and 
+            conf.starttime < activities.endtime and 
+            activities.id <> conf.id
+      inner join tickets 
+        on tickets.activity_id = conf.id
+      inner join invoices 
+        on tickets.invoice_id = invoices.id
+    group by activities.id, person_id;
+
+  
+  # virker ikke - der skal oprettes et bedre view
+  create ALGORITHM = MERGE view acts_blocked_by as 
+    select activities.id, tickets.person_id, group_concat(conf.name) as blocked_by
+    from activities 
+      inner join conf 
+        on activities.starttime < conf.endtime and 
+            conf.starttime < activities.endtime and 
+            activities.id <> conf.id
+      inner join tickets 
+        on tickets.activity_id = activities.id
+      inner join invoices 
+        on tickets.invoice_id = invoices.id and
+          invoices.paid = true
+    group by activities.id;
 
 create ALGORITHM = MERGE view acts_free as select activities.id, activities.number - count(tickets.id) as free 
   from activities left outer join tickets on tickets.activity_id = activities.id left outer join (
@@ -120,3 +151,74 @@ from activities
 			and activities.id = acts_blocked_by.id
 order by activities.id, people.id
 ;
+
+---------------------------------------
+
+
+create view member_activities as
+select activities.id, 
+	people.member_id, 
+	acts_sold_out.sold_out,
+	group_concat(people.id) as person_ids, 
+	group_concat(people.name) as person_names, 
+	group_concat(ifnull(acts_blocked_by.blocked_by,'-')) as blocked_by,
+	group_concat(ifnull(tickets.id,'-')) as ticket_ids, 
+	group_concat(ifnull(invoices.paid,'0'))as paid,
+	group_concat(
+		case
+			when concat('0,', activities.ptypes_ok, ',0') like concat('%,', cast(people.ptype_id as char(10)),',%') then true
+			when people.ptype_id > 2 and activities.first_date < people.aargang and activities.last_date > people.aargang then true
+			when activities.min_age is null and activities.max_age is null then true
+			else false
+		end
+	) as age_ok 
+	from activities
+	cross join people
+	left outer join acts_sold_out
+		on activities.id = acts_sold_out.id
+	left outer join acts_confs
+		on activities.id = acts_confs.id 
+	left outer join acts_blocked_by
+		on people.id = acts_blocked_by.person_id 
+			and activities.id = acts_blocked_by.id
+	left outer join tickets
+		on activities.id = tickets.activity_id and
+			people.id = tickets.person_id
+	left outer join invoices
+		on tickets.invoice_id = invoices.id
+	group by activities.id, people.member_id;
+  
+  drop view member_activities;
+create view member_activities as
+select activities.*,
+	people.member_id, 
+	acts_sold_out.sold_out as s_out,
+	acts_confs.conflict_ids,
+	group_concat(people.id) as p_ids, 
+	group_concat(people.name) as p_names, 
+	group_concat(ifnull(acts_blocked_by.blocked_by,'-')) as blckd_by,
+	group_concat(ifnull(tickets.id,'-')) as t_ids, 
+	group_concat(ifnull(invoices.paid,'0'))as i_paid,
+	group_concat(
+		case
+			when concat('0,', activities.ptypes_ok, ',0') like concat('%,', cast(people.ptype_id as char(10)),',%') then true
+			when people.ptype_id > 2 and activities.first_date < people.aargang and activities.last_date > people.aargang then true
+			when activities.min_age is null and activities.max_age is null then true
+			else false
+		end
+	) as age_ok 
+	from activities
+	cross join people
+	left outer join acts_sold_out
+		on activities.id = acts_sold_out.id
+	left outer join acts_confs
+		on activities.id = acts_confs.id
+	left outer join acts_blocked_by
+		on people.id = acts_blocked_by.person_id 
+			and activities.id = acts_blocked_by.id
+	left outer join tickets
+		on activities.id = tickets.activity_id and
+			people.id = tickets.person_id
+	left outer join invoices
+		on tickets.invoice_id = invoices.id
+	group by activities.id, people.member_id;
