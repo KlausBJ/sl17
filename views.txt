@@ -222,3 +222,35 @@ select activities.*,
 	left outer join invoices
 		on tickets.invoice_id = invoices.id
 	group by activities.id, people.member_id;
+  
+  drop view member_people_paid;
+create view member_people_paid as
+	select 	members.`*`, 
+				count(people.id) as m_people 
+		from members
+			left outer join people 
+				on members.id = people.member_id
+			left outer join invoices
+				on people.invoice_id = invoices.id
+					and invoices.paid = true
+			group by members.id;
+
+drop view people_index;
+create view people_index as
+	select 	people.*,
+				members.number as member_number,
+				concat(ht2.name, ' ', members.housing_number) as member_housing,
+				concat(housing_types.name, ' ', people.housing_number) as person_housing,
+				ptypes.name as ptype_name,
+				invoices.paid as invoice_paid
+		from people
+			inner join members 
+				on people.member_id = members.id
+			inner join ptypes 
+				on people.ptype_id = ptypes.id
+			inner join invoices 
+				on people.invoice_id = invoices.id
+			left outer join housing_types 
+				on people.housing_type_id = housing_types.id
+			left outer join housing_types as ht2
+				on members.housing_type_id = housing_types.id;

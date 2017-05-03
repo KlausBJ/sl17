@@ -8,7 +8,7 @@ class PeopleController < ApplicationController
 
   # GET /people
   def index
-    @people = Person.paid.order(:member_id)
+    @people = Person.find_by_sql('select * from people_index order by member_number')
   end
 
   # GET /people/1

@@ -73,9 +73,11 @@ class ActivitiesController < ApplicationController
                           activity_params[:person_ids]
         @member = Member.find(activity_params[:member_id])
         updated_activities = (@member.update_sold_out + (@activity.conflicts.map(&:id) << @activity.id)).join(',')
+        Rails.logger.info("#{updated_activities}")
         @activities = Activity.find_by_sql(
           "select * from member_activities where member_id = #{@member.id} and member_activities.id in (#{updated_activities})"
         )
+        Rails.logger.info("Activities: #{@activities.length}")
         render layout: false
       end
     end

@@ -21,12 +21,12 @@ class InvoicesController < ApplicationController
   def index
     if params[:order]
       if params[:order] == 'name'
-        @invoices = Invoice.all.includes(:member).order('members.name')
+        @invoices = Invoice.all.includes(:member, :people, :tickets).order('members.name')
       else
-        @invoices = Invoice.order(params[:order])
+        @invoices = Invoice.all.includes(:member, :people, :tickets).order(params[:order])
       end
     else
-      @invoices = Invoice.all.includes(:member).order('members.number')
+      @invoices = Invoice.all.includes(:member, :people, :tickets).order('members.number')
     end
   end
 

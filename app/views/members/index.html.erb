@@ -26,7 +26,7 @@
         <td><%= link_to member.number, smid ? email_member_path(member) : member %></td>
         <td><%= link_to member.name, smid ? email_member_path(member) : member %></td>
         <td><%= link_to member.email, smid ? email_member_path(member) : member %></td>
-        <td><%= member.people.paid.any? ? member.invoices.where(paid: true).map{|i| i.people.count}.sum : nil %></td>
+        <td><%= member.m_people.nonzero? ? member.m_people : nil %></td>
       </tr>
     <% end %>
   </tbody>

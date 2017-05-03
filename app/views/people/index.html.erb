@@ -21,16 +21,16 @@
     <% lmid = 0 %>
     <% @people.each do |person| %>
       <tr>
-        <td><b><%= person.member.number unless person.member_id == lmid %></td>
+        <td><b><%= person.member_number unless person.member_id == lmid %></td>
         <td><%= person.name %></td>
-        <td><%= person.ptype.name %></td>
+        <td><%= person.ptype_name %></td>
         <td><%= person.koen %></td>
         <td><%= person.fdag %></td>
         <td><%= person.phone %></td>
         <td><%= person.housing %></td>
         <td><%= person.host_member %><%= " - #{Member.find_by_number(person.host_member).name}" if person.host_member %></td>
         <td><%= link_to('Rediger', edit_person_path(person)) if person.member.editable?(@cm) %></td>
-        <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if @cm && @cm.admin? && !(person.invoice.paid) %></td>
+        <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if @cm && @cm.admin? && !(person.invoice_paid) %></td>
       </tr>
       <% lmid = person.member_id %>
     <% end %>

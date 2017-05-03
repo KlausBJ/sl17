@@ -11,9 +11,14 @@ class MembersController < ApplicationController
 
   # GET /members
   def index
-    @members = Member.all.order(:number)
-    return unless params[:search]
-    @members = Member.search(params[:search]).order('number ASC')
+    return @members = Member.find_by_sql("select * from member_people_paid order by number") unless params[:search]
+    search = params[:search]
+    @members = Member.find_by_sql(
+      "select * from member_people_paid
+        where name LIKE '%#{search}%'
+          OR number LIKE '%#{search}%'
+          OR email LIKE '%#{search}%'
+        order by number")
   end
 
   def show2
