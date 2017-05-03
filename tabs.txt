@@ -1,0 +1,7 @@
+https://jsfiddle.net/rg6gkrn0/
+
+https://launchschool.com/blog/integrating-rails-and-bootstrap-part-2
+
+http://fullscreen.github.io/bh/
+
+navbar fixed to top, med deltagernes navne?
