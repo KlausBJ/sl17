@@ -1,4 +1,4 @@
-create ALGORITHM = MERGE view conf as select id, name, starttime, endtime from activities;
+﻿create ALGORITHM = MERGE view conf as select id, name, starttime, endtime from activities;
 create ALGORITHM = MERGE view acts_confs as 
 	select activities.id, group_concat(conf.id) as conflict_ids
 	from activities 
@@ -254,3 +254,21 @@ create view people_index as
 				on people.housing_type_id = housing_types.id
 			left outer join housing_types as ht2
 				on members.housing_type_id = housing_types.id;
+
+
+	select 	people.id, people.name,
+				members.number AS member_number,
+				ptypes.name,
+				invoices.paid AS invoice_paid,
+				concat(housing_types.name, ' ', members.housing_number) as p_housing 
+				from people 
+					join members 
+						on people.member_id = members.id 
+					join ptypes 
+						on people.ptype_id = ptypes.id
+					join invoices 
+						on people.invoice_id = invoices.id 
+					left join housing_types 
+						on (members.housing_type_id = housing_types.id and people.housing_type_id is null) or (people.housing_type_id = housing_types.id)
+                        order by member_number, people.id
+;
