@@ -1,0 +1,26 @@
+I, [2017-05-04T00:46:28.382316 #32683]  INFO -- : [25944004-2f58-4c84-bd81-74a13cd6bc51] Completed 500 Internal Server Error in 57ms (ActiveRecord: 18.7ms)
+F, [2017-05-04T00:46:28.383808 #32683] FATAL -- : [25944004-2f58-4c84-bd81-74a13cd6bc51] ActiveRecord::StatementInvalid (Mysql2::Error: Table 'giftedch_sl17_development.member_activities' doesn't exist: select * from member_activities where member_id = 354):
+I, [2017-05-04T01:00:05.464654 #32683]  INFO -- : [46fb8d1e-1b8b-4b00-b282-9332a0c6869e] Completed 500 Internal Server Error in 91ms (ActiveRecord: 15.8ms)
+F, [2017-05-04T01:00:05.469593 #32683] FATAL -- : [46fb8d1e-1b8b-4b00-b282-9332a0c6869e] ActionView::Template::Error (undefined local variable or method `person_housing' for #<Person:0x007f2233d10770>):
+I, [2017-05-04T01:06:24.055156 #32683]  INFO -- : [36421a93-734d-42b5-a148-7b9c07307b37] Completed 500 Internal Server Error in 50ms (ActiveRecord: 5.4ms)
+F, [2017-05-04T01:06:24.055976 #32683] FATAL -- : [36421a93-734d-42b5-a148-7b9c07307b37] ActionView::Template::Error (undefined method `person_housing' for #<Person:0x007f221a33cd20>):
+I, [2017-05-04T01:07:23.604046 #25999]  INFO -- : [e0d01c6d-75be-4743-acd6-d09e012ea153] Completed 500 Internal Server Error in 101ms (ActiveRecord: 12.8ms)
+F, [2017-05-04T01:07:23.604869 #25999] FATAL -- : [e0d01c6d-75be-4743-acd6-d09e012ea153] ActionView::Template::Error (undefined method `person_housing' for #<Person:0x007fb663e49028>):
+I, [2017-05-04T01:09:02.172724 #27393]  INFO -- : [36ea1192-2784-4abc-9a35-ea4fa97cb70e] Completed 500 Internal Server Error in 84ms (ActiveRecord: 13.7ms)
+F, [2017-05-04T01:09:02.174547 #27393] FATAL -- : [36ea1192-2784-4abc-9a35-ea4fa97cb70e] ActionView::Template::Error (undefined method `p_housing' for #<Person:0x007fcb9c6a3410>):
+I, [2017-05-04T01:10:17.581004 #29371]  INFO -- : [dae3a89b-6912-4a50-a159-91cb2dcbd463] Completed 500 Internal Server Error in 123ms (ActiveRecord: 14.7ms)
+F, [2017-05-04T01:10:17.581841 #29371] FATAL -- : [dae3a89b-6912-4a50-a159-91cb2dcbd463] ActionView::Template::Error (undefined local variable or method `person_housing' for #<Person:0x007f8aa6813458>):
+I, [2017-05-04T01:12:08.146800 #31490]  INFO -- : [891f298b-8bff-4aa1-bc77-260ead304877] Completed 500 Internal Server Error in 121ms (ActiveRecord: 14.8ms)
+F, [2017-05-04T01:12:08.147585 #31490] FATAL -- : [891f298b-8bff-4aa1-bc77-260ead304877] ActionView::Template::Error (undefined local variable or method `p_housing' for #<Person:0x007f870eef6568>):
+I, [2017-05-04T06:18:07.981851 #5842]  INFO -- : [c864ff16-abac-429d-9537-56eb74ddf8f3] Completed 500 Internal Server Error in 19ms (ActiveRecord: 0.0ms)
+F, [2017-05-04T06:18:07.982603 #5842] FATAL -- : [c864ff16-abac-429d-9537-56eb74ddf8f3] ActionView::Template::Error (undefined local variable or method `member_housing' for #<Person:0x007fa4e76fb6f0>):
+I, [2017-05-04T06:18:54.285234 #5842]  INFO -- : [c94332f2-25f5-4e75-a0d2-a1bd02769230] Completed 500 Internal Server Error in 24ms (ActiveRecord: 0.0ms)
+F, [2017-05-04T06:18:54.285983 #5842] FATAL -- : [c94332f2-25f5-4e75-a0d2-a1bd02769230] ActionView::Template::Error (undefined local variable or method `member_housing' for #<Person:0x007fa4e6212478>):
+I, [2017-05-04T06:20:10.899675 #5842]  INFO -- : [c10929e7-f978-4434-a507-47e00c9ef94a] Completed 500 Internal Server Error in 17ms (ActiveRecord: 0.0ms)
+F, [2017-05-04T06:20:10.900368 #5842] FATAL -- : [c10929e7-f978-4434-a507-47e00c9ef94a] ActionView::Template::Error (undefined local variable or method `member_housing' for #<Person:0x007fa4e5928e70>):
+I, [2017-05-04T06:20:36.705987 #5842]  INFO -- : [d33b6d37-0983-41e4-8421-1875edb97c64] Completed 500 Internal Server Error in 17ms (ActiveRecord: 0.0ms)
+F, [2017-05-04T06:20:36.706676 #5842] FATAL -- : [d33b6d37-0983-41e4-8421-1875edb97c64] ActionView::Template::Error (undefined local variable or method `member_housing' for #<Person:0x007fa4e6dac2e8>):
+I, [2017-05-04T06:21:04.986650 #5842]  INFO -- : [325c5d76-1800-441b-ab0f-6336c0ca570c] Completed 500 Internal Server Error in 20ms (ActiveRecord: 0.0ms)
+F, [2017-05-04T06:21:04.987484 #5842] FATAL -- : [325c5d76-1800-441b-ab0f-6336c0ca570c] ActionView::Template::Error (undefined local variable or method `member_housing' for #<Person:0x007fa4e7a03c30>):
+I, [2017-05-04T06:22:38.146137 #5842]  INFO -- : [3261bf94-b0a0-4159-ad3c-805cfe471d4e] Completed 500 Internal Server Error in 21ms (ActiveRecord: 0.0ms)
+F, [2017-05-04T06:22:38.147237 #5842] FATAL -- : [3261bf94-b0a0-4159-ad3c-805cfe471d4e] ActionView::Template::Error (undefined local variable or method `member_housing' for #<Person:0x007fa4e772dc68>):

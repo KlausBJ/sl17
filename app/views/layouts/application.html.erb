@@ -13,16 +13,20 @@
     <div id='header'>
       <table>
         <tr>
+          <td colspan="3">
+            <ul class="nav nav-pills">
+              <li class="active"><%= @cm ? link_to('Hjem', @cm) : link_to('Hjem', members_path) %></li>
+              <li><%= link_to 'Deltagerliste', people_path %></li>
+              <li><%= @cm ? link_to("Medlemsnr.: #{@cm.number} #{@cm.roles_to_s}", @cm) : 'Anonym' %></li>
+              <li><%= link_to 'Log ud', logout_path, method: :delete %></li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
           <td><%= image_tag('gclogo63.png') %></td>
-          <td><h1>Tilmelding til sommerlejr 2017</h1></td>
+          <td><h1>Sommerlejr 2017</h1></td>
           <% if session[:member_id] %>
             <td>
-              <%= @cm ? "Medlemsnr.: #{@cm.number}" : 'Anonym' %><%= @cm.roles_to_s if @cm %> - <%= link_to 'Log ud', logout_path, method: :delete %>
-              <% if @cm && @cm.admin? %>
-                <br>
-                <%= link_to 'Fakturaliste', invoices_path %>
-                <%= link_to 'Indkvarteringer', housing_types_path %>
-              <% end %>
             </td>
           <% end %>
         </tr>

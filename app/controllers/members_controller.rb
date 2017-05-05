@@ -35,14 +35,16 @@ class MembersController < ApplicationController
       @member.reload
     end
     @member.update_sold_out
-    #@activities = Activity.order(:starttime, :endtime).includes(:tickets).includes(:people)
     @activities = Activity.find_by_sql(
-       "select * from member_activities where member_id = #{@member.id}"
+        "select * from member_activities where member_id = #{@member.id} order by starttime, endtime"
     )
     @person = Person.new
-    @people = @member.people.includes(:tickets)
-    #find_tickets(@member.invoices.includes(:tickets).order('tickets.activity_id'))
-    #find_conflicts(@activities)
+    @people = Person.find_by_sql(
+        "select * from people_index where member_id = #{@member.id}"
+    )
+    @guest_people = Person.find_by_sql(
+        "select * from people_index where host_member = #{@member.id}"
+    )
   end
 
   def email; end

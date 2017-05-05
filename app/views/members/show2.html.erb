@@ -1,5 +1,4 @@
   <% total_sold_out = @member.sold_out.blank? ? [] : @member.sold_out.split(',').map { |a| a.to_i } %>
-  <% Rails.logger.info(@member.sold_out) %>
   <% names = @activities.first.p_names.split(',') %>
   <br>
   <br>

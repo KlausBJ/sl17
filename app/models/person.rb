@@ -37,10 +37,9 @@ class Person < ApplicationRecord
   end
 
   def housing
-    return person_housing if person_housing
-    return "#{housing_type.name if housing_type} #{housing_number}" if
-    housing_type || housing_number
-    member_housing || member.housing
+    return p_housing if defined? p_housing
+    return "#{housing_type.name if housing_type} #{housing_number}" if housing_type || housing_number
+    member.housing
   end
 
   def fdag

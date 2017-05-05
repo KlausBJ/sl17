@@ -5,153 +5,218 @@
 <% if @cm.nil? && session[:member_id] && session[:member_id] != 0 %>
   <% @cm = Member.find(session[:member_id]) %>
 <% end %>
-<table>
-  <thead>
-    <tr>
-      <th colspan='2'>Medlemsinfo:</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Medlemsnr.</td><td><%= @member.number %><%= " - #{@member.password.password}" if @cm && @cm.admin? %></td>
-    </tr>
-    <tr>
-      <td>Navn:</td><td><%= @member.name %></td>
-    </tr>
-    <tr>
-      <td>Email:</td><td><%= @member.email %> <%= link_to 'Redigér email', email_member_path(@member) if @member.editable?(@cm) %></td>
-    </tr>
-  </tbody>
-</table>
 
-<% if session[:member_id] != 0 && @member.people.any? %>
-  <h2>Tilmeldte:</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Navn</th>
-        <th>Billettype</th>
-        <th>Køn</th>
-        <th>Fødselsdag</th>
-        <th>Mobilnr.</th>
-        <th>Indkvartering</th>
-        <% if @member.hostmember %><th><%= 'Værtsfamilie' %></th><% end %>
-        <th>&nbsp;</th>
-        <th>&nbsp;</th>
-      </tr>
-    </thead>
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#tilmelding">Tilmelding</a></li>
+    <li><a data-toggle="tab" href="#aktiviteter">Aktiviteter</a></li>
+    <li><a data-toggle="tab" href="#fakturaer">Fakturaer</a></li>
+    <li><a data-toggle="tab" href="#kontaktinfo">Kontaktinfo</a></li>
+  </ul>
 
-    <tbody>
-      <% @member.people.includes(:invoice).includes(:ptype).includes(:housing_type).each do |person| %>
-        <tr>
-          <td><%= person.invoice.paid ? '' : '* ' %><%= person.name %></td>
-          <td><%= person.ptype.name %></td>
-          <td><%= person.koen %></td>
-          <td><%= person.fdag %></td>
-          <td><%= person.phone %></td>
-          <td><%= person.housing %></td>
-          <% if @member.hostmember %>
-            <td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td>
-          <% end %>
-          <td><%= link_to 'Redigér', edit_person_path(person) if @member.editable?(@cm) %></td>
-          <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if person.deletable?(@cm) %></td>
-        </tr>
-      <% end %>
-      <% if @member.guest_people.any? %>
-        <tr>
-          <td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-        </tr>
-        <% @member.guest_people.each do |person| %>
-          <tr>
-            <td><%= person.name %> (<%= person.member.number %>)</td>
-            <td><%= person.ptype.name %></td>
-            <td><%= person.koen %></td>
-            <td><%= person.fdag %></td>
-            <td><%= person.phone %></td>
-            <td><%= person.housing %></td>
-            <% if @member.hostmember %><td>&nbsp;</td><% end %>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-          </tr>
-        <% end %>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
-
-<% if @cm && @member.editable?(@cm) && @member.inv? %>
-  <br>
-  <table>
-  <% @member.invoices.each do |invoice| %>
-    <% if invoice.people.none? && invoice.tickets.none? %>
-      <% next %>
-    <% end %>
-    <tr>
-      <td id="faktura_<%= invoice.id %>">
-      <%= render partial: 'invoice', locals: { :invoice => invoice } %>
-      </td>
-    </tr>
-  <% end %>
-  </table>
-<% end %>
-
-<br>
-<% if @member.editable?(@cm) %>
-  <h2>Tilmeld deltager</h2>
-
-  <%= render 'people/form', member: @member, person: Person.new %>
-<% end %>
-
-<% if @cm && (@cm.admin? || @cm.tester?) && @member.people.any? %>
-  <% total_sold_out = @member.sold_out.blank? ? [] : @member.sold_out.split(',').map { |a| a.to_i } %>
-  <br>
-  <br>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <td>
+  <div class="tab-content">
+    <div id="tilmelding" class="tab-pane fade in active">
+      <% if session[:member_id] != 0 && @member.people.any? %>
+          <h2>Tilmeldte:</h2>
           <table>
-              <tr>
-              <td style="width: 200px; text-align:left;"><b>Aktivitet</b></td>
-              <% @member.people.each do |person| %>
-                <td style="width: 70px; text-align: center;"><b><%= person.name.split(' ')[0] %></b></td>
-              <% end %>
+            <thead>
+            <tr>
+              <th>Navn</th>
+              <th>Billettype</th>
+              <th>Køn</th>
+              <th>Fødselsdag</th>
+              <th>Mobilnr.</th>
+              <th>Indkvartering</th>
+              <% if @member.hostmember %><th><%= 'Værtsfamilie' %></th><% end %>
+              <th>&nbsp;</th>
+              <th>&nbsp;</th>
             </tr>
+            </thead>
+
+            <tbody>
+            <% @people.each do |person| %>
+                <tr>
+                  <td><%= person.invoice_paid ? '' : '* ' %><%= person.name %></td>
+                  <td><%= person.ptype_name %></td>
+                  <td><%= person.koen %></td>
+                  <td><%= person.fdag %></td>
+                  <td><%= person.phone %></td>
+                  <td><%= person.p_housing %></td>
+                  <% if @member.hostmember %>
+                      <td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td>
+                  <% end %>
+                  <td><%= link_to 'Redigér', edit_person_path(person) if @member.editable?(@cm) %></td>
+                  <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if person.deletable?(@cm) %></td>
+                </tr>
+            <% end %>
+            <% if @member.guest_people.any? %>
+                <tr>
+                  <td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+                <% @guest_people.each do |person| %>
+                    <tr>
+                      <td><%= person.name %> (<%= person.member.number %>)</td>
+                      <td><%= person.ptype.name %></td>
+                      <td><%= person.koen %></td>
+                      <td><%= person.fdag %></td>
+                      <td><%= person.phone %></td>
+                      <td><%= person.housing %></td>
+                      <% if @member.hostmember %><td>&nbsp;</td><% end %>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                    </tr>
+                <% end %>
+            <% end %>
+            </tbody>
           </table>
-        </td>
-      </tr>
-    </thead>
-    <tbody>
-    <% last_act = nil %>
-    <% @activities.each do |a| %>
-      <% if last_act.nil? || last_act != a.starttime.to_date %>
+      <% end %>
+      <br>
+      <% if @member.editable?(@cm) %>
+          <h2>Tilmeld deltager</h2>
+
+          <%= render 'people/form', member: @member, person: Person.new %>
+      <% end %>
+    </div>
+    <div id="aktiviteter" class="tab-pane fade">
+      <% total_sold_out = @member.sold_out.blank? ? [] : @member.sold_out.split(',').map { |a| a.to_i } %>
+      <% names = @activities.first.p_names.split(',') %>
+      <br>
+      <br>
+      <table class="table table-hover">
+        <thead>
         <tr>
           <td>
             <table>
               <tr>
-                <td style="width: 200px; text-align:left;"><br>
-                  <b>
-                    <%= I18n.t('date.day_names')[a.starttime.to_date.wday].capitalize +
-                            ', d. ' + I18n.localize(a.starttime.to_date, format: :long) %>
-                  </b>
-                </td>
+                <td style="width: 200px; text-align:left;"><b>Aktivitet</b></td>
+                <% names.each do |name| %>
+                    <td style="width: 70px; text-align: center;"><b><%= name.split(' ')[0] %></b></td>
+                <% end %>
               </tr>
             </table>
           </td>
         </tr>
+        </thead>
+        <tbody>
+        <% last_act = nil %>
+        <% p_ids = @activities.first.p_ids.split(',') %>
+        <% @activities.each do |activity| %>
+            <% checked = activity.t_ids.split(',') %>
+            <% blocked_by = activity.blckd_by.split(',') %>
+            <% i_paid = activity.i_paid.split(',')%>
+            <% age_ok = activity.age_ok.split(',') %>
+            <% if last_act.nil? || last_act != activity.starttime.to_date %>
+                <tr>
+                  <td>
+                    <table>
+                      <tr>
+                        <td style="width: 200px; text-align:left;"><br>
+                          <b>
+                            <%= I18n.t('date.day_names')[activity.starttime.to_date.wday].capitalize +
+                                    ', d. ' + I18n.localize(activity.starttime.to_date, format: :long) %>
+                          </b>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+            <% end %>
+            <tr id="tr_act_<%= activity.id %>" class="<%= total_sold_out.include?(activity.id) ? 'danger' : ''  %>">
+              <td id="form_act_<%= activity.id %>">
+                <%= form_for(
+                        activity, {
+                        remote: true,
+                        multiple: true,
+                        url: "/aktiviteter/#{activity.id}/toggle",
+                        method: :post
+                    }
+                    ) do |f| %>
+                    <table>
+                      <tr>
+                        <td style="width: 200px; text-align: left;"><%= f.hidden_field :member_id, :value => @member.id %>
+                          <% unless activity.s_out.nonzero? %><b><% end %>
+                          <%= activity.name %>
+                          <% unless activity.s_out.nonzero? %></b><% end %>
+                        </td>
+                        <% (0..p_ids.size - 1).each do |i| %>
+                            <%#= f.collection_check_boxes  :person_ids,
+                                    (0..p_ids.size - 1).zip(p_ids),
+                                    :last,
+                                    :last do |b| %>
+                            <% optns = {
+                                onchange: %Q[$("#edit_activity_#{activity.id}").submit();]
+                            } %>
+                            <% optns[:checked] = 'checked' if checked[i] != '-' %>
+                            <% optns[:disabled] = 'disabled' if ((activity.s_out.nonzero? && checked[i] == '-') ||
+                                i_paid[i] == 1 ||
+                                blocked_by[i] != '-') %>
+                            <% optns[:title] = i_paid[i] == 1 ?
+                                'Betalt' :
+                                age_ok[i].to_i.zero? ?
+                                    'Forkert aldersgruppe' :
+                                    activity.s_out.nonzero? ?
+                                        'Udsolgt' :
+                                        blocked_by[i] != '-' ?
+                                            "Overlap: #{blocked_by[i]}" :
+                                            names[i].split(' ')[0]
+                            %>
+                            <td style="width: 70px; text-align: center;">
+                              <%= check_box_tag('activity[person_ids][]', p_ids[i], checked[i] != '-' ? true : false, optns) %>
+                            </td>
+                        <% end %>
+                        <td>
+                          <% if activity.s_out.nonzero? %>
+                              <b>Udsolgt!</b>
+                          <% end %>
+                        </td>
+                      </tr>
+                    </table>
+                <% end %>
+              </td>
+            </tr>
+            <% last_act = activity.starttime.to_date %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div id="fakturaer" class="tab-pane fade">
+      <% if @cm && @member.editable?(@cm) && @member.inv? %>
+          <br>
+          <table>
+            <% @member.invoices.each do |invoice| %>
+                <% if invoice.people.none? && invoice.tickets.none? %>
+                    <% next %>
+                <% end %>
+                <tr>
+                  <td id="faktura_<%= invoice.id %>">
+                    <%= render partial: 'invoice', locals: { :invoice => invoice } %>
+                  </td>
+                </tr>
+            <% end %>
+          </table>
       <% end %>
-      <tr id="tr_act_<%= a.id %>" class="<%= total_sold_out.include?(a.id) ? 'danger' : ''  %>">
-        <td id="form_act_<%= a.id %>">
-          <%= render partial: 'member_activity_separat', locals: {
-              :activity => a,
-              :member => @member
-          }, :as => :activity %>
-        </td>
-      </tr>
-    <% last_act = a.starttime.to_date %>
-    <% end %>
-    </tbody>
-  </table>
-<% end %>
+    </div>
+    <div id="kontaktinfo" class="tab-pane fade">
+      <table>
+        <thead>
+        <tr>
+          <th colspan='2'>Medlemsinfo:</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>Medlemsnr.</td><td><%= @member.number %><%= " - #{@member.password.password}" if @cm && @cm.admin? %></td>
+        </tr>
+        <tr>
+          <td>Navn:</td><td><%= @member.name %></td>
+        </tr>
+        <tr>
+          <td>Email:</td><td><%= @member.email %> <%= link_to 'Redigér email', email_member_path(@member) if @member.editable?(@cm) %></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
