@@ -16,7 +16,7 @@
 
   <div class="tab-content">
     <div id="tilmelding" class="tab-pane fade in active">
-      <% if session[:member_id] != 0 && @member.people.any? %>
+      <% if session[:member_id] != 0 && (@people.length.nonzero? || @guest_people.length.nonzero?) %>
           <h2>Tilmeldte:</h2>
           <table>
             <thead>
@@ -27,7 +27,7 @@
               <th>Fødselsdag</th>
               <th>Mobilnr.</th>
               <th>Indkvartering</th>
-              <% if @member.hostmember %><th><%= 'Værtsfamilie' %></th><% end %>
+              <% if @member.host %><th><%= 'Værtsfamilie' %></th><% end %>
               <th>&nbsp;</th>
               <th>&nbsp;</th>
             </tr>
@@ -42,28 +42,28 @@
                   <td><%= person.fdag %></td>
                   <td><%= person.phone %></td>
                   <td><%= person.p_housing %></td>
-                  <% if @member.hostmember %>
+                  <% if @member.host %>
                       <td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td>
                   <% end %>
                   <td><%= link_to 'Redigér', edit_person_path(person) if @member.editable?(@cm) %></td>
                   <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if person.deletable?(@cm) %></td>
                 </tr>
             <% end %>
-            <% if @member.guest_people.any? %>
+            <% if @guest_people.any? %>
                 <tr>
-                  <td colspan="<%= @member.hostmember ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
+                  <td colspan="<%= @member.host ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                 </tr>
                 <% @guest_people.each do |person| %>
                     <tr>
                       <td><%= person.name %> (<%= person.member.number %>)</td>
-                      <td><%= person.ptype.name %></td>
+                      <td><%= person.ptype_name %></td>
                       <td><%= person.koen %></td>
                       <td><%= person.fdag %></td>
                       <td><%= person.phone %></td>
                       <td><%= person.housing %></td>
-                      <% if @member.hostmember %><td>&nbsp;</td><% end %>
+                      <% if @member.host %><td>&nbsp;</td><% end %>
                       <td>&nbsp;</td>
                       <td>&nbsp;</td>
                     </tr>
@@ -182,16 +182,16 @@
       </table>
     </div>
     <div id="fakturaer" class="tab-pane fade">
-      <% if @cm && @member.editable?(@cm) && @member.inv? %>
+      <% if @cm && @member.editable?(@cm) %>
           <br>
           <table>
-            <% @member.invoices.each do |invoice| %>
+            <% @invoices.each do |invoice| %>
                 <% if invoice.people.none? && invoice.tickets.none? %>
                     <% next %>
                 <% end %>
                 <tr>
                   <td id="faktura_<%= invoice.id %>">
-                    <%= render partial: 'invoice', locals: { :invoice => invoice } %>
+                    <%= render partial: 'invoice', locals: { :invoice => invoice } %><%# maybe lose the partial? %>
                   </td>
                 </tr>
             <% end %>

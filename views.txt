@@ -272,3 +272,11 @@ create view people_index as
 						on (members.housing_type_id = housing_types.id and people.housing_type_id is null) or (people.housing_type_id = housing_types.id)
                         order by member_number, people.id
 ;
+
+
+drop view member_host;
+create view member_host as
+select members.`*`, 
+	group_concat(people.host_member) as host 
+	from members left outer join people on people.member_id = members.id and people.host_member is not null group by members.id;
+

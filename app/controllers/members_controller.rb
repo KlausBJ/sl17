@@ -45,6 +45,7 @@ class MembersController < ApplicationController
     @guest_people = Person.find_by_sql(
         "select * from people_index where host_member = #{@member.id}"
     )
+    @invoices = Invoice.where(member_id: @member.id).includes(:people).includes(:tickets)
   end
 
   def email; end
@@ -117,7 +118,7 @@ class MembersController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_member
-    @member = Member.find(params[:id])
+    @member = Member.find_by_sql("select * from member_host where id = #{params[:id]} limit 1")[0]
   end
 
   # Never trust parameters from the scary internet, only allow the white
