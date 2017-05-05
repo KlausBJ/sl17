@@ -48,10 +48,10 @@ class Member < ApplicationRecord
   end
 
   def editable?(cm)
-    cm && ((cm.roles.any? && cm.roles.map do |r|
-      r.name.to_sym
-    end.include?(:admin)) ||
-    (cm.nil? && invoices.none?) || (cm.id == id))
+    (cm && cm.id == id) || (cm.nil? && invoices.none?) ||
+      (cm.roles.any? && cm.roles.map do |r|
+        r.name.to_sym
+      end.include?(:admin))
   end
 
   def housing

@@ -66,11 +66,8 @@ onchange="$(&quot;#edit_activity_#{activity.id}&quot;).submit();"
 title="#{optns[:title]}"
 #{' checked="checked"' if checked[i] != '-'}
 #{'disabled="disabled"' if optns[:disabled]} />
-</td>
-<td>
-#{'<b>Udsolgt!</b>' if activity.s_out.nonzero?}
 </td>]
       end
-      html += "</tr></table>"
+      html += "<td>#{'<b>Udsolgt!</b>' if activity.s_out.nonzero?}</td></tr></table>"
   end
 end

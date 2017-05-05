@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   # session (non resources, controller only)
   get '/login', to: 'sessions#new', path: '/log_ind'
+  match '/login' => 'sessions#new', :via => :get
   post '/log_ind', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy', path: '/log_ud'
 
