@@ -53,6 +53,7 @@ class Activity < ApplicationRecord
   end
 
   def remove(invoice_id, *person_ids)
+    # kan fungere uden invoice_id
     person_ids.each do |person_id|
       ticket = Ticket.find_by activity_id: id,
                               person_id: person_id

@@ -45,7 +45,7 @@ class MembersController < ApplicationController
     @guest_people = Person.find_by_sql(
         "select * from people_index where host_member = #{@member.id}"
     )
-    @invoices = Invoice.where(member_id: @member.id).includes(:people).includes(:tickets)
+    @invoices = Invoice.find_by_sql("select * from invoices_total_paid where member_id = #{@member.id}")
   end
 
   def email; end

@@ -1,11 +1,11 @@
-<% if invoice.paid %>
+<% if invoice.i_paid %>
     <%= link_to "Faktura nr. #{invoice.id}, betalt", invoice_path(invoice) %>
-<% elsif invoice.free? %>
+<% elsif invoice.i_total.zero? %>
     <strong>
       <%= link_to "Faktura nr. #{invoice.id}, afslut...", invoice_path(invoice) %>
     </strong>
 <% else %>
     <strong>
-      <%= link_to "Faktura nr. #{invoice.id}, (kr. #{dkk(invoice.total)}), gå til betaling...", invoice_path(invoice) %>
+      <%= link_to "Faktura nr. #{invoice.id}, (kr. #{dkk(invoice.i_total)}), gå til betaling...", invoice_path(invoice) %>
     </strong>
 <% end %>

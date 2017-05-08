@@ -137,7 +137,7 @@
                       <tr>
                         <td style="width: 200px; text-align: left;"><%= f.hidden_field :member_id, :value => @member.id %>
                           <% unless activity.s_out.nonzero? %><b><% end %>
-                          <%= activity.name %>
+                          <%= activity.name %><%= activity.deltbet %>
                           <% unless activity.s_out.nonzero? %></b><% end %>
                         </td>
                         <% (0..p_ids.size - 1).each do |i| %>
@@ -149,10 +149,12 @@
                                 onchange: %Q[$("#edit_activity_#{activity.id}").submit();]
                             } %>
                             <% optns[:checked] = 'checked' if checked[i] != '-' %>
-                            <% optns[:disabled] = 'disabled' if ((activity.s_out.nonzero? && checked[i] == '-') ||
-                                i_paid[i] == 1 ||
-                                blocked_by[i] != '-') %>
-                            <% optns[:title] = i_paid[i] == 1 ?
+                            <% optns[:disabled] = 'disabled' if
+                              (activity.s_out.nonzero? && checked[i] == '-') ||
+                              (activity.deltbet && i_paid[i] == '1') ||
+                              (blocked_by[i] != '-')
+                            %>
+                            <% optns[:title] = (i_paid[i] == '1' && activity.deltbet) ?
                                 'Betalt' :
                                 age_ok[i].to_i.zero? ?
                                     'Forkert aldersgruppe' :
@@ -186,12 +188,19 @@
           <br>
           <table>
             <% @invoices.each do |invoice| %>
-                <% if invoice.people.none? && invoice.tickets.none? %>
-                    <% next %>
-                <% end %>
                 <tr>
                   <td id="faktura_<%= invoice.id %>">
-                    <%= render partial: 'invoice', locals: { :invoice => invoice } %><%# maybe lose the partial? %>
+                    <% if invoice.i_paid.nonzero? %>
+                      <%= link_to "Faktura nr. #{invoice.id}, betalt", invoice_path(invoice) %>
+                    <% elsif invoice.i_total.to_i.zero? %>
+                      <strong>
+                        <%= link_to "Faktura nr. #{invoice.id}, afslut...", invoice_path(invoice) %>
+                      </strong>
+                    <% else %>
+                      <strong>
+                        <%= link_to "Faktura nr. #{invoice.id}, (kr. #{dkk(invoice.i_total)}), gå til betaling...", invoice_path(invoice) %>
+                      </strong>
+                    <% end %>
                   </td>
                 </tr>
             <% end %>
@@ -220,3 +229,17 @@
     </div>
   </div>
 </div>
+<%= javascript_tag do %>
+    $(document).ready(function() {
+    if (location.hash) {
+    $("a[href='" + location.hash + "']").tab("show");
+    }
+    $(document.body).on("click", "a[data-toggle]", function(event) {
+    location.hash = this.getAttribute("href");
+    });
+    });
+    $(window).on("popstate", function() {
+    var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
+    $("a[href='" + anchor + "']").tab("show");
+    });
+<% end %>
