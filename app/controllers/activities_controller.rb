@@ -69,8 +69,9 @@ class ActivitiesController < ApplicationController
   def toggle
     respond_to do |format|
       format.js do
-        @invoice = @activity.ptoggle activity_params[:member_id],
-                          activity_params[:person_ids]
+        invoice_id = (@activity.ptoggle activity_params[:member_id],
+                          activity_params[:person_ids]).id
+        @invoice = Invoice.find_by_sql("select * from invoices_total_paid where id = #{invoice_id}")[0]
         @member = Member.find(activity_params[:member_id])
         updated_activities = (@member.update_sold_out + (@activity.conflicts.map(&:id) << @activity.id)).join(',')
         @activities = Activity.find_by_sql(

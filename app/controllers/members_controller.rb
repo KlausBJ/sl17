@@ -36,7 +36,9 @@ class MembersController < ApplicationController
     end
     @member.update_sold_out
     @activities = Activity.find_by_sql(
-        "select * from member_activities where member_id = #{@member.id} order by starttime, endtime"
+        # "select * from member_activities where member_id = #{@member.id} order by starttime, endtime"
+      "select id, name, starttime, deltbet, s_out, p_ids, p_names, blckd_by, t_ids, i_paid, age_ok
+		    from member_activities where member_id = #{@member.id} order by starttime, endtime"
     )
     @person = Person.new
     @people = Person.find_by_sql(
