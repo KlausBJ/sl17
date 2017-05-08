@@ -1,3 +1,5 @@
+<% housing_types = HousingType.order(:name) %>
+<% p_types = Ptype.order(:name) %>
 <%= form_for(@person) do |f| %>
   <% if @person.errors.any? %>
     <div id='error_explanation'>
@@ -15,10 +17,10 @@
     <table>
       <tr>
         <% if @member %>
-          <td><%= f.label :housing_type_id, 'Indkvartering' %><%= f.collection_select(:housing_type_id, HousingType.order(:name), :id, :name, {selected: @person.housing_type_id || @member.housing_type_id, include_blank: true}) %></td>
+          <td><%= f.label :housing_type_id, 'Indkvartering' %><%= f.collection_select(:housing_type_id, housing_types, :id, :name, {selected: @person.housing_type_id || @member.housing_type_id, include_blank: true}) %></td>
           <td><%= f.label :housing_number, 'Nr.' %><%= f.text_field :housing_number, value: @person.housing_number || @member.housing_number %></td>
         <% else %>
-          <td><%= f.label :housing_type_id, 'Indkvartering' %><%= f.collection_select(:housing_type_id, HousingType.order(:name), :id, :name, {selected: @person.housing_type_id || @person.member.housing_type_id, include_blank: true}) %></td>
+          <td><%= f.label :housing_type_id, 'Indkvartering' %><%= f.collection_select(:housing_type_id, housing_types, :id, :name, {selected: @person.housing_type_id || @person.member.housing_type_id, include_blank: true}) %></td>
           <td><%= f.label :housing_number, 'Nr.' %><%= f.text_field :housing_number, value: @person.housing_number || @person.member.housing_number %></td>
         <% end %>
       </tr>
@@ -31,10 +33,10 @@
   </div>
 
   <div class='h2field'>
-  <% if (@member && @member.people.any? && @member.people.where(ptype: 1).any?) || (@person.member && @person.member.people.any? && @person.member.people.where(ptype: 1).any?) %>
+  <% if (@member && @people.length.nonzero? && @member.adults.nonzero?) || (@person.member && @person.member.people.any? && @person.member.people.where(ptype: 1).any?) %>
     <%= f.label :host_member, 'Værtsfamilie (for deltagere under 21 uden familie)' %>
     <%= f.text_field :host_member, required: false %>
-    <% if @member && @member.people.any? && @member.people.where(ptype_id: 1).where('id <> ?', @person.id || 0).any? %>
+    <% if @member && ((@member.adults.nonzero? && @person.id.nil?) || @member.adults > 1) %>
       <% @host_member_needed = false %>
     <% else %>
       <% @host_member_needed = true %>
@@ -60,16 +62,16 @@
   <div class='field'>
     <%= f.label :ptype_id, 'Billettype' %>
   <% if @host_member_needed %>
-    <%= f.collection_select :ptype_id, Ptype.order(:name), :id, :name, {include_blank: true}, {:required=>true, :onchange=>%Q[if (this.value == #{Ptype.where(datereq: true).map{|ptype| ptype.id}.join(' || this.value == ')}) { $('.hfield').show(); document.getElementById("person_host_member").required = true; document.getElementById("person_aargang_1i").required = true; document.getElementById("person_aargang_2i").required = true; document.getElementById("person_aargang_3i").required = true; } else { $('.hfield').hide(); document.getElementById("person_aargang_1i").required = false; document.getElementById("person_aargang_2i").required = false; document.getElementById("person_aargang_3i").required = false; if (this.value == 1) { document.getElementById("person_host_member").required = false; } else { document.getElementById("person_host_member").required = true; } }] } %>
+    <%= f.collection_select :ptype_id, p_types, :id, :name, {include_blank: true}, {:required=>true, :onchange=>%Q[if (this.value == 3 || this.value == 4)}) { $('.hfield').show(); document.getElementById("person_host_member").required = true; document.getElementById("person_aargang_1i").required = true; document.getElementById("person_aargang_2i").required = true; document.getElementById("person_aargang_3i").required = true; } else { $('.hfield').hide(); document.getElementById("person_aargang_1i").required = false; document.getElementById("person_aargang_2i").required = false; document.getElementById("person_aargang_3i").required = false; if (this.value == 1) { document.getElementById("person_host_member").required = false; } else { document.getElementById("person_host_member").required = true; } }] } %>
   <% else %>
-    <%= f.collection_select :ptype_id, Ptype.order(:name), :id, :name, {include_blank: true}, {:required=>true, :onchange=>%Q[if (this.value == #{Ptype.where(datereq: true).map{|ptype| ptype.id}.join(' || this.value == ')}) {$('.hfield').show();document.getElementById("person_aargang_1i").required = true;document.getElementById("person_aargang_2i").required = true;document.getElementById("person_aargang_3i").required = true;} else {$('.hfield').hide();document.getElementById("person_aargang_1i").required = false;document.getElementById("person_aargang_2i").required = false;document.getElementById("person_aargang_3i").required = false;}]} %>
+    <%= f.collection_select :ptype_id, p_types, :id, :name, {include_blank: true}, {:required=>true, :onchange=>%Q[if (this.value == 3 || this.value == 4)}) {$('.hfield').show();document.getElementById("person_aargang_1i").required = true;document.getElementById("person_aargang_2i").required = true;document.getElementById("person_aargang_3i").required = true;} else {$('.hfield').hide();document.getElementById("person_aargang_1i").required = false;document.getElementById("person_aargang_2i").required = false;document.getElementById("person_aargang_3i").required = false;}]} %>
   <% end %>
   </div>
 
   <%= f.hidden_field :member_id, value: @person.member_id || @member.id %>
   <%= f.hidden_field :invoice_id, value: @person.invoice_id || (@invoice && @invoice.id) %>
 
-  <% if @person.ptype && @person.ptype.datereq %>
+  <% if @person.ptype && @person.ptype_id > 2 %>
     <div class='hfield'>
     <%= f.label :aargang, 'Fødselsdag - skal udfyldes' %>
     <%= f.date_select(:aargang, {start_year: 1999, end_year: 2017, order: [:day, :month, :year], use_month_names: ['januar', 'februar', 'marts', 'april', 'maj', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'december'], include_blank: true}, {default: nil, required: true}) %>

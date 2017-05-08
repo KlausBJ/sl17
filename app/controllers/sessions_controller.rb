@@ -27,6 +27,7 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:member_id] = nil
+    session[:clearances] = nil
     redirect_to login_path
   end
 end

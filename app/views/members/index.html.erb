@@ -31,7 +31,7 @@
     <% end %>
   </tbody>
 </table>
-<% if @cm && @cm.admin? %>
+<% if current_clearance_levels.include?(:admin) %>
 <div>
 <h3>Import a CSV File</h3>
   <%= form_tag import_members_path, multipart: true do %>

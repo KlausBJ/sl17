@@ -6,5 +6,6 @@ module SessionsHelper
 
   def log_in(member)
     session[:member_id] = member.id
+    session[:clearances] = current_clearance_levels.map { |r| r.to_s }
   end
 end

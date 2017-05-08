@@ -116,7 +116,6 @@ class Activity < ApplicationRecord
 
   def self.import(file)
     CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8', col_sep: ';') do |row|
-      Rails.logger.info(row.to_hash)
       ah = row.to_hash
       activity = Activity.where(
         name: ah['navn'],

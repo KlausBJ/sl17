@@ -49,15 +49,9 @@ class Person < ApplicationRecord
   end
 
   def deletable?(cm)
-    cm && !invoice.paid && ((cm.roles.any? && cm.roles.map do |r|
-      r.name.to_sym
-    end.include?(:admin)) || cm.id == member_id) && (
-      ptype_id != 1 || member.people.where(ptype_id: 1).where(
-        'id <> ?', id
-      ).any? || member.people.where('ptype_id <> 1').where(
-        'host_member IS NULL'
-      ).none?
-    )
+    cm && invoice_paid.zero? &&
+      (cm.id == member_id || (session[:clearances] && session[:clearances].include?(:admin))) &&
+      (ptype_id != 1 || member.adults > 1 || member.children.zero?)
   end
 
   def self.import(file)

@@ -32,6 +32,7 @@ class Member < ApplicationRecord
   end
 
   def admin?
+    return session[:clearances].split(',').include?("admin") if session[:clearances]
     clearance_levels.include? :admin
   end
 

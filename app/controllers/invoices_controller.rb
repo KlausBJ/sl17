@@ -5,7 +5,7 @@ class InvoicesController < ApplicationController
   let :all, :callback
 
   skip_before_action :check_login, only: :callback
-  skip_before_action :set_cm, only: :callback
+  # skip_before_action :set_cm, only: :callback
 
   before_action :set_invoice, only: [:show, :edit, :update, :destroy, :pay]
   skip_before_filter :verify_authenticity_token
@@ -94,7 +94,6 @@ class InvoicesController < ApplicationController
     )
 
     return unless checksum == env['HTTP_QUICKPAY_CHECKSUM_SHA256']
-    Rails.logger.debug('Request is authenticated. ')
     invoice = Invoice.find(JSON.parse(request_body)['order_id'].to_i - 1000)
     invoice.paid = JSON.parse(request_body)['accepted']
     invoice.save

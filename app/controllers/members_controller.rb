@@ -40,11 +40,12 @@ class MembersController < ApplicationController
     )
     @person = Person.new
     @people = Person.find_by_sql(
-        "select * from people_index where member_id = #{@member.id}"
+        "select * from people_index where member_id = #{@member.id}
+             or host_member = #{@member.number} order by host_member"
     )
-    @guest_people = Person.find_by_sql(
-        "select * from people_index where host_member = #{@member.id}"
-    )
+    # @guest_people = Person.find_by_sql(
+    #    "select * from people_index where host_member = #{@member.id}"
+    # )
     @invoices = Invoice.find_by_sql("select * from invoices_total_paid where member_id = #{@member.id}")
   end
 
@@ -118,7 +119,9 @@ class MembersController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_member
-    @member = Member.find_by_sql("select * from member_host where id = #{params[:id]} limit 1")[0]
+    @member = Member.find_by_sql("select member_host.*, adults, children from member_host inner join
+                                      member_adults_children on member_host.id = member_adults_children.id
+                                      where member_host.id = #{params[:id]} limit 1")[0]
   end
 
   # Never trust parameters from the scary internet, only allow the white

@@ -280,3 +280,36 @@ select members.`*`,
 	group_concat(people.host_member) as host 
 	from members left outer join people on people.member_id = members.id and people.host_member is not null group by members.id;
 
+drop view invoices_total_paid;
+create view invoices_total_paid as
+select id, member_id, created_at, updated_at, paid as i_paid, payment_link, sum(sub_total) as i_total
+from 
+(select invoices.*, sum(activities.deltbet) as sub_total
+	from invoices
+		inner join tickets
+			on tickets.invoice_id = invoices.id
+		inner join activities 
+			on tickets.activity_id = activities.id
+	group by invoices.id
+union
+select invoices.*,  sum(ptypes.price) as sub_total
+	from invoices
+		inner join people
+			on people.invoice_id = invoices.id
+		inner join ptypes
+			on people.ptype_id = ptypes.id
+	group by invoices.id) as invoices_total
+	group by invoices_total.id
+
+drop view member_adults_children;
+create view member_adults_children as
+select members.id, count(distinct adults.id) as adults, count(distinct children.id) as children
+	from members
+		left outer join people as adults
+			on adults.member_id = members.id
+				and adults.ptype_id = 1
+		left outer join people as children
+			on children.member_id = members.id
+				and children.ptype_id > 1
+				and children.host_member is null
+	group by members.id
