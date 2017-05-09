@@ -22,8 +22,9 @@ class Member < ApplicationRecord
   def update_sold_out
     old_sold_out = (self.sold_out || '').split(',')
     new_sold_out = Activity.sold_out.map(&:id)
-    self.sold_out = new_sold_out.join(',')
-    save
+    #self.sold_out = new_sold_out.join(',')
+    #save
+    update_columns(sold_out: new_sold_out.join(','))
     (new_sold_out - old_sold_out) + (old_sold_out - new_sold_out)
   end
 
