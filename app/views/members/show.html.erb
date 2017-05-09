@@ -13,6 +13,13 @@
 
   <div class="tab-content">
     <div id="tilmelding" class="tab-pane fade in active">
+      <% activity = @activities.first %>
+      <%= check_box_tag 'activity', activity.id, false, {
+        data: {
+          remote: true,
+          url: toggle_activity_url(@activities.first),
+          method: "POST"}
+        } %><br><br>
       <% if session[:member_id] != 0 && (@people.length.nonzero? || @guest_people.length.nonzero?) %>
           <h2>Tilmeldte:</h2>
           <table>
