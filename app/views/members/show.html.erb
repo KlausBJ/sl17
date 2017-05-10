@@ -262,3 +262,11 @@
     $("a[href='" + anchor + "']").tab("show");
     });
 <% end %>
+<%# virker, men skal loades igen ved opdateringer %>
+<%= javascript_tag do %>
+$('input:checkbox').change(function () {
+var name = $(this).val();
+var check = $(this).attr('checked');
+alert("Change: " + name + " to " + check);
+});
+<% end %>
