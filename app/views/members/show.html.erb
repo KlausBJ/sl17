@@ -14,11 +14,13 @@
   <div class="tab-content">
     <div id="tilmelding" class="tab-pane fade in active">
       <% activity = @activities.first %>
-      <%= check_box_tag 'activity', activity.id, false, {
+      <% person = Person.first %>
+      <%= check_box_tag 'activity', person.id, false,
+                        #onchange: "$(this).data('activity[person_id]=#{person.id}')",
         data: {
-          remote: true,
-          url: toggle_activity_url(@activities.first),
-          method: "POST"}
+          person_id: 354,
+          activity_id: 3,
+          invoice_id: 12
         } %><br><br>
       <% if session[:member_id] != 0 && (@people.length.nonzero? || @guest_people.length.nonzero?) %>
           <h2>Tilmeldte:</h2>
@@ -83,7 +85,7 @@
           </table>
       <% end %>
       <br>
-      <% if (session[:member_id] == @member.id || current_clearance_levels.include?(:admin)) %>
+      <% if session[:member_id] == @member.id || current_clearance_levels.include?(:admin) %>
           <h2>Tilmeld deltager</h2>
           <%= render 'people/form', member: @member, people: @people, person: Person.new %>
       <% end %>
