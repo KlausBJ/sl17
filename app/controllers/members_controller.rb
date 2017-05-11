@@ -48,7 +48,8 @@ class MembersController < ApplicationController
     # @guest_people = Person.find_by_sql(
     #    "select * from people_index where host_member = #{@member.id}"
     # )
-    @invoices = Invoice.find_by_sql("select * from invoices_total_paid where member_id = #{@member.id}")
+    @invoices = Invoice.find_by_sql("select * from invoices_total_paid where member_id = #{@member.id}
+                                      order by i_paid desc, id")
   end
 
   def email; end

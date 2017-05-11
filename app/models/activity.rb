@@ -63,7 +63,7 @@ class Activity < ApplicationRecord
     end
   end
 
-  def ptoggle(member_id, person_ids)
+  def ptoggle(member_id, person_id)
     member = Member.find(member_id)
     invoice = member.invoices.where(paid: false).last
     invoice ||= Invoice.create(member: member, paid: false)

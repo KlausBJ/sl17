@@ -105,7 +105,7 @@ class ActivitiesController < ApplicationController
     #[:id, :member_id, :person_ids].each_with_object(params) do |key, obj|
     #  obj.require(key)
     #end
-    params.require(:activity).permit(:id, :member_id, :checked, person_ids: [])
+    params.require(:activity).permit(:id, :member_id, :person_id, :invoice_id, :checked, person_ids: [])
   end
 
   def activity_params

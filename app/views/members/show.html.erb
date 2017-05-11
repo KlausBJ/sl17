@@ -265,8 +265,16 @@
 <%# virker, men skal loades igen ved opdateringer %>
 <%= javascript_tag do %>
 $('input:checkbox').change(function () {
-var name = $(this).val();
-var check = $(this).attr('checked');
-alert("Change: " + name + " to " + check);
-});
+    var person_id = $(this).val();
+    var check = $(this).attr('checked');
+    var data = {
+        'activity': {
+            'invoice_id': '<%= @invoices.last.id %>',
+            'person_id': person_id,
+            'member_id': '<%= @member.id %>',
+            'checked': check
+        }
+    };
+$.post("/aktiviteter/30/toggle",data);
+    });
 <% end %>
