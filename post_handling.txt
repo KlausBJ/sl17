@@ -1,0 +1,5 @@
+http://jsfiddle.net/s6fe9/
+
+http://stackoverflow.com/questions/9180087/how-to-handle-change-of-checkbox-using-jquery
+
+

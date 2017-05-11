@@ -266,7 +266,7 @@
 <%= javascript_tag do %>
 $('input:checkbox').change(function () {
     var person_id = $(this).val();
-    var check = $(this).attr('checked');
+    var check = $(this).prop('checked');
     var data = {
         'activity': {
             'invoice_id': '<%= @invoices.last.id %>',
