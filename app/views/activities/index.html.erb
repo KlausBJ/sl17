@@ -1,7 +1,7 @@
 <p id='notice'><%= notice %></p>
 
 <h1>Aktiviteter</h1>
-
+<%  %>
 <table>
   <thead>
     <tr>
@@ -20,8 +20,8 @@
         <td><%= activity.name %></td>
         <td><%= activity.starttime %></td>
         <td><%= activity.endtime %></td>
-        <td><%= activity.person.name %></td>
-        <td><%= activity.place.name %></td>
+        <td><%= activity.person.name if activity.person %></td>
+        <td><%= activity.place.name if activity.place %></td>
         <td><%= link_to 'Vis', activity %></td>
         <td><%= link_to 'Rediger', edit_activity_path(activity) %></td>
         <td><%= link_to 'Slet', activity, method: :delete, data: { confirm: 'Er du sikker?' } %></td>

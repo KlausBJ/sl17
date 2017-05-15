@@ -69,14 +69,80 @@ class ActivitiesController < ApplicationController
   def toggle
     respond_to do |format|
       format.js do
-        invoice_id = (@activity.ptoggle activity_params[:member_id],
-                          activity_params[:person_ids]).id
+        invoice_id = activity_params[:invoice_id]
+        if activity_params[:checked] == 'true'
+          @activity.add invoice_id, activity_params[:person_id]
+        else
+          @activity.remove activity_params[:person_id]
+        end
         @invoice = Invoice.find_by_sql("select * from invoices_total_paid where id = #{invoice_id}")[0]
         @member = Member.find(activity_params[:member_id])
-        updated_activities = (@member.update_sold_out + (@activity.conflicts.map(&:id) << @activity.id)).join(',')
-        @activities = Activity.find_by_sql(
-          "select * from member_activities where member_id = #{@member.id} and member_activities.id in (#{updated_activities})"
-        )
+        #updated_activities = (@member.update_sold_out + (@activity.conflicts.map(&:id) << @activity.id)).join(',')
+        member_id = @member.id
+        sold_out = activity_params[:sold_out]
+        sold_out = '0' if sold_out == ''
+        @activities = Activity.find_by_sql("
+  select  activities.*,
+          ma_people.member_id,
+          acts_sold_out.sold_out as s_out,
+          group_concat(ma_people.id) as p_ids,
+          group_concat(ma_people.name) as p_names,
+          group_concat(ifnull(ma_acts_blocked_by.blocked_by,'-')) as blckd_by,
+          group_concat(ifnull(ma_tickets_invoices.id,'-')) as t_ids,
+          group_concat(ifnull(ma_tickets_invoices.paid,'0'))as i_paid,
+          group_concat(
+            case
+              when concat('0,', activities.ptypes_ok, ',0') like
+                  concat('%,', cast(ma_people.ptype_id as char(10)),',%') then true
+              when ma_people.ptype_id > 2 and activities.first_date <
+                  ma_people.aargang and activities.last_date > ma_people.aargang then true
+              when activities.min_age is null and activities.max_age is null then true
+              else false
+            end
+          ) as age_ok,
+          group_concat(
+            case
+              when gender = 0 then true
+              when ma_people.koen = 'K' and gender = 1 then true
+              when ma_people.koen = 'M' and gender = 2 then true
+              else false
+            end
+          ) as gender_ok
+	from activities
+	cross join (select * from people where member_id = #{member_id}) as ma_people
+	left outer join acts_sold_out
+		on activities.id = acts_sold_out.id
+	left outer join (
+    select activities.id, tickets.person_id, group_concat(tickets.activity_name separator ';') as blocked_by
+  from activities
+    inner join tickets
+      on concat('0,', activities.conflict_ids, ',0') like concat('%,', cast(tickets.activity_id as char(10)),',%')
+    inner join invoices
+      on tickets.invoice_id = invoices.id
+        and invoices.member_id = #{member_id}
+  where `show` = 1
+    order by tickets.person_id
+  group by activities.id, person_id) as ma_acts_blocked_by
+		on ma_people.id = ma_acts_blocked_by.person_id
+			and activities.id = ma_acts_blocked_by.id
+  left outer join
+  (
+  select invoices.paid, tickets.id, tickets.activity_id, tickets.person_id
+  from invoices
+    inner join tickets
+      on invoices.id = tickets.invoice_id
+    where invoices.member_id = #{member_id}
+  ) as ma_tickets_invoices
+    on ma_tickets_invoices.activity_id = activities.id
+      and ma_tickets_invoices.person_id = ma_people.id
+  where (
+          (activities.id in (#{sold_out}) and acts_sold_out.sold_out = 0) or
+          (activities.id not in (#{sold_out}) and acts_sold_out.sold_out = 1) or
+          concat('0,', conflict_ids, ',0') like '%,#{@activity.id},%'
+  ) and activities.show = 1
+  group by activities.id, ma_people.member_id
+  order by starttime, endtime;
+")
         render layout: false
       end
     end
@@ -105,13 +171,13 @@ class ActivitiesController < ApplicationController
     #[:id, :member_id, :person_ids].each_with_object(params) do |key, obj|
     #  obj.require(key)
     #end
-    params.require(:activity).permit(:id, :member_id, :person_id, :invoice_id, :checked, person_ids: [])
+    params.require(:activity).permit(:id, :member_id, :person_id, :invoice_id, :checked)
   end
 
   def activity_params
     params.require(:activity).permit(
       :name, :starttime, :endtime, :person_id, :number, :deltbet, :place_id,
-      :member_id, person_ids: []
+      :member_id, :person_id, :invoice_id, :checked, :sold_out
     )
   end
 end

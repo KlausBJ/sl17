@@ -6,10 +6,10 @@ gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
 gem 'mysql2'
 
 gem 'rack-mini-profiler'
-#gem 'stackprof', '~> 0.2.7'
+##gem 'stackprof', '~> 0.2.7'
 gem 'fast_stack'
 
-gem 'flamegraph'
+#gem 'flamegraph'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
@@ -43,7 +43,7 @@ gem 'autoprefixer-rails'
 #gem 'ruby-growl', group: 'development'
 #gem 'xmpp4r', group: 'development'
 
-gem 'bullet', group: 'development'
+#gem 'bullet', group: 'development'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

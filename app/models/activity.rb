@@ -1,12 +1,13 @@
 # Activities for participants, some of which are payable
 class Activity < ApplicationRecord
-  belongs_to :person
-  belongs_to :place
+  belongs_to :person, optional: true
+  belongs_to :place, optional: true
   has_many :tasks
   has_many :tickets
   has_many :people, through: :tickets
   # just testing...
   has_many :invoices, through: :tickets
+  has_one :description
 
   require 'csv'
 
@@ -39,28 +40,19 @@ class Activity < ApplicationRecord
     people.where(member_id: member_id).map(&:id)
   end
 
-  def add(invoice_id, *person_ids)
-    invoice = Invoice.find(invoice_id)
-    person_ids.first.each do |person_id|
-      if any_left?
-        Ticket.create activity_id: id,
-                      person_id: person_id,
-                      invoice_id: invoice_id do |t|
-          t.invoice.touch
-        end
-      end
+  def add(invoice_id, person_id)
+    if any_left?
+      Ticket.create activity_id: id,
+                    person_id: person_id,
+                    invoice_id: invoice_id,
+                    activity_name: self.name
     end
   end
 
-  def remove(invoice_id, *person_ids)
-    # kan fungere uden invoice_id
-    person_ids.each do |person_id|
-      ticket = Ticket.find_by activity_id: id,
-                              person_id: person_id
-      ticket.destroy do |t|
-        t.invoice.touch
-      end
-    end
+  def remove(person_id)
+    ticket = Ticket.find_by activity_id: id,
+                            person_id: person_id
+    ticket.destroy
   end
 
   def ptoggle(member_id, person_id)
@@ -84,7 +76,7 @@ class Activity < ApplicationRecord
       'starttime < ?', endtime
     ).where(
       'endtime > ?', starttime
-    )
+    ).where(show: 1)
   end
 
   def for_sale?(person) # skal være en del af én query som finder ALT!
@@ -117,18 +109,29 @@ class Activity < ApplicationRecord
   def self.import(file)
     CSV.foreach(file.path, headers: true, encoding: 'bom|utf-8', col_sep: ';') do |row|
       ah = row.to_hash
+      place = Place.find_by(name: ah['Resource'])
+      place_id = place.id if place
+      place_id ||= nil
       activity = Activity.where(
-        name: ah['navn'],
-        place_id: Place.find_by(name: ah['sted']).id
-      ) # mulighed for ens navne, hvis tiderne er forskellige
+        name: ah['title'],
+        place_id: place_id,
+        starttime: ah['starttid']
+      )
 
       if activity.none?
-        starttime = ah['starttid']
-        endtime = ah['sluttid']
-        mid = Member.find_by(number: ah['tovholdermedlemsnr']).id
+        starttime = ah['Begin']
+        endtime = ah['End']
+        fname = ah['User'].split(' ')[0]
+        a_member = Member.find_by(number: ah['Medlemsnr'])
+        mid = a_member.id if a_member
+        a_persons = Person.where(member_id: mid).where(
+            'name like ?', fname + '%'
+        ) if mid
+        pid = a_persons[0].id if a_persons && a_persons.any?
+        Rails.logger.info("a: #{ah['Title']} f: #{fname} m: #{mid} p: #{pid}")
         min_age = ah['min_alder'].to_i
         max_age = ah['max_alder'].to_i
-        fname = ah['tovholdernavn'].split(' ')[0]
+        show = ah['show']
         # switch if wrongly provided
         if max_age && min_age && max_age > 999 && min_age > 999 && min_age < max_age
           min_age, max_age = max_age, min_age
@@ -157,23 +160,32 @@ class Activity < ApplicationRecord
 
           ptypes_ok = ptypes_ok_array.join(',')
         end
+        if ah['Deltagerbetaling'] && ah['Deltagerbetaling'].include?(' ')
+          altbet = ah['Deltagerbetaling']
+          deltbet = nil
+        else
+          deltbet = ah['Deltagerbetaling']
+          altbet = nil
+        end
 
-        activity.create!  name: ah['navn'],
-                          person_id: Person.where(member_id: mid).where(
-                            'name like ?', fname + '%'
-                          )[0].id,
+        activity.create!(
+                          name: ah['Title'],
+                          description: ah['Description'],
+                          person_id: pid,
                           starttime: starttime.to_datetime,
                           endtime: endtime.to_datetime,
-                          number: ah['antal'],
-                          place_id: Place.find_by(
-                            name: ah['sted']
-                          ).id,
-                          deltbet: ah['deltagerbetaling'],
+                          number: ah['*Max. Deltagerantal'],
+                          place_id: place_id,
+                          deltbet: deltbet,
+                          altbet: altbet,
                           min_age: min_age,
                           max_age: max_age,
                           first_date: first_date,
                           last_date: last_date,
-                          ptypes_ok: ptypes_ok
+                          ptypes_ok: ptypes_ok,
+                          show: show,
+                          gender: ah['gender']
+        )
       end # if
     end # CSV.foreach
   end # self.import

@@ -6,8 +6,9 @@
   <% checked = activity.t_ids.split(',') %>
   <% blocked_by = activity.blckd_by.split(',') %>
   <% i_paid = activity.i_paid.split(',')%>
-  <% age_ok = activity.age_ok.split(',') %>
-  $("#form_act_<%= activity.id %>").html("<%= j(activity_line(activity, @member.id, p_ids, names, checked, blocked_by, i_paid, age_ok)).html_safe %>");
+  <% age_ok = activity.age_ok.split(',').map { |a| a == '0' ? true : false } %>
+  <% gender_ok = activity.gender_ok.split(',').map { |g| g == '0' ? true : false } %>
+  $("#form_act_<%= activity.id %>").html("<%= j(activity_line(activity, @member.id, p_ids, names, checked, blocked_by, i_paid, age_ok, gender_ok)).html_safe %>");
   <% if activity.s_out.nonzero? %>
     $("#tr_act_<%= activity.id %>").attr("class", "danger");
   <% else %>

@@ -18,76 +18,74 @@
       <%= check_box_tag 'activity', person.id, false,
                         #onchange: "$(this).data('activity[person_id]=#{person.id}')",
         data: {
-          person_id: 354,
-          activity_id: 3,
-          invoice_id: 12
+          activity_id: @activities.first.id
         } %><br><br>
       <% if session[:member_id] != 0 && (@people.length.nonzero? || @guest_people.length.nonzero?) %>
-          <h2>Tilmeldte:</h2>
-          <table>
-            <thead>
-            <tr>
-              <th>Navn</th>
-              <th>Billettype</th>
-              <th>Køn</th>
-              <th>Fødselsdag</th>
-              <th>Mobilnr.</th>
-              <th>Indkvartering</th>
-              <% if @member.host %><th><%= 'Værtsfamilie' %></th><% end %>
-              <th>&nbsp;</th>
-              <th>&nbsp;</th>
-            </tr>
-            </thead>
+        <h2>Tilmeldte:</h2>
+        <table>
+          <thead>
+          <tr>
+            <th>Navn</th>
+            <th>Billettype</th>
+            <th>Køn</th>
+            <th>Fødselsdag</th>
+            <th>Mobilnr.</th>
+            <th>Indkvartering</th>
+            <% if @member.host %><th><%= 'Værtsfamilie' %></th><% end %>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+          </tr>
+          </thead>
 
-            <tbody>
-            <% host_family = @people.last.member_id == @member.id %>
-            <% @people.each do |person| %>
-                <% if person.member_id == @member.id %>
-                  <tr>
-                    <td><%= person.invoice_paid.nonzero? ? '' : '* ' %><%= person.name %></td>
-                    <td><%= person.ptype_name %></td>
-                    <td><%= person.koen %></td>
-                    <td><%= person.aargang.strftime('%d') + '/' + person.aargang.strftime('%m') + '-' +
-                              person.aargang.strftime('%Y') if person.aargang %></td>
-                    <td><%= person.phone %></td>
-                    <td><%= person.p_housing %></td>
-                    <% if @member.host %>
-                        <td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td>
-                    <% end %>
-                    <td><%= link_to('Redigér', edit_person_path(person)) if (session[:member_id] == person.member_id ||
-                                current_clearance_levels.include?(:admin)) %></td>
-                    <td><%= link_to'Slet', person, method: :delete, data: { confirm: 'Er du sikker?' } if
-                              p_deletable?(person, session[:member_id]) %></td>
-                  </tr>
-              <% else %>
-                <% if host_family %>
-                  <tr>
-                    <td colspan="<%= @member.host ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <% host_family = nil %>
+          <tbody>
+          <% host_family = @people.last.member_id == @member.id %>
+          <% @people.each do |person| %>
+            <% if person.member_id == @member.id %>
+              <tr>
+                <td><%= person.invoice_paid.nonzero? ? '' : '* ' %><%= person.name %></td>
+                <td><%= person.ptype_name %></td>
+                <td><%= person.koen %></td>
+                <td><%= person.aargang.strftime('%d') + '/' + person.aargang.strftime('%m') + '-' +
+                          person.aargang.strftime('%Y') if person.aargang %></td>
+                <td><%= person.phone %></td>
+                <td><%= person.p_housing %></td>
+                <% if @member.host %>
+                    <td><%= "#{person.host_member} - #{Member.find_by_number(person.host_member).name}" %></td>
                 <% end %>
+                <td><%= link_to('Redigér', edit_person_path(person)) if (session[:member_id] == person.member_id ||
+                            current_clearance_levels.include?(:admin)) %></td>
+                <td><%= link_to'Slet', person, method: :delete, data: { confirm: 'Er du sikker?' } if
+                          p_deletable?(person, session[:member_id]) %></td>
+              </tr>
+            <% else %>
+              <% if host_family %>
                 <tr>
-                  <td><%= person.name %> (<%= person.member.number %>)</td>
-                  <td><%= person.ptype_name %></td>
-                  <td><%= person.koen %></td>
-                  <td><%= person.fdag %></td>
-                  <td><%= person.phone %></td>
-                  <td><%= person.housing %></td>
-                  <% if @member.host %><td>&nbsp;</td><% end %>
+                  <td colspan="<%= @member.host ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                 </tr>
+                <% host_family = nil %>
               <% end %>
+              <tr>
+                <td><%= person.name %> (<%= person.member.number %>)</td>
+                <td><%= person.ptype_name %></td>
+                <td><%= person.koen %></td>
+                <td><%= person.fdag %></td>
+                <td><%= person.phone %></td>
+                <td><%= person.housing %></td>
+                <% if @member.host %><td>&nbsp;</td><% end %>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
             <% end %>
-            </tbody>
-          </table>
+          <% end %>
+          </tbody>
+        </table>
       <% end %>
       <br>
       <% if session[:member_id] == @member.id || current_clearance_levels.include?(:admin) %>
-          <h2>Tilmeld deltager</h2>
-          <%= render 'people/form', member: @member, people: @people, person: Person.new %>
+        <h2>Tilmeld deltager</h2>
+        <%= render 'people/form', member: @member, people: @people, person: Person.new %>
       <% end %>
     </div>
     <div id="aktiviteter" class="tab-pane fade">
@@ -104,7 +102,7 @@
               <tr>
                 <td style="width: 200px; text-align:left;"><b>Aktivitet</b></td>
                 <% names.each do |name| %>
-                    <td style="width: 70px; text-align: center;"><b><%= name.split(' ')[0] %></b></td>
+                  <td style="width: 70px; text-align: center;"><b><%= name.split(' ')[0] %></b></td>
                 <% end %>
               </tr>
             </table>
@@ -115,82 +113,73 @@
         <% last_act = nil %>
         <% p_ids = @activities.first.p_ids.split(',') %>
         <% @activities.each do |activity| %>
-            <% checked = activity.t_ids.split(',') %>
-            <% blocked_by = activity.blckd_by.split(',') %>
-            <% i_paid = activity.i_paid.split(',')%>
-            <% age_ok = activity.age_ok.split(',') %>
-            <% if last_act.nil? || last_act != activity.starttime.to_date %>
+          <% checked = activity.t_ids.split(',') %>
+          <% blocked_by = activity.blckd_by.split(',') %>
+          <% i_paid = activity.i_paid.split(',')%>
+          <% age_ok = activity.age_ok.split(',').map { |a| a == '0' ? true : false } %>
+          <% gender_ok = activity.gender_ok.split(',').map { |g| g == '0' ? true : false } %>
+          <% if last_act.nil? || last_act != activity.starttime.to_date %>
+              <tr>
+                <td>
+                  <table>
+                    <tr>
+                      <td style="width: 200px; text-align:left;"><br>
+                        <b>
+                          <%= I18n.t('date.day_names')[activity.starttime.to_date.wday].capitalize +
+                                  ', d. ' + I18n.localize(activity.starttime.to_date, format: :long) %>
+                        </b>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+          <% end %>
+          <tr id="tr_act_<%= activity.id %>" class="<%= total_sold_out.include?(activity.id) ? 'danger' : ''  %>">
+            <td id="form_act_<%= activity.id %>">
+              <table>
                 <tr>
+                  <td style="width: 200px; text-align: left;">
+                    <% unless activity.s_out.nonzero? %><b><% end %>
+                    <%= activity.name %>
+                    <% unless activity.s_out.nonzero? %></b><% end %>
+                  </td>
+                  <% (0..p_ids.size - 1).each do |i| %>
+                      <% optns = {
+                          data: {activity_id: activity.id}
+                      } %>
+                      <% optns[:checked] = 'checked' if checked[i] != '-' %>
+                      <% optns[:disabled] = 'disabled' if
+                        (activity.s_out.nonzero? && checked[i] == '-') ||
+                        (activity.deltbet && i_paid[i] == '1') ||
+                        (blocked_by[i] != '-') ||
+                        (age_ok[i] || gender_ok[i])
+                      %>
+                      <% optns[:title] = (i_paid[i] == '1' && activity.deltbet) ?
+                          'Betalt' :
+                          (age_ok[i] || gender_ok[i]) ?
+                              'Ingen adgang' :
+                              activity.s_out.nonzero? ?
+                                  'Udsolgt' :
+                                  blocked_by[i] != '-' ?
+                                      "Overlap: #{blocked_by[i]}" :
+                                      names[i].split(' ')[0]
+                      %>
+                      <td style="width: 70px; text-align: center;">
+                        <%= check_box_tag('activity[person_id]', p_ids[i], checked[i] != '-' ? true : false, optns) %>
+                      </td>
+                  <% end %>
                   <td>
-                    <table>
-                      <tr>
-                        <td style="width: 200px; text-align:left;"><br>
-                          <b>
-                            <%= I18n.t('date.day_names')[activity.starttime.to_date.wday].capitalize +
-                                    ', d. ' + I18n.localize(activity.starttime.to_date, format: :long) %>
-                          </b>
-                        </td>
-                      </tr>
-                    </table>
+                    <% if activity.s_out.nonzero? %>
+                      <b>Udsolgt!</b>
+                    <% else %>
+                      <%= (activity.deltbet && activity.deltbet > 0) ? activity.deltbet : activity.altbet %>
+                    <% end %>
                   </td>
                 </tr>
-            <% end %>
-            <tr id="tr_act_<%= activity.id %>" class="<%= total_sold_out.include?(activity.id) ? 'danger' : ''  %>">
-              <td id="form_act_<%= activity.id %>">
-                <%= form_for(
-                        activity, {
-                        remote: true,
-                        multiple: true,
-                        url: "/aktiviteter/#{activity.id}/toggle",
-                        method: :post
-                    }
-                    ) do |f| %>
-                    <table>
-                      <tr>
-                        <td style="width: 200px; text-align: left;"><%= f.hidden_field :member_id, :value => @member.id %>
-                          <% unless activity.s_out.nonzero? %><b><% end %>
-                          <%= activity.name %><%= activity.deltbet %>
-                          <% unless activity.s_out.nonzero? %></b><% end %>
-                        </td>
-                        <% (0..p_ids.size - 1).each do |i| %>
-                            <%#= f.collection_check_boxes  :person_ids,
-                                    (0..p_ids.size - 1).zip(p_ids),
-                                    :last,
-                                    :last do |b| %>
-                            <% optns = {
-                                onchange: %Q[$("#edit_activity_#{activity.id}").submit();]
-                            } %>
-                            <% optns[:checked] = 'checked' if checked[i] != '-' %>
-                            <% optns[:disabled] = 'disabled' if
-                              (activity.s_out.nonzero? && checked[i] == '-') ||
-                              (activity.deltbet && i_paid[i] == '1') ||
-                              (blocked_by[i] != '-')
-                            %>
-                            <% optns[:title] = (i_paid[i] == '1' && activity.deltbet) ?
-                                'Betalt' :
-                                age_ok[i].to_i.zero? ?
-                                    'Forkert aldersgruppe' :
-                                    activity.s_out.nonzero? ?
-                                        'Udsolgt' :
-                                        blocked_by[i] != '-' ?
-                                            "Overlap: #{blocked_by[i]}" :
-                                            names[i].split(' ')[0]
-                            %>
-                            <td style="width: 70px; text-align: center;">
-                              <%= check_box_tag('activity[person_ids][]', p_ids[i], checked[i] != '-' ? true : false, optns) %>
-                            </td>
-                        <% end %>
-                        <td>
-                          <% if activity.s_out.nonzero? %>
-                              <b>Udsolgt!</b>
-                          <% end %>
-                        </td>
-                      </tr>
-                    </table>
-                <% end %>
-              </td>
-            </tr>
-            <% last_act = activity.starttime.to_date %>
+              </table>
+            </td>
+          </tr>
+          <% last_act = activity.starttime.to_date %>
         <% end %>
         </tbody>
       </table>
@@ -262,19 +251,20 @@
     $("a[href='" + anchor + "']").tab("show");
     });
 <% end %>
-<%# virker, men skal loades igen ved opdateringer %>
 <%= javascript_tag do %>
-$('input:checkbox').change(function () {
+    $('#aktiviteter').on("change","input:checkbox", function () {
     var person_id = $(this).val();
-    var check = $(this).attr('checked');
+    var check = $(this).prop('checked');
+    var activity_id = $(this).data('activity-id');
     var data = {
-        'activity': {
-            'invoice_id': '<%= @invoices.last.id %>',
-            'person_id': person_id,
-            'member_id': '<%= @member.id %>',
-            'checked': check
-        }
+    'activity': {
+    'invoice_id': '<%= @invoices.last.id %>',
+    'person_id': person_id,
+    'member_id': '<%= @member.id %>',
+    'checked': check,
+    'sold_out': '<%= @member.sold_out %>'
+    }
     };
-$.post("/aktiviteter/30/toggle",data);
+    $.post('/aktiviteter/' + activity_id + '/toggle',data);
     });
 <% end %>
