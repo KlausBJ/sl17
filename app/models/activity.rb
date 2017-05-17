@@ -111,7 +111,6 @@ class Activity < ApplicationRecord
       ah = row.to_hash
       place = Place.find_by(name: ah['Resource'])
       place_id = place.id if place
-      place_id ||= nil
       activity = Activity.where(
         name: ah['title'],
         place_id: place_id,
@@ -128,7 +127,6 @@ class Activity < ApplicationRecord
             'name like ?', fname + '%'
         ) if mid
         pid = a_persons[0].id if a_persons && a_persons.any?
-        Rails.logger.info("a: #{ah['Title']} f: #{fname} m: #{mid} p: #{pid}")
         min_age = ah['min_alder'].to_i
         max_age = ah['max_alder'].to_i
         show = ah['show']
@@ -170,7 +168,7 @@ class Activity < ApplicationRecord
 
         activity.create!(
                           name: ah['Title'],
-                          description: ah['Description'],
+                          description: Description.create(content: ah['Description']),
                           person_id: pid,
                           starttime: starttime.to_datetime,
                           endtime: endtime.to_datetime,

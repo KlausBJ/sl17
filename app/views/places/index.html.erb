@@ -1,10 +1,26 @@
 <p id='notice'><%= notice %></p>
 
 <h1>Steder</h1>
-
+<% p_names = [] %>
+<% a_ids = [] %>
+<% a_names = [] %>
+<% a_tovholdere = [] %>
+<% a_starttimes = [] %>
+<% a_endtimes = [] %>
+<% @places.each_with_index do |place,index| %>
+  <% p_names[index] = place.name %>
+  <% a_ids[index] = place.a_ids.split(',') %>
+  <% a_names[index] = place.a_names.split(',') %>
+  <% a_starttimes[index] = place.starttimes.split(',') %>
+  <% a_endtimes[index] = place.endtimes.split(',') %>
+  <% a_tovholdere[index] = place.tovholdere.split(',') %>
+<% end %>
+<% days = (Date.new(2017, 7, 8)..Date.new(2017, 7, 14)) %>
+<% last_column = p_names.length - 1 %>
 <table>
   <thead>
     <tr>
+      <%  %>
       <th>Navn</th>
       <th>Beskrivelse</th>
       <th>Begrænset</th>

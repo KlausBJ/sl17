@@ -5,7 +5,28 @@ class PlacesController < ApplicationController
 
   # GET /places
   def index
-    @places = Place.all
+    @places = Place.find_by_sql(%q[
+  select
+    ifnull(places.id,1000) as id,
+    ifnull(places.name,'Ekstern lokation') as name,
+    group_concat(activities.name order by starttime) as a_names,
+    group_concat(activities.id order by starttime) as a_ids,
+    group_concat(starttime order by starttime) as starttimes,
+    group_concat(endtime order by starttime) as endtimes,
+    group_concat(ifnull(people.name,'-') order by starttime) as tovholdere,
+    group_concat(acts_sold_out.sold_out order by starttime) as sold_out
+  from
+    activities
+      inner join acts_sold_out
+        on activities.id = acts_sold_out.id
+      left outer join places
+        on activities.place_id = places.id
+      left outer join people
+        on activities.person_id = people.id
+  where places.id in (14,15,16,17,18,19,20,21,22)
+  group by places.id
+  order by id;
+    ])
   end
 
   # GET /places/1

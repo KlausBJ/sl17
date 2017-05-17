@@ -13,6 +13,27 @@ class ActivitiesController < ApplicationController
   # GET /activities.json
   def index
     @activities = Activity.all
+    @activities = Activity.find_by_sql('
+  select
+  activities.id,
+	places.name as place_name,
+	activities.name,
+	starttime,
+	endtime,
+  person_id,
+	place_id,
+	people.name as tovholder,
+	acts_sold_out.sold_out
+	from activities
+		inner join acts_sold_out
+			on activities.id = acts_sold_out.id
+		left outer join places
+			on activities.place_id = places.id
+		left outer join people
+			on activities.person_id = people.id
+	group by place_id
+	order by starttime, place_id
+    ')
   end
 
   # GET /activities/1
