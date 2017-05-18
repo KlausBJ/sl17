@@ -15,6 +15,64 @@
   <% a_endtimes[index] = place.endtimes.split(',') %>
   <% a_tovholdere[index] = place.tovholdere.split(',') %>
 <% end %>
+
+
+#Time.hours, Time.min kan bruges
+
+
+# time fælles, ikke 6 arrays?
+
+times = []
+(0..6).each do |day|
+start_time = (2017, 7, day + 8, 8, 0, 0, 'UTC')
+end_time = (2017, 7, day + 8, 23, 30, 0, 'UTC')
+
+times[day] = (start_time.to_i..end_time.to_i).to_a.in_groups_of(30.minutes).collect(&:first).collect { |t| Time.at(t).utc }
+end
+
+<table>
+  <tr>
+    <td>
+    </td>
+    <% kolonner.each do |kolonne| %>
+      <td>
+        <% p_names[kolonne] %>
+      </td>
+    <% end %>
+    </tr>
+  <% times[day].each do |time| %>
+    <tr>
+      <td>
+        <%= time %>
+      </td>
+      <% kolonner.each do |kolonne| %>
+        if kolonne.nuv_aktivitet.starttime == curr_time # aktivitet starter her
+          <td>
+            vis nuv_aktivitet
+            <% rowspan[kolonne] = nuv_aktivitet.endtime - nuv_aktivitet.starttime / 30.minutes %>
+          </td>
+        ellers # aktivitet eller ledig tid i gang
+          <% if rowspan[kolonne] > 0 %>
+            <% rowspan[kolonne] -= 1 %>
+            hvis rowspan[kolonne] == 0 && nuv_aktivitet.starttime < curr_time # hvis ledig tid er næste aktivitet allerede hentet
+              næste aktivitet
+  <% end %> # aktivitet slutter her
+          ellers # ledig tid starter her
+            <td>
+              vis ledig tid
+              rowspan = nuv_aktivitet.starttime - curr_time / 30.minutes
+            </td>
+  <% end %> # ledig
+  <% end %> # betinget visning
+      <% end %> # kolonne
+    </tr>
+  <% end %> # timeslot
+</table>
+
+
+
+
+
 <% days = (Date.new(2017, 7, 8)..Date.new(2017, 7, 14)) %>
 <% last_column = p_names.length - 1 %>
 <table>
