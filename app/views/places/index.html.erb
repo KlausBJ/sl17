@@ -7,6 +7,9 @@
 <% a_tovholdere = [] %>
 <% a_starttimes = [] %>
 <% a_endtimes = [] %>
+<% a_counter = [] %>
+<% a_total = [] %>
+<% rowspan = [] %>
 <% @places.each_with_index do |place,index| %>
   <% p_names[index] = place.name %>
   <% a_ids[index] = place.a_ids.split(',') %>
@@ -21,56 +24,55 @@
   collect { |t| Time.at(t).utc.to_time_of_day } %>
 
 <% (0..6).each do |index| %>
-<% day = Date.new(2017, 7, index + 8) %>
-
+  <% day = Date.new(2017, 7, index + 8) %>
+  <table>
+    <tr>
+      <th>
+        <%= day %>
+      </th>
+      <% (0..p_names.length - 1).each do |place| %>
+        <% a_counter[place] = 0 %>
+        <% a_total[place] = a_names.length %>
+        <th>
+          <% p_names[place] %>
+        </th>
+      <% end %>
+    </tr>
+    <% times.each do |time| %>
+      <% curr_time = day.at time %>
+      <tr>
+        <td>
+          <%= "#{time.hour < 10 ? '0' : '' }#{time.hour}:#{time.min.zero? ? '00' : '30'}" %>
+        </td>
+        <% (0..p_names.length - 1).each do |place| %>
+          <% if a_starttimes[a_counter[place]] == curr_time %>
+            <td>
+              <%= a_names[a_counter[place]] %>
+              <% rowspan[place] = a_endtimes[a_counter[place]] - a_starttimes[a_counter[place]] / 30.minutes %>
+            </td>
+          <% else %>
+            <% if rowspan[place] > 0 %>
+              <% rowspan[place] -= 1 %>
+              <% if rowspan[place] == 0 && a_starttimes[a_counter[place]] <= curr_time %>
+                <% a_counter[place] += 1 %>
+              <% end %>
+            <% else %> # ledig tid starter her
+              <% rowspan[place] =
+                   (a_starttimes[a_counter[place]].nil? ? a_starttimes[a_counter[place]] : day.at(midnight)) -
+                     curr_time / 30.minutes %>
+              <td rowspan="<%= rowspan[place] %>">
+              </td>
+            <% end %>
+          <% end %>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
 <% end %>
 
-<table>
-  <tr>
-    <td>
-    </td>
-    <% (0..p_names.length - 1).each do |place| %>
-      <td>
-        <% p_names[place] %>
-      </td>
-    <% end %>
-    </tr>
-  <% times.each do |time| %>
-      <% curr_time = day.at time %>
-    <tr>
-      <td>
-        <%= "#{time.hour < 10 ? '0' : '' }#{time.hour}:#{time.min.zero? ? '00' : '30'}" %>
-      </td>
-      <% (0..p_names.length - 1).each do |place| %>
-        if place.nuv_aktivitet.starttime == curr_time # aktivitet starter her
-          <td>
-            vis nuv_aktivitet
-            <% rowspan[place] = nuv_aktivitet.endtime - nuv_aktivitet.starttime / 30.minutes %>
-          </td>
-        ellers # aktivitet eller ledig tid i gang
-          <% if rowspan[place] > 0 %>
-            <% rowspan[place] -= 1 %>
-            hvis rowspan[place] == 0 && nuv_aktivitet.starttime < curr_time # hvis ledig tid er næste aktivitet allerede hentet
-              næste aktivitet
-  <% end %> # aktivitet slutter her
-          <% else %> # ledig tid starter her
-            <td>
-              vis ledig tid
-              <% rowspan[place] = nuv_aktivitet.starttime - curr_time / 30.minutes %>
-            </td>
-          <% end %> # ledig
-        <% end %> # betinget visning
-      <% end %> # kolonne
-    </tr>
-  <% end %> # time
-</table>
 
 
 
-
-
-<% days = (Date.new(2017, 7, 8)..Date.new(2017, 7, 14)) %>
-<% last_column = p_names.length - 1 %>
 <table>
   <thead>
     <tr>

@@ -1,5 +1,6 @@
 # Controller for places, locations for activities
 class PlacesController < ApplicationController
+  require 'tod/core_extensions'
   let :admins, :all
   before_action :set_place, only: [:show, :edit, :update, :destroy]
 
