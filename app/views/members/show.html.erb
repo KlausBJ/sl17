@@ -8,18 +8,12 @@
     <li class="active"><a data-toggle="tab" href="#tilmelding">Tilmelding</a></li>
     <li><a data-toggle="tab" href="#aktiviteter">Aktiviteter</a></li>
     <li><a data-toggle="tab" href="#fakturaer">Fakturaer</a></li>
+    <li><a data-toggle="tab" href="#opgaver">Opgaver</a></li>
     <li><a data-toggle="tab" href="#kontaktinfo">Kontaktinfo</a></li>
   </ul>
 
   <div class="tab-content">
     <div id="tilmelding" class="tab-pane fade in active">
-      <% activity = @activities.first %>
-      <% person = Person.first %>
-      <%= check_box_tag 'activity', person.id, false,
-                        #onchange: "$(this).data('activity[person_id]=#{person.id}')",
-        data: {
-          activity_id: @activities.first.id
-        } %><br><br>
       <% if session[:member_id] != 0 && (@people.length.nonzero? || @guest_people.length.nonzero?) %>
         <h2>Tilmeldte:</h2>
         <table>
@@ -38,9 +32,13 @@
           </thead>
 
           <tbody>
-          <% host_family = @people.last.member_id == @member.id %>
+          <% host_family = @people.last.member_id != @member.id %>
+          <% tpeople = [] %>
           <% @people.each do |person| %>
             <% if person.member_id == @member.id %>
+              <% if person.task %>
+                <% tpeople << person %>
+              <% end %>
               <tr>
                 <td><%= person.invoice_paid.nonzero? ? '' : '* ' %><%= person.name %></td>
                 <td><%= person.ptype_name %></td>
@@ -60,7 +58,7 @@
             <% else %>
               <% if host_family %>
                 <tr>
-                  <td colspan="<%= @member.host ? 7 : 6 %>"><center><b>Angivet som værtsfamilie af:</b></center></td>
+                  <td colspan="<%= @member.host ? 7 : 6 %>"><br><center><b>Angivet som værtsfamilie af:</b></center></td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                 </tr>
@@ -112,6 +110,7 @@
         <tbody>
         <% last_act = nil %>
         <% p_ids = @activities.first.p_ids.split(',') %>
+        <% mtickets = [] %>
         <% @activities.each do |activity| %>
           <% checked = activity.t_ids.split(',') %>
           <% blocked_by = activity.blckd_by.split(',') %>
@@ -144,6 +143,9 @@
                     <% unless activity.s_out.nonzero? %></b><% end %>
                   </td>
                   <% (0..p_ids.size - 1).each do |i| %>
+                      <% if checked[i] != '-' %>
+                        <% mtickets << activity.id %>
+                      <% end %>
                       <% optns = {
                           data: {activity_id: activity.id}
                       } %>
@@ -189,8 +191,87 @@
           <br><br><br><br>
       <% end %>
     </div>
+    <div id="opgaver" class="tab-pane fade">
+      <% if tpeople.length.nonzero? && @tasks %>
+        <% last_task = nil %>
+        <% day = 0 %>
+        <% names = @tasks.first.p_names.split(',') %>
+        <% has_task = @tasks.first.has_tasks.split(',') %>
+        <br>
+        <br>
+        <table class="table table-hover">
+          <thead>
+          <% p_ids = @tasks.first.p_ids.split(',') %>
+          <tr>
+            <th style="text-align:left;"><b>Opgave</b></th>
+            <th style="text-align:left;">(vedr. aktivitet)</th>
+            <% i = 0 %>
+            <% names.each do |name| %>
+              <th style="width: 70px; text-align: center;" class="<%= has_task[i] == '1' ? 'success' : '' %>"
+                  id="task_person_<%= p_ids[i] %>_0"><b><%= name.split(' ')[0] %></b></th>
+              <% i += 1 %>
+            <% end %>
+          </tr>
+          </thead>
+          <tbody class="accordion panel accordion-group" id="accordion_opg">
+          <% @tasks.each do |task| %>
+            <% checked = task.a_ids.split(',') %>
+            <% if last_task.nil? || last_task != task.time.to_date %>
+              <% day += 1 %>
+              <tr class="clickable" data-toggle="collapse" id="<%= day %>" data-target=".<%= day %>collapsed">
+                <td style="text-align:left;"><br>
+                  <b>
+                    <%= I18n.t('date.day_names')[task.time.to_date.wday].capitalize +
+                          ', d. ' + I18n.localize(task.time.to_date, format: :long) %>
+                  </b>
+                </td>
+                <td style="text-align:left;"><br>
+                  (Vis alle...)
+                </td>
+                <% (0..p_ids.size - 1).each do |i| %>
+                  <td class="<%= has_task[i] == '1' ? 'success' : '' %>" id="task_person_<%= p_ids[i] %>_new_date"></td>
+                <% end %>
+              </tr>
+            <% end %>
+            <tr id="tr_task_<%= task.id %>" class="<%= (
+                                                        task.priority ||
+                                                        (task.a_ids.split(',') - ['-']).length.nonzero? ||
+                                                        task.early == 1 ||
+                                                        mtickets.include?(task.activity_id)
+            ) ? 'primary' : "#{day}collapsed panel-collapse collapse" %>" data-parent="accordion_opg">
+              <td style="text-align: left;" title="<%= task.description ? task.description : task.name %>">
+                <%= task.name[0..24] %>
+              </td>
+              <td style="text-align: left;" title="<%= task.activity_name %>">
+                <%= task.activity_name[0..24] %>
+              </td>
+              <% (0..p_ids.size - 1).each do |i| %>
+                <% optns = {
+                  data: {task_id: task.id}
+                } %>
+                <% optns[:checked] = 'checked' if checked[i] != '-' %>
+                <% optns[:disabled] = 'disabled' if
+                   (checked[i] == '-' && task.max.nil? && task.taken >= task.number) ||
+                   (checked[i] == '-' && task.max && task.taken >= task.max)
+                %>
+                <% optns[:title] = names[i].split(' ')[0] %>
+                <td style="width: 70px; text-align: center;" class="<%= has_task[i] == '1' ? 'success' : '' %>" id="task_person_<%= p_ids[i] %>_<%= task.id %>">
+                  <%= check_box_tag('task[person_id]', p_ids[i], checked[i] != '-' ? true : false, optns) %>
+                </td>
+              <% end %>
+            </tr>
+            <% last_task = task.time.to_date %>
+          <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <br><br><br><br>
+        Ingen deltagere med pligt til arbejdsopgave ved indlæsning af siden.
+        <br><br><br><br>
+      <% end %>
+    </div>
     <div id="fakturaer" class="tab-pane fade">
-      <% if (session[:member_id] == @member.id || current_clearance_levels.include?(:admin)) %>
+      <% if session[:member_id] == @member.id || current_clearance_levels.include?(:admin) %>
           <br>
           <table>
             <% @invoices.each do |invoice| %>
@@ -266,5 +347,19 @@
     }
     };
     $.post('/aktiviteter/' + activity_id + '/toggle',data);
+    });
+<% end %>
+<%= javascript_tag do %>
+    $('#opgaver').on("change","input:checkbox", function () {
+    var person_id = $(this).val();
+    var check = $(this).prop('checked');
+    var task_id = $(this).data('task-id');
+    var data = {
+    'task': {
+    'person_id': person_id,
+    'checked': check
+    }
+    };
+    $.post('/opgaver/' + task_id + '/toggle',data);
     });
 <% end %>

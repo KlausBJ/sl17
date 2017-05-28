@@ -27,15 +27,15 @@
         <td><%= person.koen %></td>
         <td><%= person.fdag %></td>
         <td><%= person.phone %></td>
-        <td><%= person.housing %></td>
-        <td><%= person.host_member %><%= " - #{Member.find_by_number(person.host_member).name}"
-                                         if person.host_member %></td>
-        <td><%= link_to('Rediger', edit_person_path(person))
-                if (session[:member_id] == person.member_id
-                  || current_clearance_levels.include?(:admin)) %></td>
-        <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' })
-                  if (session[:member_id] == person.member_id
-                    || current_clearance_levels.include?(:admin)) && !(person.invoice_paid) %></td>
+        <td><%= person.p_housing %></td>
+        <td><%= person.host_member %><%= " - #{Member.find_by_number(person.host_member).name}" if
+                                         person.host_member %></td>
+        <td><%= link_to('Rediger', edit_person_path(person)) if
+                (session[:member_id] == person.member_id ||
+                  current_clearance_levels.include?(:admin)) %></td>
+        <td><%= link_to('Slet', person, method: :delete, data: { confirm: 'Er du sikker?' }) if
+                  (session[:member_id] == person.member_id ||
+                    current_clearance_levels.include?(:admin)) && !(person.invoice_paid) %></td>
       </tr>
       <% lmid = person.member_id %>
     <% end %>

@@ -105,47 +105,99 @@ create view member_people_paid as
 					and invoices.paid = true
 			group by members.id;
 
-
 drop view people_index;
-CREATE VIEW people_index AS 
-  select  people.*,
-          members.number AS member_number,
-          ptypes.name AS ptype_name,
-          invoices.paid AS invoice_paid,
-          concat(housing_types.name,' ',members.housing_number) AS p_housing 
+create view people_index as
+select  `people`.`id` AS `id`,
+        `people`.`name` AS `name`,
+        `people`.`member_id` AS `member_id`,
+        `people`.`aargang` AS `aargang`,
+        `people`.`koen` AS `koen`,
+        `people`.`phone` AS `phone`,
+        `people`.`host_member` AS `host_member`,
+        `people`.`task` AS `task`,
+        `members`.`number` AS `member_number`,
+        `ptypes`.`name` AS `ptype_name`,
+        `invoices`.`paid` AS `invoice_paid`,
+        concat(`housing_types`.`name`,' ',`members`.`housing_number`) AS `p_housing`, 
+        count(assignments.id) as assignments
   from 
   (
     (
       (
         (
-          people join members on
+          `people` join `members` on
           (
-            (people.member_id = members.id)
+            (`people`.`member_id` = `members`.`id`)
           )
         ) 
-        join ptypes on
+        join `ptypes` on
         (
-          (people.ptype_id = ptypes.id)
+          (`people`.`ptype_id` = `ptypes`.`id`)
         )
       ) 
-      join invoices on
+      join `invoices` on
       (
-        (people.invoice_id = invoices.id)
+        (`people`.`invoice_id` = `invoices`.`id`)
       )
     ) 
-    left join housing_types on
+    left join `housing_types` on
     (
       (
         (
-          (members.housing_type_id = housing_types.id) 
-          and isnull(people.housing_type_id)
+          (`members`.`housing_type_id` = `housing_types`.`id`) 
+          and isnull(`people`.`housing_type_id`)
         ) 
-        or 
-        (people.housing_type_id = housing_types.id)
+        or (`people`.`housing_type_id` = `housing_types`.`id`)
       )
     )
-  ) 
-  order by members.number,people.id;
+  )
+  left join assignments on 
+  (people.id = assignments.person_id)
+  group by people.id
+  order by `members`.`number`,`people`.`id`;
+
+      
+      
+  drop view people_index;
+  CREATE VIEW people_index AS 
+    select  people.*,
+            members.number AS member_number,
+            ptypes.name AS ptype_name,
+            invoices.paid AS invoice_paid,
+            concat(housing_types.name,' ',members.housing_number) AS p_housing 
+    from 
+    (
+      (
+        (
+          (
+            people join members on
+            (
+              (people.member_id = members.id)
+            )
+          ) 
+          join ptypes on
+          (
+            (people.ptype_id = ptypes.id)
+          )
+        ) 
+        join invoices on
+        (
+          (people.invoice_id = invoices.id)
+        )
+      ) 
+      left join housing_types on
+      (
+        (
+          (
+            (members.housing_type_id = housing_types.id) 
+            and isnull(people.housing_type_id)
+          ) 
+          or 
+          (people.housing_type_id = housing_types.id)
+        )
+      )
+    ) 
+    order by members.number,people.id;
 
 
 drop view member_host;

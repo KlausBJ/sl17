@@ -107,6 +107,53 @@ class MembersController < ApplicationController
       @invoices = Invoice.find_by_sql("select * from invoices_total_paid where member_id = #{member_id}
                                        order by i_paid desc, id")
     end
+
+    @tasks = Task.find_by_sql("
+  select 	tasks_assignments.id,
+			name,
+			description,
+			number,
+			max,
+			priority,
+			time,
+      activity_id,
+			activity_name,
+			taken,
+			taken_index,
+			early,
+			group_concat(p_id order by p_id) as p_ids,
+			group_concat(p_name order by p_id) as p_names,
+			group_concat(ptype_id order by p_id) as ptype_ids,
+			group_concat(ifnull(task_id, '-') order by p_id) as a_ids,
+			group_concat(ifnull(p_as.as_exist,'-') order by p_id) as has_tasks
+	from
+      (select 	tasks.id,
+            tasks.name,
+            tasks.description,
+            tasks.number,
+            tasks.max,
+            tasks.priority,
+            tasks.time,
+            activities.id as activity_id,
+            activities.name as activity_name,
+            count(assignments.id) as taken,
+            count(assignments.id) / tasks.number as taken_index,
+            if (tasks.time < '2017-07-09 12:00:00', 1, 0) as early
+        from tasks
+        left outer join activities
+        on activities.id = tasks.activity_id
+        left outer join assignments
+        on assignments.task_id = tasks.id
+        group by tasks.id) as tasks_assignments
+	cross join
+      (select people.id as p_id, people.name as p_name, people.ptype_id from people where member_id = #{@member.id} and task = 1) as tpeople
+  left outer join
+          assignments as t_assignments on tpeople.p_id = t_assignments.person_id and tasks_assignments.id = t_assignments.task_id
+   left outer join (select people.id, case when exists (select id from assignments where person_id = people.id) then 1 else 0 end as as_exist from people) as p_as
+   on tpeople.p_id = p_as.id
+	where time > NOW()
+	group by id
+	order by time;")
   end
 
   def email; end

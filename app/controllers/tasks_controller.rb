@@ -1,7 +1,7 @@
 # Controller for tasks
 class TasksController < ApplicationController
   let :admins, :all
-  before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :set_task, only: [:show, :edit, :update, :destroy, :toggle]
 
   # GET /tasks
   def index
@@ -10,6 +10,25 @@ class TasksController < ApplicationController
 
   # GET /tasks/1
   def show; end
+
+  def toggle
+    respond_to do |format|
+      format.js do
+        person_id = task_params[:person_id]
+        if task_params[:checked] == 'true'
+          if @task.taken < @task.number || (@task.max && @task.taken < @task.max)
+            Assignment.create(person_id: person_id, task_id: @task.id)
+          end
+        else
+          assignment = Assignment.find_by(person_id: person_id, task_id: @task.id)
+          assignment.delete if assignment
+        end
+        @person = Person.includes(:assignments).find(person_id)
+        render layout: false
+      end
+    end
+  end
+
 
   # GET /tasks/new
   def new
@@ -66,12 +85,21 @@ class TasksController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_task
-    @task = Task.find(params[:id])
+    #@task = Task.find(params[:id])
+    @task = Task.find_by_sql("
+  select  tasks.`*`,
+          count(assignments.id) as taken
+  from tasks
+  left outer join assignments
+    on tasks.id = assignments.task_id
+  where tasks.id = #{params[:id]}
+  group by tasks.id
+  ")[0]
   end
 
   # Never trust parameters from the scary internet, only allow the white
   # list through.
   def task_params
-    params.require(:task).permit(:name, :description, :activity_id)
+    params.require(:task).permit(:name, :description, :activity_id, :person_id, :checked)
   end
 end

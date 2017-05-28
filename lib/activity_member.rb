@@ -48,7 +48,7 @@ module ActivityMember
         (activity.s_out.nonzero? && checked[i] == '-') ||
         (activity.deltbet && i_paid[i] == '1') ||
         (blocked_by[i] != '-') ||
-        (age_ok[i] && gender_ok[i])
+        (age_ok[i] || gender_ok[i])
       optns[:title] = (i_paid[i] == '1' && activity.deltbet) ?
         'Betalt' :
         (age_ok[i] || gender_ok[i]) ?

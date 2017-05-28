@@ -1,0 +1,5 @@
+<% if @person.assignments.length.nonzero? %>
+  $("[id^='task_person_<%= @person.id %>_']").attr("class", "success");
+<% else %>
+  $("[id^='task_person_<%= @person.id %>_']").attr("class", "");
+<% end %>

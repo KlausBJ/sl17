@@ -20,6 +20,11 @@ class PeopleController < ApplicationController
   # POST /people
   def create
     @person = Person.new(person_params)
+    if @person.ptype_id == 4 || (@person.ptype_id == 3 && @person.aargang > Date.new(2001, 12, 31))
+      @person.task = 0
+    else
+      @person.task = 1
+    end
     if @person.ptype.datereq && (
       (@person.ptype_id == 4 && @person.aargang < Date.new(2013, 7, 8)) ||
       (@person.ptype_id == 3 && @person.aargang > Date.new(2013, 7, 15))

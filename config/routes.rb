@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :tickets, except: [:destroy], path: '/billetter'
   resources :tasks, except: [:destroy], path: '/opgaver' do
     collection { post :import }
+    member { post :toggle }
   end
   resources :activities, except: [:destroy], path: '/aktiviteter' do
     collection { post :import }
