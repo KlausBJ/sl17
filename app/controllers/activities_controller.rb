@@ -12,7 +12,7 @@ class ActivitiesController < ApplicationController
   # GET /activities
   # GET /activities.json
   def index
-    @activities = Activity.all
+    #@activities = Activity.all
     @activities = Activity.find_by_sql('
   select
   activities.id,
@@ -31,7 +31,7 @@ class ActivitiesController < ApplicationController
 			on activities.place_id = places.id
 		left outer join people
 			on activities.person_id = people.id
-	group by place_id
+	group by activities.id
 	order by starttime, place_id
     ')
   end

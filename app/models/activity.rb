@@ -7,7 +7,7 @@ class Activity < ApplicationRecord
   has_many :people, through: :tickets
   # just testing...
   has_many :invoices, through: :tickets
-  has_one :description
+  has_one :description, dependent: :destroy
 
   require 'csv'
 
@@ -184,7 +184,13 @@ class Activity < ApplicationRecord
                           show: show,
                           gender: ah['gender']
         )
+        conflicts = activity.conflicts
       end # if
     end # CSV.foreach
+    activities = Activity.where(show: 1)
+    activities.each do |act|
+      act.conflict_ids = act.conflicts.map(&:id).join(',')
+      act.save
+    end
   end # self.import
 end
